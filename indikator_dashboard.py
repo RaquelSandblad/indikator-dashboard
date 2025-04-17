@@ -30,6 +30,35 @@ Här kan du följa upp indikatorer för:
 elif val == "Kommunnivå":
     st.title("Kommunnivå – befolkning, demografi och näringsliv")
 
+    st.write("### Planbesked – följer de ÖP?")
+st.markdown("""
+Här kan du se var i kommunen nya planbesked lämnats in, och om de stämmer överens med ÖP:s riktlinjer.
+- 🟢 Grön = i linje med ÖP
+- 🔴 Röd = avviker från ÖP:s strategi
+""")
+
+# Exempeldata (ersätt med riktig data sen)
+planbesked = [
+    {"namn": "Tölö Ängar", "koordinat": [57.500, 12.078], "status": "i linje"},
+    {"namn": "Idala by", "koordinat": [57.420, 12.280], "status": "avviker"},
+]
+
+# Skapa karta
+plan_karta = folium.Map(location=[57.47, 12.1], zoom_start=10)
+
+# Lägg till punkter
+for pb in planbesked:
+    färg = "green" if pb["status"] == "i linje" else "red"
+    folium.Marker(
+        location=pb["koordinat"],
+        popup=f"{pb['namn']} – {pb['status']}",
+        icon=folium.Icon(color=färg)
+    ).add_to(plan_karta)
+
+# Visa i Streamlit
+st_folium(plan_karta, width=700, height=500)
+
+
     bef_2022 = 85682
     bef_2023 = 85476
     tillväxt = ((bef_2023 - bef_2022) / bef_2022) * 100
