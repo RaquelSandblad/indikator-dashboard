@@ -23,7 +23,7 @@ Här kan du följa upp indikatorer för:
 
     st.subheader("🗺️ Strategibild (ÖP)")
     bild = Image.open("image.png")  # Se till att du laddar upp 'image.png' också!
-    st.image(bild, caption="Strategi för Kungsbacka kommun", use_column_width=True)
+    st.image(bild, caption="Strategi för Kungsbacka kommun", use_container_width=True)
 
 # ---------------- KOMMUN ----------------
 elif val == "Kommunnivå":
