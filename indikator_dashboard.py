@@ -74,7 +74,7 @@ elif val == "Anneberg & Åsa":
     st.title("🏘️ Utvecklingsorter – Anneberg & Åsa")
 
     orter = {
-        "Anneberg": {"koordinat": [57.507, 12.191], "flerfamiljshus": 36, "mål": 35},
+        "Anneberg": {"koordinat": [57.5567, 12.1980], "flerfamiljshus": 36, "mål": 35},
         "Åsa": {"koordinat": [57.353, 12.073], "flerfamiljshus": 30, "mål": 35},
     }
 
