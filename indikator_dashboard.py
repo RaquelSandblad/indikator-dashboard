@@ -29,7 +29,7 @@ Här kan du följa upp indikatorer för:
 elif val == "Kommunnivå":
     st.title("Kommunnivå – befolkning, demografi och näringsliv")
 
-    bef_2022 = 85682
+bef_2022 = 85682
 bef_2023 = 85476
 tillväxt = ((bef_2023 - bef_2022) / bef_2022) * 100
 skillnad = bef_2023 - bef_2022
