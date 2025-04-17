@@ -18,6 +18,7 @@ Här kan du följa upp indikatorer för:
 - Kommunen som helhet
 - Kungsbacka stad
 - Anneberg och Åsa
+- Övriga orter
 - Rörelser och transport
     """)
 
