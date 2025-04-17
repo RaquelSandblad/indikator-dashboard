@@ -104,7 +104,7 @@ elif val == "Kungsbacka stad":
 
 # ---------------- ORTER ----------------
 elif val == "Anneberg & Åsa":
-    st.title("Utvecklingsorter – Anneberg & Åsa")
+    st.title("Prioriterade orter – Anneberg & Åsa")
 
     orter = {
         "Anneberg": {"koordinat": [57.5345, 12.1167], "flerfamiljshus": 36, "mål": 35},
