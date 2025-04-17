@@ -21,7 +21,7 @@ Här kan du följa upp indikatorer för:
 - Rörelser och transport
     """)
 
-    st.subheader("Strategibild (ÖP)")
+    st.subheader("Strategi 2040")
     bild = Image.open("image.png")  # Se till att du laddar upp 'image.png' också!
     st.image(bild, caption="Strategi för Kungsbacka kommun", use_container_width=True)
 
