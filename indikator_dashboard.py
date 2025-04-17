@@ -132,6 +132,6 @@ Här kan ni visa kartor eller statistik för:
 - Hur många pendlar ut/in varje dag
 - Medelrestid
 - Andel som åker kollektivt, cyklar, går, etc.
-- *(Exempel: SCB, Trafikverket, RVU-data)*
+- *(Exempel: SCB, Trafikverket, kommunens data)*
     """)
 
