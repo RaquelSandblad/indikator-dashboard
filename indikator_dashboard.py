@@ -107,3 +107,31 @@ elif val == "Anneberg & Åsa":
         ).add_to(karta)
 
     st_folium(karta, width=700, height=500)
+
+# ---------------- TRANSPORT ----------------
+elif val == "Rörelser och transport":
+    st.title("Rörelser och transport")
+
+    st.write("### Avstånd till kollektivtrafik")
+    st.markdown("""
+- 90 % av befolkningen bör ha en hållplats inom **1 km**  
+- 50 % bör ha en hållplats inom **400 meter**  
+- *(Nuläge: skrivs in manuellt eller hämtas från GIS/SCB senare)*
+    """)
+
+    st.write("### Turtäthet för kollektivtrafik")
+    st.markdown("""
+- Minst **1 avgång per timme** i lågtrafik  
+- Minst **30-minuterstrafik** i högtrafik  
+- *(Data kan kopplas från Västtrafik eller Trafikverket)*
+    """)
+
+    st.write("### Pendlingsmöjligheter")
+    st.markdown("""
+Här kan ni visa kartor eller statistik för:
+- Hur många pendlar ut/in varje dag
+- Medelrestid
+- Andel som åker kollektivt, cyklar, går, etc.
+- *(Exempel: SCB, Trafikverket, RVU-data)*
+    """)
+
