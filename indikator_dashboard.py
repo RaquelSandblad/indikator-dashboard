@@ -6,18 +6,18 @@ from streamlit_folium import st_folium
 
 # ---------------- SIDBAR ----------------
 st.set_page_config(page_title="Uppföljning av ÖP – Kungsbacka", layout="wide")
-st.sidebar.title("🗂️ Välj sida")
-val = st.sidebar.radio("Gå till:", ["🧭 Introduktion", "🏛️ Kommunnivå", "🏙️ Kungsbacka stad", "🏘️ Anneberg & Åsa"])
+st.sidebar.title("Välj sida")
+val = st.sidebar.radio(["🧭 Introduktion", "🏛️ Kommunnivå", "🏙️ Kungsbacka stad", "🏘️ Anneberg & Åsa", "Rörelser i kommunen"])
 
 # ---------------- INTRO ----------------
 if val == "🧭 Introduktion":
-    st.title("📊 Uppföljning av Översiktsplan – Kungsbacka")
+    st.title("📊 Uppföljning av Översiktsplan för Kungsbacka")
     st.write("""
 Här kan du följa upp indikatorer för:
 
 - Kommunen som helhet
-- Staden (Kungsbacka)
-- Utvalda orter (Anneberg, Åsa)
+- Kungsbacka stad
+- Anneberg, Åsa
     """)
 
     st.subheader("🗺️ Strategibild (ÖP)")
