@@ -21,7 +21,7 @@ Här kan du följa upp indikatorer för:
 - Rörelser och transport
     """)
 
-    st.subheader("🗺️ Strategibild (ÖP)")
+    st.subheader("Strategibild (ÖP)")
     bild = Image.open("image.png")  # Se till att du laddar upp 'image.png' också!
     st.image(bild, caption="Strategi för Kungsbacka kommun", use_container_width=True)
 
@@ -40,7 +40,7 @@ elif val == "Kommunnivå":
 
 # ---------------- STAD ----------------
 elif val == "Kungsbacka stad":
-    st.title("🏙️ Kungsbacka stad – måluppfyllelse och trender")
+    st.title("Kungsbacka stad – måluppfyllelse och trender")
 
     st.write("### Måluppfyllelse")
     st.write("**Andel nybyggnation i stad**")
@@ -71,7 +71,7 @@ elif val == "Kungsbacka stad":
 
 # ---------------- ORTER ----------------
 elif val == "Anneberg & Åsa":
-    st.title("🏘️ Utvecklingsorter – Anneberg & Åsa")
+    st.title("Utvecklingsorter – Anneberg & Åsa")
 
     orter = {
         "Anneberg": {"koordinat": [57.5345, 12.1167], "flerfamiljshus": 36, "mål": 35},
