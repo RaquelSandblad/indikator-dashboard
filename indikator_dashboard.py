@@ -34,6 +34,10 @@ elif val == "Kommunnivå":
     tillväxt = ((bef_2023 - bef_2022) / bef_2022) * 100
 
     st.write("**📈 Befolkningstillväxt**", f"{tillväxt:.2f} %", delta=f"{bef_2023 - bef_2022} personer")
+    if skillnad >= 0:
+    st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
+else:
+    st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
 
     st.write("**🧓 Ålderspyramid & åldersfördelning per geografiskt område** *(Ej inlagd ännu – men förberedd)*")
     st.write("**🏭 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – [här kan du koppla in data från SCB eller kommunen]")
