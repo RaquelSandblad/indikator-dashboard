@@ -7,7 +7,7 @@ from streamlit_folium import st_folium
 # ---------------- SIDBAR ----------------
 st.set_page_config(page_title="Uppföljning av ÖP – Kungsbacka", layout="wide")
 st.sidebar.title("Välj sida")
-val = st.sidebar.radio(["🧭 Introduktion", "🏛️ Kommunnivå", "🏙️ Kungsbacka stad", "🏘️ Anneberg & Åsa", "Rörelser i kommunen"])
+val = st.sidebar.radio("Välj sida", ["🧭 Introduktion", "🏛️ Kommunnivå", "🏙️ Kungsbacka stad", "🏘️ Anneberg & Åsa", "Rörelser i kommunen"])
 
 # ---------------- INTRO ----------------
 if val == "🧭 Introduktion":
