@@ -33,7 +33,7 @@ elif val == "Kommunnivå":
     bef_2023 = 85476
     tillväxt = ((bef_2023 - bef_2022) / bef_2022) * 100
 
-    st.metric("**📈 Befolkningstillväxt**", f"{tillväxt:.2f} %", delta=f"{bef_2023 - bef_2022} personer")
+    st.write("**📈 Befolkningstillväxt**", f"{tillväxt:.2f} %", delta=f"{bef_2023 - bef_2022} personer")
 
     st.write("**🧓 Ålderspyramid & åldersfördelning per geografiskt område** *(Ej inlagd ännu – men förberedd)*")
     st.write("**🏭 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – [här kan du koppla in data från SCB eller kommunen]")
