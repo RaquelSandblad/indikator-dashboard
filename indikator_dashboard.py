@@ -11,7 +11,7 @@ val = st.sidebar.radio("Välj sida", ["Introduktion", "Kommunnivå", "Kungsbacka
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
-    st.title("Uppföljning av Översiktsplan för Kungsbacka kommun")
+    st.title("Uppföljning av Översiktsplanen för Kungsbacka kommun")
     st.write("""
 Här kan du följa upp indikatorer för:
 
