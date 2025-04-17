@@ -32,9 +32,9 @@ elif val == "Kommunnivå":
     bef_2022 = 85682
     bef_2023 = 85476
     tillväxt = ((bef_2023 - bef_2022) / bef_2022) * 100
-
+    skillnad = bef_2023 - bef_2022
     st.write("**📈 Befolkningstillväxt**", f"{tillväxt:.2f} %", delta=f"{bef_2023 - bef_2022} personer")
-    if skillnad >= 0:
+if skillnad >= 0:
     st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
 else:
     st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
