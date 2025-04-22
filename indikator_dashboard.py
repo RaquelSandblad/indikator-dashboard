@@ -50,7 +50,7 @@ Här kan du se var i kommunen nya planbesked lämnats in, och om de stämmer öv
         färg = "green" if pb["status"] == "i linje" else "red"
         folium.Marker(
             location=pb["koordinat"],
-            popup=f"{pb['namn']} – {pb['status']}",
+            popup=f"{pb['namn']},
             icon=folium.Icon(color=färg)
         ).add_to(plan_karta)
 
