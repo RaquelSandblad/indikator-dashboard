@@ -3,5 +3,4 @@ streamlit-folium
 pillow
 pandas
 folium
-pxweb==1.0.0
 matplotlib
