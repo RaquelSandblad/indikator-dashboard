@@ -132,7 +132,7 @@ def ort_sida(namn):
     st.write("(Här kan du visa kartor eller statistik som visar hur många som har tillgång till hållplats inom 400 m och 1 km.)")
 
 # ---------------- ORTER ----------------
-elif val == "Anneberg":
+if val == "Anneberg":
     ort_sida("Anneberg")
 elif val == "Åsa":
     ort_sida("Åsa")
@@ -148,6 +148,7 @@ elif val == "Fjärås":
     ort_sida("Fjärås")
 elif val == "Frillesås":
     ort_sida("Frillesås")
+
 
 # ---------------- TRANSPORT ----------------
 elif val == "Rörelser och transport":
