@@ -104,6 +104,10 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
         ).add_to(plan_karta)
     st_folium(plan_karta, width=700, height=500)
 
+# Lägg till extra luft och separator
+    st.markdown("###")  # luft
+    st.markdown("---")  # visuell linje
+
     bef_2022 = 85682
     bef_2023 = 85476
     tillvaxt = ((bef_2023 - bef_2022) / bef_2022) * 100
