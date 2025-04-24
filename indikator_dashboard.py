@@ -4,7 +4,7 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
-from pxweb import PxWebApi
+import requests
 
 # ---------------- SIDBAR ----------------
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
@@ -17,27 +17,62 @@ val = st.sidebar.radio("", [
 
 # ---------------- FUNKTION: hämta befolkning från SCB ----------------
 def hamta_aldersfordelning():
-    api = PxWebApi("https://api.scb.se/OV0104/v1/doris/sv/ssd/")
+    url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
     query = {
-        "Region": ["1384"],  # Kungsbacka
-        "Kon": ["1", "2"],   # 1=Män, 2=Kvinnor
-        "Alder": [str(i) for i in range(101)] + ["100+"],
-        "Tid": ["2023"]
+        "query": [
+            {
+                "code": "Region",
+                "selection": {
+                    "filter": "item",
+                    "values": ["1384"]
+                }
+            },
+            {
+                "code": "ContentsCode",
+                "selection": {
+                    "filter": "item",
+                    "values": ["BE0101N1"]
+                }
+            },
+            {
+                "code": "Tid",
+                "selection": {
+                    "filter": "item",
+                    "values": ["2023"]
+                }
+            },
+            {
+                "code": "Kon",
+                "selection": {
+                    "filter": "item",
+                    "values": ["1", "2"]
+                }
+            },
+            {
+                "code": "Alder",
+                "selection": {
+                    "filter": "item",
+                    "values": [str(i) for i in range(101)] + ["100+"]
+                }
+            }
+        ],
+        "response": {
+            "format": "json"
+        }
     }
-    df = api.get(
-        table_path="BE/BE0101/BE0101A/BefolkningNy",
-        query=query
-    ).to_dataframe()
+    response = requests.post(url, json=query)
+    data = response.json()
+    rows = data["data"]
 
-    # Omstrukturera
-    df.reset_index(inplace=True)
-    df = df.rename(columns={
-        "Ålder": "Ålder",
-        "Kon": "Kön",
-        "2023": "Antal"
-    })
-    df["Antal"] = pd.to_numeric(df["Antal"], errors="coerce")
-    return df
+    result = []
+    for row in rows:
+        entry = {
+            "Ålder": row["key"][4],
+            "Kön": "Män" if row["key"][3] == "1" else "Kvinnor",
+            "Antal": int(row["values"][0])
+        }
+        result.append(entry)
+    return pd.DataFrame(result)
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
@@ -193,4 +228,3 @@ Visualisering av:
 - Medelrestid
 - Andel som åker kollektivt, cyklar, går, etc.
 """)
-
