@@ -160,17 +160,3 @@ Visualisering av:
 - Medelrestid
 - Andel som åker kollektivt, cyklar, går, etc.
 """)
-
-def testdata_kungsbacka():
-    url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
-    payload = {
-        "query": [
-            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
-            {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
-            {"code": "Alder", "selection": {"filter": "item", "values": ["20", "30", "40"]}},
-            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
-        ],
-        "response": {"format": "json"}
-    }
-    response = requests.post(url, json=payload)
-    return response.json()
