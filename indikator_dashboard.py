@@ -103,10 +103,7 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
             icon=folium.Icon(color=farg)
         ).add_to(plan_karta)
     st_folium(plan_karta, width=700, height=500)
-
-# Lägg till extra luft och separator
-    st.markdown("###")  # luft
-    st.markdown("---")  # visuell linje
+    st.markdown("<hr style='margin-top: 15px; margin-bottom: 10px;'>", unsafe_allow_html=True)
 
     bef_2022 = 85682
     bef_2023 = 85476
