@@ -136,9 +136,9 @@ def ort_sida(namn):
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik=f"Ålderspyramid – {namn} (hela kommunen som exempel)")
 
-for ort in ["Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]:
-    if val == ort:
-        ort_sida(ort)
+orter = ["Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]
+if val in orter:
+    ort_sida(val)
 
 # ---------------- TRANSPORT ----------------
 elif val == "Rörelser och transport":
