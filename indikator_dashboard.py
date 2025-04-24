@@ -15,30 +15,16 @@ val = st.sidebar.radio("", [
     "Rörelser och transport"
 ])
 
-# ---------------- FUNKTION: hämta befolkning från SCB ----------------
+# ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
 def hamta_aldersfordelning():
     url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
-    query = {
+    payload = {
         "query": [
             {
                 "code": "Region",
                 "selection": {
                     "filter": "item",
                     "values": ["1384"]
-                }
-            },
-            {
-                "code": "ContentsCode",
-                "selection": {
-                    "filter": "item",
-                    "values": ["BE0101N1"]
-                }
-            },
-            {
-                "code": "Tid",
-                "selection": {
-                    "filter": "item",
-                    "values": ["2023"]
                 }
             },
             {
@@ -54,25 +40,29 @@ def hamta_aldersfordelning():
                     "filter": "item",
                     "values": [str(i) for i in range(101)] + ["100+"]
                 }
+            },
+            {
+                "code": "Tid",
+                "selection": {
+                    "filter": "item",
+                    "values": ["2023"]
+                }
             }
         ],
-        "response": {
-            "format": "json"
-        }
+        "response": {"format": "json"}
     }
-    response = requests.post(url, json=query)
+    response = requests.post(url, json=payload)
     data = response.json()
     rows = data["data"]
-
-    result = []
-    for row in rows:
-        entry = {
-            "Ålder": row["key"][4],
-            "Kön": "Män" if row["key"][3] == "1" else "Kvinnor",
+    parsed = [
+        {
+            "Kön": row["key"][1],
+            "Ålder": row["key"][2],
             "Antal": int(row["values"][0])
         }
-        result.append(entry)
-    return pd.DataFrame(result)
+        for row in rows
+    ]
+    return pd.DataFrame(parsed)
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
@@ -106,30 +96,30 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
 
     plan_karta = folium.Map(location=[57.47, 12.1], zoom_start=10)
     for pb in planbesked:
-        färg = "green" if pb["status"] == "i linje" else "red"
+        farg = "green" if pb["status"] == "i linje" else "red"
         folium.Marker(
             location=pb["koordinat"],
             popup=pb["namn"],
-            icon=folium.Icon(color=färg)
+            icon=folium.Icon(color=farg)
         ).add_to(plan_karta)
     st_folium(plan_karta, width=700, height=500)
 
     bef_2022 = 85682
     bef_2023 = 85476
-    tillväxt = ((bef_2023 - bef_2022) / bef_2022) * 100
+    tillvaxt = ((bef_2023 - bef_2022) / bef_2022) * 100
     skillnad = bef_2023 - bef_2022
 
-    st.write("**📈 Befolkningstillväxt**", f"{tillväxt:.2f} %", delta=f"{skillnad} personer")
+    st.write("**📈 Befolkningstillväxt**", f"{tillvaxt:.2f} %", delta=f"{skillnad} personer")
     if skillnad >= 0:
         st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
     else:
         st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
 
-    st.write("**🧓 Ålderspyramid & åldersfördelning per geografiskt område**")
+    st.write("**🧃 Ålderspyramid & åldersfördelning per geografiskt område**")
     if st.button("Visa ålderspyramid"):
         df = hamta_aldersfordelning()
-        df_m = df[df.Kön == "Män"]
-        df_k = df[df.Kön == "Kvinnor"]
+        df_m = df[df.Kön == "1"]
+        df_k = df[df.Kön == "2"]
 
         df_m = df_m.set_index("Ålder")["Antal"] * -1
         df_k = df_k.set_index("Ålder")["Antal"]
@@ -142,7 +132,7 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
         ax.legend()
         st.pyplot(fig)
 
-    st.write("**🏭 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
+    st.write("**🏢 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
 
 # ---------------- KUNGSBACKA STAD ----------------
 elif val == "Kungsbacka stad":
