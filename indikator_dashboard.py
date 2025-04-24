@@ -3,6 +3,8 @@ from PIL import Image
 import pandas as pd
 import folium
 from streamlit_folium import st_folium
+import matplotlib.pyplot as plt
+from pxweb import PxWebApi
 
 # ---------------- SIDBAR ----------------
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
@@ -12,6 +14,30 @@ val = st.sidebar.radio("", [
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås",
     "Rörelser och transport"
 ])
+
+# ---------------- FUNKTION: hämta befolkning från SCB ----------------
+def hamta_aldersfordelning():
+    api = PxWebApi("https://api.scb.se/OV0104/v1/doris/sv/ssd/")
+    query = {
+        "Region": ["1384"],  # Kungsbacka
+        "Kon": ["1", "2"],   # 1=Män, 2=Kvinnor
+        "Alder": [str(i) for i in range(101)] + ["100+"],
+        "Tid": ["2023"]
+    }
+    df = api.get(
+        table_path="BE/BE0101/BE0101A/BefolkningNy",
+        query=query
+    ).to_dataframe()
+
+    # Omstrukturera
+    df.reset_index(inplace=True)
+    df = df.rename(columns={
+        "Ålder": "Ålder",
+        "Kon": "Kön",
+        "2023": "Antal"
+    })
+    df["Antal"] = pd.to_numeric(df["Antal"], errors="coerce")
+    return df
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
@@ -64,7 +90,23 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
     else:
         st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
 
-    st.write("**🧓 Ålderspyramid & åldersfördelning per geografiskt område** *(Ej inlagd ännu – men förberedd)*")
+    st.write("**🧓 Ålderspyramid & åldersfördelning per geografiskt område**")
+    if st.button("Visa ålderspyramid"):
+        df = hamta_aldersfordelning()
+        df_m = df[df.Kön == "Män"]
+        df_k = df[df.Kön == "Kvinnor"]
+
+        df_m = df_m.set_index("Ålder")["Antal"] * -1
+        df_k = df_k.set_index("Ålder")["Antal"]
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+        df_m.plot(kind="barh", color="skyblue", ax=ax, label="Män")
+        df_k.plot(kind="barh", color="lightcoral", ax=ax, label="Kvinnor")
+        ax.set_title("Ålderspyramid – Kungsbacka kommun 2023")
+        ax.set_xlabel("Antal personer")
+        ax.legend()
+        st.pyplot(fig)
+
     st.write("**🏭 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
 
 # ---------------- KUNGSBACKA STAD ----------------
