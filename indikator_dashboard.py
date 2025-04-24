@@ -5,11 +5,13 @@ import folium
 from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
 import requests
+from requests.exceptions import RequestException
+import json
 
 # ---------------- SIDBAR ----------------
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
 st.sidebar.title("Välj sida")
-val = st.sidebar.radio("", [
+val = st.sidebar.radio("Välj sida", [
     "Introduktion", "Kommunnivå", "Kungsbacka stad",
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås",
     "Rörelser och transport"
@@ -20,49 +22,45 @@ def hamta_aldersfordelning():
     url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
     payload = {
         "query": [
-            {
-                "code": "Region",
-                "selection": {
-                    "filter": "item",
-                    "values": ["1384"]
-                }
-            },
-            {
-                "code": "Kon",
-                "selection": {
-                    "filter": "item",
-                    "values": ["1", "2"]
-                }
-            },
-            {
-                "code": "Alder",
-                "selection": {
-                    "filter": "item",
-                    "values": [str(i) for i in range(101)] + ["100+"]
-                }
-            },
-            {
-                "code": "Tid",
-                "selection": {
-                    "filter": "item",
-                    "values": ["2023"]
-                }
-            }
+            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
+            {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
+            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(101)] + ["100+"]}},
+            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
         ],
         "response": {"format": "json"}
     }
-    response = requests.post(url, json=payload)
-    data = response.json()
-    rows = data["data"]
-    parsed = [
-        {
-            "Kön": row["key"][1],
-            "Ålder": row["key"][2],
-            "Antal": int(row["values"][0])
-        }
-        for row in rows
-    ]
-    return pd.DataFrame(parsed)
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        rows = data.get("data", [])
+        parsed = [
+            {"Kön": row["key"][1], "Ålder": row["key"][2], "Antal": int(row["values"][0])}
+            for row in rows
+        ]
+        return pd.DataFrame(parsed)
+    except (RequestException, json.JSONDecodeError, KeyError):
+        st.warning("Kunde inte hämta åldersfördelning just nu från SCB. Försök igen senare.")
+        return pd.DataFrame(columns=["Kön", "Ålder", "Antal"])
+
+# ---------------- FUNKTION: visa ålderspyramid ----------------
+def visa_alderspyramid(df, rubrik="Ålderspyramid"):
+    if not df.empty:
+        df_m = df[df.Kön == "1"]
+        df_k = df[df.Kön == "2"]
+
+        df_m = df_m.set_index("Ålder")["Antal"] * -1
+        df_k = df_k.set_index("Ålder")["Antal"]
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+        df_m.plot(kind="barh", color="skyblue", ax=ax, label="Män")
+        df_k.plot(kind="barh", color="lightcoral", ax=ax, label="Kvinnor")
+        ax.set_title(rubrik)
+        ax.set_xlabel("Antal personer")
+        ax.legend()
+        st.pyplot(fig)
+    else:
+        st.info("Ingen data att visa just nu.")
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
@@ -116,54 +114,9 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
     else:
         st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
 
-    st.write("**🧃 Ålderspyramid & åldersfördelning per geografiskt område**")
-    if st.button("Visa ålderspyramid"):
-        df = hamta_aldersfordelning()
-        df_m = df[df.Kön == "1"]
-        df_k = df[df.Kön == "2"]
-
-        df_m = df_m.set_index("Ålder")["Antal"] * -1
-        df_k = df_k.set_index("Ålder")["Antal"]
-
-        fig, ax = plt.subplots(figsize=(10, 8))
-        df_m.plot(kind="barh", color="skyblue", ax=ax, label="Män")
-        df_k.plot(kind="barh", color="lightcoral", ax=ax, label="Kvinnor")
-        ax.set_title("Ålderspyramid – Kungsbacka kommun 2023")
-        ax.set_xlabel("Antal personer")
-        ax.legend()
-        st.pyplot(fig)
-
-    st.write("**🏢 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
-
-# ---------------- KUNGSBACKA STAD ----------------
-elif val == "Kungsbacka stad":
-    st.title("Kungsbacka stad – måluppfyllelse och trender")
-
-    st.write("### Måluppfyllelse")
-    faktiskt = 52
-    mål = 50
-    if faktiskt >= mål:
-        st.success(f"✅ Uppfyllt: {faktiskt}% ≥ {mål}%")
-    else:
-        st.error(f"❌ Ej uppfyllt: {faktiskt}% < {mål}%")
-
-    andel = 78
-    mål_ff = 75
-    if andel >= mål_ff:
-        st.success(f"✅ Uppfyllt: {andel}% ≥ {mål_ff}%")
-    else:
-        st.error(f"❌ Ej uppfyllt: {andel}% < {mål_ff}%")
-
-    st.write("### Trender och analys")
-    st.write("#### Befolkning och struktur")
-    st.write("- Antal och andel invånare")
-    st.write("- Täthet")
-    st.write("- Dag/natt-befolkning")
-    st.write("#### Service och livskvalitet")
-    st.write("- Kommunal service")
-    st.write("- Kultur/idrottsutbud")
-    st.write("### Avstånd till kollektivtrafik")
-    st.write("Här kan kartor eller statistik visas som visar hur många som har tillgång till kollektivtrafik")
+    st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
+    df = hamta_aldersfordelning()
+    visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
 
 # ---------------- ORTER ----------------
 def ort_sida(namn):
@@ -180,24 +133,12 @@ def ort_sida(namn):
     st.write("### Inflyttning")
     st.write("Här visas statistik om inflyttning")
     st.write("### Demografi")
-    st.write("Visualisering av åldersfördelning, t.ex. ålderspyramid")
+    df = hamta_aldersfordelning()
+    visa_alderspyramid(df, rubrik=f"Ålderspyramid – {namn} (hela kommunen som exempel)")
 
-if val == "Anneberg":
-    ort_sida("Anneberg")
-elif val == "Åsa":
-    ort_sida("Åsa")
-elif val == "Kullavik":
-    ort_sida("Kullavik")
-elif val == "Särö":
-    ort_sida("Särö")
-elif val == "Vallda":
-    ort_sida("Vallda")
-elif val == "Onsala":
-    ort_sida("Onsala")
-elif val == "Fjärås":
-    ort_sida("Fjärås")
-elif val == "Frillesås":
-    ort_sida("Frillesås")
+for ort in ["Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]:
+    if val == ort:
+        ort_sida(ort)
 
 # ---------------- TRANSPORT ----------------
 elif val == "Rörelser och transport":
