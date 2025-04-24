@@ -136,7 +136,7 @@ def ort_sida(namn):
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik=f"Ålderspyramid – {namn} (hela kommunen som exempel)")
 
-orter = ["Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]
+orter = ["Kungsbacka stad", "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]
 if val in orter:
     ort_sida(val)
 
@@ -160,3 +160,17 @@ Visualisering av:
 - Medelrestid
 - Andel som åker kollektivt, cyklar, går, etc.
 """)
+
+def testdata_kungsbacka():
+    url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
+    payload = {
+        "query": [
+            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
+            {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
+            {"code": "Alder", "selection": {"filter": "item", "values": ["20", "30", "40"]}},
+            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
+        ],
+        "response": {"format": "json"}
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
