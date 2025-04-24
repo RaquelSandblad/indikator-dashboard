@@ -8,9 +8,9 @@ from streamlit_folium import st_folium
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
 st.sidebar.title("Välj sida")
 val = st.sidebar.radio("", [
-    "Introduktion", "Kommunnivå", "Kungsbacka stad", 
+    "Introduktion", "Kommunnivå", "Kungsbacka stad",
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås",
-    "Övriga orter", "Rörelser och transport"
+    "Rörelser och transport"
 ])
 
 # ---------------- INTRO ----------------
@@ -18,13 +18,11 @@ if val == "Introduktion":
     st.title("Uppföljning av Översiktsplanen för Kungsbacka kommun")
     st.write("""
 Här kan du följa upp indikatorer för:
-
 - Kommunen som helhet
 - Kungsbacka stad
-- Prioriterade utvecklingsorter (Åsa, Anneberg, m.fl.)
+- Utvecklingsorter
 - Rörelser och transport
     """)
-
     st.subheader("Strategi 2040")
     bild = Image.open("image.png")
     st.image(bild, caption="Strategi för Kungsbacka kommun", width=700)
@@ -35,7 +33,7 @@ elif val == "Kommunnivå":
 
     st.write("### Planbesked – följer de ÖP?")
     st.markdown("""
-Här kan du se var i kommunen nya planbesked lämnats in.
+Här visas planbesked och huruvida de stämmer överens med ÖP:
 - 🟢 Grön = i linje med ÖP
 - 🔴 Röd = avviker från ÖP:s strategi
 """)
@@ -44,6 +42,7 @@ Här kan du se var i kommunen nya planbesked lämnats in.
         {"namn": "Tölö Ängar", "koordinat": [57.500, 12.078], "status": "i linje"},
         {"namn": "Idala by", "koordinat": [57.420, 12.280], "status": "avviker"},
     ]
+
     plan_karta = folium.Map(location=[57.47, 12.1], zoom_start=10)
     for pb in planbesked:
         färg = "green" if pb["status"] == "i linje" else "red"
@@ -66,14 +65,13 @@ Här kan du se var i kommunen nya planbesked lämnats in.
         st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
 
     st.write("**🧓 Ålderspyramid & åldersfördelning per geografiskt område** *(Ej inlagd ännu – men förberedd)*")
-    st.write("**🏭 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – [här kan du koppla in data från SCB eller kommunen]")
+    st.write("**🏭 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
 
 # ---------------- KUNGSBACKA STAD ----------------
 elif val == "Kungsbacka stad":
     st.title("Kungsbacka stad – måluppfyllelse och trender")
 
     st.write("### Måluppfyllelse")
-    st.write("**Andel nybyggnation i stad**")
     faktiskt = 52
     mål = 50
     if faktiskt >= mål:
@@ -81,7 +79,6 @@ elif val == "Kungsbacka stad":
     else:
         st.error(f"❌ Ej uppfyllt: {faktiskt}% < {mål}%")
 
-    st.write("**Flerfamiljshus i staden**")
     andel = 78
     mål_ff = 75
     if andel >= mål_ff:
@@ -89,49 +86,34 @@ elif val == "Kungsbacka stad":
     else:
         st.error(f"❌ Ej uppfyllt: {andel}% < {mål_ff}%")
 
-    st.write("### Trender och analys – exempel på indikatorer")
-    st.markdown("""
-- Antal och andel invånare i staden
-- Täthet
-- Dag/natt-befolkning
-- Boendeformer
-- Kommunal service
-- Kultur/idrottsutbud
-    """)
-
-    st.write("### Inflyttning och demografi")
-    st.markdown("""
-- Här kan ni lägga in statistik om inflyttning till Kungsbacka stad
-- Visualisera åldersfördelning (t.ex. ålderspyramid) om ni har tillgång till data
-- Hämta från SCB eller kommunens egna register
-    """)
-
-    st.write("### Avstånd till kollektivtrafik")
-    st.markdown("""
-- Visa karta eller siffror om andel av befolkningen som bor inom 400 meter / 1 km från hållplatser
-- Eventuellt GIS-data eller manuella punkter från kommunen
-    """)
-
-# ---------------- GEMENSAM ORTFUNKTION ----------------
-def ort_sida(namn):
-    st.title(f"{namn} – utveckling och indikatorer")
-    st.write("### Demografi")
+    st.write("### Trender och analys")
+    st.write("#### Befolkning och struktur")
     st.write("- Antal och andel invånare")
-    st.write("- Ålderspyramid")
-    st.write("- Boendeformer")
-
-    st.write("### Täthet och bebyggelse")
     st.write("- Täthet")
     st.write("- Dag/natt-befolkning")
+    st.write("#### Service och livskvalitet")
+    st.write("- Kommunal service")
+    st.write("- Kultur/idrottsutbud")
+    st.write("### Avstånd till kollektivtrafik")
+    st.write("Här kan kartor eller statistik visas som visar hur många som har tillgång till kollektivtrafik")
 
+# ---------------- ORTER ----------------
+def ort_sida(namn):
+    st.title(f"{namn} – utveckling och indikatorer")
+    st.write("### Befolkning och struktur")
+    st.write("- Antal och andel invånare")
+    st.write("- Täthet")
+    st.write("- Dag/natt-befolkning")
     st.write("### Service och livskvalitet")
     st.write("- Kommunal service")
     st.write("- Kultur/idrottsutbud")
-
     st.write("### Avstånd till kollektivtrafik")
-    st.write("(Här kan du visa kartor eller statistik som visar hur många som har tillgång till hållplats inom 400 m och 1 km.)")
+    st.write("Kartor och statistik kan kopplas in för att visa avstånd till hållplats")
+    st.write("### Inflyttning")
+    st.write("Här visas statistik om inflyttning")
+    st.write("### Demografi")
+    st.write("Visualisering av åldersfördelning, t.ex. ålderspyramid")
 
-# ---------------- ORTER ----------------
 if val == "Anneberg":
     ort_sida("Anneberg")
 elif val == "Åsa":
@@ -149,30 +131,24 @@ elif val == "Fjärås":
 elif val == "Frillesås":
     ort_sida("Frillesås")
 
-
 # ---------------- TRANSPORT ----------------
 elif val == "Rörelser och transport":
     st.title("Rörelser och transport")
-
     st.write("### Avstånd till kollektivtrafik")
     st.markdown("""
 - 90 % av befolkningen bör ha en hållplats inom **1 km**  
-- 50 % bör ha en hållplats inom **400 meter**  
-- *(Nuläge: skrivs in manuellt eller hämtas från GIS/SCB senare)*
-    """)
-
+- 50 % bör ha en hållplats inom **400 meter**
+""")
     st.write("### Turtäthet för kollektivtrafik")
     st.markdown("""
 - Minst **1 avgång per timme** i lågtrafik  
-- Minst **30-minuterstrafik** i högtrafik  
-- *(Data kan kopplas från Västtrafik eller Trafikverket)*
-    """)
-
+- Minst **30-minuterstrafik** i högtrafik
+""")
     st.write("### Pendlingsmöjligheter")
     st.markdown("""
-Här kan ni visa kartor eller statistik för:
-- Hur många pendlar ut/in varje dag
+Visualisering av:
+- Hur många som pendlar in/ut
 - Medelrestid
 - Andel som åker kollektivt, cyklar, går, etc.
-- *(Exempel: SCB, Trafikverket, kommunens data)*
-    """)
+""")
+
