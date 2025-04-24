@@ -32,7 +32,7 @@ Här kan du följa upp indikatorer för:
 # ---------------- KOMMUN ----------------
 elif val == "Kommunnivå":
     st.title("Kommunnivå – befolkning, demografi och näringsliv")
-    
+
     st.write("### Planbesked – följer de ÖP?")
     st.markdown("""
 Här kan du se var i kommunen nya planbesked lämnats in.
@@ -68,6 +68,50 @@ Här kan du se var i kommunen nya planbesked lämnats in.
     st.write("**🧓 Ålderspyramid & åldersfördelning per geografiskt område** *(Ej inlagd ännu – men förberedd)*")
     st.write("**🏭 Näringslivstrender**: arbetstillfällen, detaljplanerad mark – [här kan du koppla in data från SCB eller kommunen]")
 
+# ---------------- KUNGSBACKA STAD ----------------
+elif val == "Kungsbacka stad":
+    st.title("Kungsbacka stad – måluppfyllelse och trender")
+
+    st.write("### Måluppfyllelse")
+    st.write("**Andel nybyggnation i stad**")
+    faktiskt = 52
+    mål = 50
+    if faktiskt >= mål:
+        st.success(f"✅ Uppfyllt: {faktiskt}% ≥ {mål}%")
+    else:
+        st.error(f"❌ Ej uppfyllt: {faktiskt}% < {mål}%")
+
+    st.write("**Flerfamiljshus i staden**")
+    andel = 78
+    mål_ff = 75
+    if andel >= mål_ff:
+        st.success(f"✅ Uppfyllt: {andel}% ≥ {mål_ff}%")
+    else:
+        st.error(f"❌ Ej uppfyllt: {andel}% < {mål_ff}%")
+
+    st.write("### Trender och analys – exempel på indikatorer")
+    st.markdown("""
+- Antal och andel invånare i staden
+- Täthet
+- Dag/natt-befolkning
+- Boendeformer
+- Kommunal service
+- Kultur/idrottsutbud
+    """)
+
+    st.write("### Inflyttning och demografi")
+    st.markdown("""
+- Här kan ni lägga in statistik om inflyttning till Kungsbacka stad
+- Visualisera åldersfördelning (t.ex. ålderspyramid) om ni har tillgång till data
+- Hämta från SCB eller kommunens egna register
+    """)
+
+    st.write("### Avstånd till kollektivtrafik")
+    st.markdown("""
+- Visa karta eller siffror om andel av befolkningen som bor inom 400 meter / 1 km från hållplatser
+- Eventuellt GIS-data eller manuella punkter från kommunen
+    """)
+
 # ---------------- GEMENSAM ORTFUNKTION ----------------
 def ort_sida(namn):
     st.title(f"{namn} – utveckling och indikatorer")
@@ -88,7 +132,7 @@ def ort_sida(namn):
     st.write("(Här kan du visa kartor eller statistik som visar hur många som har tillgång till hållplats inom 400 m och 1 km.)")
 
 # ---------------- ORTER ----------------
-if val == "Anneberg":
+elif val == "Anneberg":
     ort_sida("Anneberg")
 elif val == "Åsa":
     ort_sida("Åsa")
