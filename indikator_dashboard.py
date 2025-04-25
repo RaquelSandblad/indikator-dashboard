@@ -12,8 +12,7 @@ st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
 st.sidebar.title("Välj sida")
 val = st.sidebar.radio("Välj sida", [
     "Introduktion", "Kommunnivå", "Kungsbacka stad",
-    "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås",
-    "Rörelser och transport"
+    "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"
 ])
 
 # ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
@@ -100,7 +99,6 @@ Här kan du följa upp indikatorer för:
 - Kommunen som helhet
 - Kungsbacka stad
 - Utvecklingsorter
-- Rörelser och transport
     """)
     st.subheader("Strategi 2040")
     bild = Image.open("image.png")
@@ -148,6 +146,12 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
 
+    st.write("**🚶‍♂️ Avstånd till kollektivtrafik (kommunnivå)**")
+    st.markdown("""
+- 90 % av befolkningen bör ha en hållplats inom **1 km**  
+- 50 % bör ha en hållplats inom **400 meter**
+""")
+
 # ---------------- ORTER ----------------
 def ort_sida(namn):
     st.title(f"{namn} – utveckling och indikatorer")
@@ -158,10 +162,10 @@ def ort_sida(namn):
     st.write("### Service och livskvalitet")
     st.write("- Kommunal service")
     st.write("- Kultur/idrottsutbud")
-    st.write("### Avstånd till kollektivtrafik")
-    st.write("Kartor och statistik kan kopplas in för att visa avstånd till hållplats")
+    st.write("### Avstånd till kollektivtrafik (lokalt)")
+    st.write("Här kommer lokal analys och karta för hållplatser i orten.")
     st.write("### Inflyttning")
-    st.write("Här visas statistik om inflyttning")
+    st.write("Här visas statistik om inflyttning per år och ort")
     st.write("### Demografi")
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik=f"Ålderspyramid – {namn} (hela kommunen som exempel)")
@@ -169,24 +173,3 @@ def ort_sida(namn):
 orter = ["Kungsbacka stad", "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]
 if val in orter:
     ort_sida(val)
-
-# ---------------- TRANSPORT ----------------
-elif val == "Rörelser och transport":
-    st.title("Rörelser och transport")
-    st.write("### Avstånd till kollektivtrafik")
-    st.markdown("""
-- 90 % av befolkningen bör ha en hållplats inom **1 km**  
-- 50 % bör ha en hållplats inom **400 meter**
-""")
-    st.write("### Turtäthet för kollektivtrafik")
-    st.markdown("""
-- Minst **1 avgång per timme** i lågtrafik  
-- Minst **30-minuterstrafik** i högtrafik
-""")
-    st.write("### Pendlingsmöjligheter")
-    st.markdown("""
-Visualisering av:
-- Hur många som pendlar in/ut
-- Medelrestid
-- Andel som åker kollektivt, cyklar, går, etc.
-""")
