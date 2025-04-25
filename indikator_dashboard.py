@@ -261,4 +261,4 @@ elif val == "Kommunnivå - Befolkning":
         tillvaxt = ((bef_senaste - bef_nast_senaste) / bef_nast_senaste) * 100
         skillnad = bef_senaste - bef_nast_senaste
         
-        st.write(f"**📈 Befolkningst
+          st.write(f"**📈 Befolkningstillväxt:** {tillvaxt:.2f} %")
