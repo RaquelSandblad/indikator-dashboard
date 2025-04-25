@@ -56,7 +56,13 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         st.info("Ingen data att visa.")
         return
 
-    # Använd pivot_table för att summera automatiskt
+    # Säkerställ att "Ålder" är numerisk och sorterad
+    df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
+    df = df.dropna(subset=["Ålder"])
+    df["Ålder"] = df["Ålder"].astype(int)
+    df = df[df["Ålder"] <= 100]  # undvik skräpdata
+
+    # Summera och pivotera
     df_pivot = pd.pivot_table(
         df,
         index="Ålder",
@@ -64,19 +70,24 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         values="Antal",
         aggfunc="sum",
         fill_value=0
-    )
+    ).sort_index()
 
-    df_pivot["Män"] *= -1
+    df_pivot["Män"] *= -1  # vänstersida
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    ax.barh(df_pivot.index, df_pivot.get("Män", 0), color="skyblue", label="Män")
-    ax.barh(df_pivot.index, df_pivot.get("Kvinnor", 0), color="lightcoral", label="Kvinnor")
+    # Räkna max för x-axel (för skala)
+    max_val = max(abs(df_pivot["Män"].min()), df_pivot["Kvinnor"].max())
 
+    # Rita figuren
+    fig, ax = plt.subplots(figsize=(6, 8))  # smalare och bättre skala
+    ax.barh(df_pivot.index, df_pivot["Män"], color="skyblue", label="Män")
+    ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="lightcoral", label="Kvinnor")
+
+    ax.set_xlim(-max_val * 1.1, max_val * 1.1)
     ax.set_xlabel("Antal personer")
     ax.set_ylabel("Ålder")
     ax.set_title(rubrik)
-    ax.legend()
     ax.axvline(0, color="black", linewidth=0.5)
+    ax.legend(loc="lower right")
     st.pyplot(fig)
 
 # ---------------- INTRO ----------------
