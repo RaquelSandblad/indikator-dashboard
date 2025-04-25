@@ -56,8 +56,16 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         st.info("Ingen data att visa.")
         return
 
-    df_grouped = df.groupby(["Ålder", "Kön"], as_index=False).sum()
-    df_pivot = df_grouped.pivot(index="Ålder", columns="Kön", values="Antal").fillna(0)
+    # Använd pivot_table för att summera automatiskt
+    df_pivot = pd.pivot_table(
+        df,
+        index="Ålder",
+        columns="Kön",
+        values="Antal",
+        aggfunc="sum",
+        fill_value=0
+    )
+
     df_pivot["Män"] *= -1
 
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -117,7 +125,7 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
     tillvaxt = ((bef_2023 - bef_2022) / bef_2022) * 100
     skillnad = bef_2023 - bef_2022
 
-    st.write("**📈 Befolkningstillväxt**", f"{tillvaxt:.2f} %", delta=f"{skillnad} personer")
+    st.write(f"**📈 Befolkningstillväxt:** {tillvaxt:.2f} %")
     if skillnad >= 0:
         st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
     else:
