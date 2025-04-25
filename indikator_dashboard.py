@@ -1,3 +1,4 @@
+# app.py
 import streamlit as st
 from PIL import Image
 import pandas as pd
@@ -8,6 +9,10 @@ import requests
 import json
 import geopandas as gpd
 from shapely.geometry import Point
+import os
+
+# Konfigurera API-bas-URL
+API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
 
 # ---------------- SIDBAR ----------------
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
@@ -17,46 +22,53 @@ val = st.sidebar.radio("Välj sida", [
     "Kommunnivå - Planbesked",
     "Kommunnivå - Befolkning",
     "Kommunnivå - Värmekarta",
+    "Kommunnivå - Kollektivtrafik",
     "Kungsbacka stad",
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"
 ])
 
-# ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
-@st.cache_data
-def hamta_aldersfordelning():
-    url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
-    payload = {
-        "query": [
-            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
-            {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
-            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(0, 100)] + ["100+"]}},
-            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
-        ],
-        "response": {"format": "json"}
-    }
-
+# ---------------- FUNKTION: hämta data från API ----------------
+@st.cache_data(ttl=3600)  # Cache i 1 timme
+def hamta_data_fran_api(endpoint, params=None):
+    """Hämtar data från API Gateway."""
+    url = f"{API_BASE_URL}/{endpoint}"
     try:
-        response = requests.post(url, json=payload)
+        response = requests.get(url, params=params)
         response.raise_for_status()
-        data = response.json()
-
-        rows = data.get("data", [])
-        parsed = []
-        for row in rows:
-            kön = "Män" if row["key"][1] == "1" else "Kvinnor"
-            ålder = row["key"][2]
-            antal = int(row["values"][0])
-            parsed.append({"Kön": kön, "Ålder": ålder, "Antal": antal})
-
-        df = pd.DataFrame(parsed)
-        df["Ålder"] = df["Ålder"].replace("100+", 100).astype(int)
-        return df.sort_values(by="Ålder")
-
+        return response.json()
     except Exception as e:
-        st.error(f"Kunde inte hämta data från SCB: {e}")
-        return pd.DataFrame(columns=["Kön", "Ålder", "Antal"])
+        st.error(f"Kunde inte hämta data: {e}")
+        return []
 
-# ---------------- FUNKTION: hämta invånare per ort (dummyversion) ----------------
+# ---------------- FUNKTION: hämta åldersfördelning via API ----------------
+def hamta_aldersfordelning(region="1384", year="2023"):
+    """Hämtar befolkningsdata per ålder och kön."""
+    data = hamta_data_fran_api("befolkning/alder-kon", {"region": region, "ar": year})
+    if data:
+        return pd.DataFrame(data)
+    return pd.DataFrame(columns=["Kön", "Ålder", "Antal"])
+
+# ---------------- FUNKTION: hämta befolkningstrender via API ----------------
+def hamta_befolkningstrend(region="1384", years=None):
+    """Hämtar befolkningsutveckling över tid."""
+    params = {"region": region}
+    if years:
+        params["ar"] = ",".join(years)
+    
+    data = hamta_data_fran_api("befolkning/trend", params)
+    if data:
+        return pd.DataFrame(data)
+    return pd.DataFrame(columns=["År", "Antal"])
+
+# ---------------- FUNKTION: hämta kollektivtrafikdata via API ----------------
+def hamta_kollektivtrafik(lan="13"):
+    """Hämtar kollektivtrafikdata (hållplatser)."""
+    data = hamta_data_fran_api("kollektivtrafik/hallplatser", {"lan": lan})
+    if data:
+        return pd.DataFrame(data)
+    return pd.DataFrame(columns=["namn", "lan", "kommun", "lat", "lon"])
+
+# ---------------- FUNKTION: hämta invånare per ort (flyttas senare till API) ----------------
 def hamta_invanare_ort():
     data = {
         "Kungsbacka stad": 23500,
@@ -112,6 +124,28 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
     plt.tight_layout()
     st.pyplot(fig)
 
+# ---------------- FUNKTION: visa befolkningsutveckling ----------------
+def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
+    if df.empty:
+        st.info("Ingen data att visa.")
+        return
+    
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(df["År"], df["Antal"], marker='o', linestyle='-', color="#1f77b4")
+    
+    ax.set_title(rubrik, fontsize=14)
+    ax.set_xlabel("År")
+    ax.set_ylabel("Antal invånare")
+    ax.grid(True, linestyle='--', alpha=0.7)
+    
+    # Formatera y-axeln med tusentalsavgränsare
+    ax.get_yaxis().set_major_formatter(
+        plt.matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',').replace(',', ' '))
+    )
+    
+    plt.tight_layout()
+    st.pyplot(fig)
+
 # ---------------- FUNKTION: visa värmekarta ----------------
 def visa_varmekarta():
     st.subheader("🏘️ Befolkningstäthet i kommunen")
@@ -132,6 +166,43 @@ def visa_varmekarta():
         ).add_to(folium_map)
     st_folium(folium_map, height=500)
 
+# ---------------- FUNKTION: visa kollektivtrafikkarta ----------------
+def visa_kollektivtrafikkarta(df=None, kommun=None):
+    st.subheader("🚌 Kollektivtrafik - Hållplatser")
+    
+    if df is None or df.empty:
+        df = hamta_kollektivtrafik()
+    
+    if kommun:
+        df = df[df["kommun"] == kommun]
+    
+    if df.empty:
+        st.info("Ingen hållplatsdata tillgänglig.")
+        return
+    
+    # Filtrera ut rader utan koordinater
+    df = df.dropna(subset=["lat", "lon"])
+    
+    if df.empty:
+        st.info("Inga koordinater för hållplatser tillgängliga.")
+        return
+    
+    # Beräkna centrum för kartan
+    center_lat = df["lat"].mean()
+    center_lon = df["lon"].mean()
+    
+    folium_map = folium.Map(location=[center_lat, center_lon], zoom_start=11)
+    
+    # Lägg till hållplatser på kartan
+    for _, row in df.iterrows():
+        folium.Marker(
+            location=[row["lat"], row["lon"]],
+            popup=row["namn"],
+            icon=folium.Icon(color="blue", icon="bus", prefix="fa")
+        ).add_to(folium_map)
+    
+    st_folium(folium_map, height=500)
+
 # ---------------- INTRO ----------------
 if val == "Introduktion":
     st.title("Uppföljning av Översiktsplanen för Kungsbacka kommun")
@@ -142,8 +213,12 @@ Här kan du följa upp indikatorer för:
 - Utvecklingsorter
     """)
     st.subheader("Strategi 2040")
-    bild = Image.open("image.png")
-    st.image(bild, caption="Strategi för Kungsbacka kommun", width=700)
+    
+    try:
+        bild = Image.open("image.png")
+        st.image(bild, caption="Strategi för Kungsbacka kommun", width=700)
+    except:
+        st.warning("Bilden 'image.png' kunde inte laddas. Kontrollera att den finns i samma mapp som skriptet.")
 
 # ---------------- KOMMUNNIVÅ ----------------
 elif val == "Kommunnivå - Planbesked":
@@ -172,50 +247,18 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
 
 elif val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
-    bef_2022 = 85682
-    bef_2023 = 85476
-    tillvaxt = ((bef_2023 - bef_2022) / bef_2022) * 100
-    skillnad = bef_2023 - bef_2022
-
-    st.write(f"**📈 Befolkningstillväxt:** {tillvaxt:.2f} %")
-    if skillnad >= 0:
-        st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
-
-    st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
-    df = hamta_aldersfordelning()
-    visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
-
-elif val == "Kommunnivå - Värmekarta":
-    st.title("Kommunnivå – Värmekarta för befolkningstäthet")
-    visa_varmekarta()
-
-# ---------------- ORTER ----------------
-def ort_sida(namn):
-    st.title(f"{namn} – utveckling och indikatorer")
-    st.write("### Befolkning och struktur")
-    inv_data = hamta_invanare_ort()
-    if namn in inv_data:
-        st.write(f"- Antal invånare: **{inv_data[namn]:,}**")
-    else:
-        st.write("- Antal invånare: saknas")
-    st.write("- Dag/natt-befolkning")
-
-    st.write("### Service och livskvalitet")
-    st.write("- Kommunal service")
-    st.write("- Kultur/idrottsutbud")
-
-    st.write("### Avstånd till kollektivtrafik (lokalt)")
-    st.write("Här kommer lokal analys och karta för hållplatser i orten.")
-
-    st.write("### Inflyttning")
-    st.write("Här visas statistik om inflyttning per år och ort")
-
-    st.write("### Demografi")
-    df = hamta_aldersfordelning()
-    visa_alderspyramid(df, rubrik=f"Ålderspyramid – {namn} (hela kommunen som exempel)")
-
-orter = ["Kungsbacka stad", "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]
-if val in orter:
-    ort_sida(val)
+    
+    # Hämta data för befolkningsutveckling
+    trend_df = hamta_befolkningstrend()
+    
+    if not trend_df.empty and len(trend_df) >= 2:
+        senaste_ar = trend_df["År"].max()
+        nast_senaste_ar = trend_df["År"].unique()[-2]
+        
+        bef_senaste = trend_df[trend_df["År"] == senaste_ar]["Antal"].values[0]
+        bef_nast_senaste = trend_df[trend_df["År"] == nast_senaste_ar]["Antal"].values[0]
+        
+        tillvaxt = ((bef_senaste - bef_nast_senaste) / bef_nast_senaste) * 100
+        skillnad = bef_senaste - bef_nast_senaste
+        
+        st.write(f"**📈 Befolkningst
