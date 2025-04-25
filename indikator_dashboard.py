@@ -5,7 +5,6 @@ import folium
 from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
 import requests
-from requests.exceptions import RequestException
 import json
 
 # ---------------- SIDBAR ----------------
@@ -24,43 +23,52 @@ def hamta_aldersfordelning():
         "query": [
             {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
             {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
-            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(101)] + ["100+"]}},
+            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(0, 100)] + ["100+"]}},
             {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
         ],
         "response": {"format": "json"}
     }
+
     try:
         response = requests.post(url, json=payload)
         response.raise_for_status()
         data = response.json()
+
         rows = data.get("data", [])
-        parsed = [
-            {"Kön": row["key"][1], "Ålder": row["key"][2], "Antal": int(row["values"][0])}
-            for row in rows
-        ]
-        return pd.DataFrame(parsed)
-    except (RequestException, json.JSONDecodeError, KeyError):
-        st.warning("Kunde inte hämta åldersfördelning just nu från SCB. Försök igen senare.")
+        parsed = []
+        for row in rows:
+            kön = "Män" if row["key"][1] == "1" else "Kvinnor"
+            ålder = row["key"][2]
+            antal = int(row["values"][0])
+            parsed.append({"Kön": kön, "Ålder": ålder, "Antal": antal})
+
+        df = pd.DataFrame(parsed)
+        df["Ålder"] = df["Ålder"].replace("100+", 100).astype(int)
+        return df.sort_values(by="Ålder")
+
+    except Exception as e:
+        st.error(f"Kunde inte hämta data från SCB: {e}")
         return pd.DataFrame(columns=["Kön", "Ålder", "Antal"])
 
 # ---------------- FUNKTION: visa ålderspyramid ----------------
 def visa_alderspyramid(df, rubrik="Ålderspyramid"):
-    if not df.empty:
-        df_m = df[df.Kön == "1"]
-        df_k = df[df.Kön == "2"]
+    if df.empty:
+        st.info("Ingen data att visa.")
+        return
 
-        df_m = df_m.set_index("Ålder")["Antal"] * -1
-        df_k = df_k.set_index("Ålder")["Antal"]
+    df_pivot = df.pivot(index="Ålder", columns="Kön", values="Antal").fillna(0)
+    df_pivot["Män"] *= -1
 
-        fig, ax = plt.subplots(figsize=(10, 8))
-        df_m.plot(kind="barh", color="skyblue", ax=ax, label="Män")
-        df_k.plot(kind="barh", color="lightcoral", ax=ax, label="Kvinnor")
-        ax.set_title(rubrik)
-        ax.set_xlabel("Antal personer")
-        ax.legend()
-        st.pyplot(fig)
-    else:
-        st.info("Ingen data att visa just nu.")
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.barh(df_pivot.index, df_pivot["Män"], color="skyblue", label="Män")
+    ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="lightcoral", label="Kvinnor")
+
+    ax.set_xlabel("Antal personer")
+    ax.set_ylabel("Ålder")
+    ax.set_title(rubrik)
+    ax.legend()
+    ax.axvline(0, color="black", linewidth=0.5)
+    st.pyplot(fig)
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
