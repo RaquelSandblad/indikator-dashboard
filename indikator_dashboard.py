@@ -56,13 +56,13 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         st.info("Ingen data att visa.")
         return
 
-    # Säkerställ att "Ålder" är numerisk och sorterad
+    # Steg 1: Rensa och konvertera ålderskolumnen korrekt
     df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
     df = df.dropna(subset=["Ålder"])
     df["Ålder"] = df["Ålder"].astype(int)
-    df = df[df["Ålder"] <= 100]  # undvik skräpdata
+    df = df[df["Ålder"] <= 100]
 
-    # Summera och pivotera
+    # Steg 2: Pivotera
     df_pivot = pd.pivot_table(
         df,
         index="Ålder",
@@ -72,13 +72,20 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         fill_value=0
     ).sort_index()
 
-    df_pivot["Män"] *= -1  # vänstersida
+    # Se till att båda könen finns
+    if "Män" not in df_pivot.columns:
+        df_pivot["Män"] = 0
+    if "Kvinnor" not in df_pivot.columns:
+        df_pivot["Kvinnor"] = 0
 
-    # Räkna max för x-axel (för skala)
+    # Negativt värde för män
+    df_pivot["Män"] *= -1
+
+    # Maxvärde för skala
     max_val = max(abs(df_pivot["Män"].min()), df_pivot["Kvinnor"].max())
 
-    # Rita figuren
-    fig, ax = plt.subplots(figsize=(6, 8))  # smalare och bättre skala
+    # Steg 3: Rita figuren snyggt
+    fig, ax = plt.subplots(figsize=(6, 8))
     ax.barh(df_pivot.index, df_pivot["Män"], color="skyblue", label="Män")
     ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="lightcoral", label="Kvinnor")
 
@@ -87,7 +94,14 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
     ax.set_ylabel("Ålder")
     ax.set_title(rubrik)
     ax.axvline(0, color="black", linewidth=0.5)
-    ax.legend(loc="lower right")
+    ax.legend(loc="upper right")
+
+    # Vänd åldersskalan: yngst längst ner
+    ax.invert_yaxis()
+
+    # Tydligare ålderssteg (t.ex. vart 10:e)
+    ax.set_yticks(range(0, 101, 10))
+
     st.pyplot(fig)
 
 # ---------------- INTRO ----------------
