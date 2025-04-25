@@ -6,6 +6,8 @@ from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
 import requests
 import json
+import geopandas as gpd
+from shapely.geometry import Point
 
 # ---------------- SIDBAR ----------------
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
@@ -114,6 +116,26 @@ def visa_hallplatser_karta(ort):
     }), zoom=12)
     st.caption("(Karta över hållplatser i "+ort+" – dummydata)")
 
+# ---------------- FUNKTION: visa värmekarta ----------------
+def visa_varmekarta():
+    st.subheader("🏘️ Befolkningstäthet i kommunen")
+    st.caption("(Simulerad värmekarta – ersätt med riktig statistik och geometri)")
+    data = pd.DataFrame({
+        'lat': [57.5, 57.48, 57.52, 57.51],
+        'lon': [12.1, 12.11, 12.09, 12.13],
+        'antal': [5000, 1500, 7000, 3000]
+    })
+    folium_map = folium.Map(location=[57.5, 12.1], zoom_start=11)
+    for _, row in data.iterrows():
+        folium.Circle(
+            location=[row['lat'], row['lon']],
+            radius=row['antal'] * 0.5,
+            color="crimson",
+            fill=True,
+            fill_opacity=0.4
+        ).add_to(folium_map)
+    st_folium(folium_map, height=500)
+
 # ---------------- INTRO ----------------
 if val == "Introduktion":
     st.title("Uppföljning av Översiktsplanen för Kungsbacka kommun")
@@ -169,6 +191,9 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
 
+    st.write("**🌍 Befolkningstäthet**")
+    visa_varmekarta()
+
     st.write("**🚶‍♂️ Avstånd till kollektivtrafik (kommunnivå)**")
     st.markdown("""
 - 90 % av befolkningen bör ha en hållplats inom **1 km**  
@@ -184,7 +209,6 @@ def ort_sida(namn):
         st.write(f"- Antal invånare: **{inv_data[namn]:,}**")
     else:
         st.write("- Antal invånare: saknas")
-    st.write("- Täthet")
     st.write("- Dag/natt-befolkning")
 
     st.write("### Service och livskvalitet")
