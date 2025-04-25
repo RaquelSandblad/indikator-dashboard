@@ -56,12 +56,13 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         st.info("Ingen data att visa.")
         return
 
-    df_pivot = df.pivot(index="Ålder", columns="Kön", values="Antal").fillna(0)
+    df_grouped = df.groupby(["Ålder", "Kön"], as_index=False).sum()
+    df_pivot = df_grouped.pivot(index="Ålder", columns="Kön", values="Antal").fillna(0)
     df_pivot["Män"] *= -1
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    ax.barh(df_pivot.index, df_pivot["Män"], color="skyblue", label="Män")
-    ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="lightcoral", label="Kvinnor")
+    ax.barh(df_pivot.index, df_pivot.get("Män", 0), color="skyblue", label="Män")
+    ax.barh(df_pivot.index, df_pivot.get("Kvinnor", 0), color="lightcoral", label="Kvinnor")
 
     ax.set_xlabel("Antal personer")
     ax.set_ylabel("Ålder")
