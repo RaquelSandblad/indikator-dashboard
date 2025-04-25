@@ -50,6 +50,21 @@ def hamta_aldersfordelning():
         st.error(f"Kunde inte hämta data från SCB: {e}")
         return pd.DataFrame(columns=["Kön", "Ålder", "Antal"])
 
+# ---------------- FUNKTION: hämta invånare per ort (dummyversion) ----------------
+def hamta_invanare_ort():
+    data = {
+        "Kungsbacka stad": 23500,
+        "Anneberg": 3800,
+        "Åsa": 3400,
+        "Kullavik": 4100,
+        "Särö": 5200,
+        "Vallda": 4600,
+        "Onsala": 11900,
+        "Fjärås": 3800,
+        "Frillesås": 2500
+    }
+    return data
+
 # ---------------- FUNKTION: visa ålderspyramid ----------------
 def visa_alderspyramid(df, rubrik="Ålderspyramid"):
     import matplotlib.ticker as ticker
@@ -90,6 +105,14 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
 
     plt.tight_layout()
     st.pyplot(fig)
+
+# ---------------- FUNKTION: placeholder för lokal hållplatskarta ----------------
+def visa_hallplatser_karta(ort):
+    st.map(pd.DataFrame({
+        "lat": [57.5],
+        "lon": [12.1],
+    }), zoom=12)
+    st.caption("(Karta över hållplatser i "+ort+" – dummydata)")
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
@@ -156,16 +179,24 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
 def ort_sida(namn):
     st.title(f"{namn} – utveckling och indikatorer")
     st.write("### Befolkning och struktur")
-    st.write("- Antal och andel invånare")
+    inv_data = hamta_invanare_ort()
+    if namn in inv_data:
+        st.write(f"- Antal invånare: **{inv_data[namn]:,}**")
+    else:
+        st.write("- Antal invånare: saknas")
     st.write("- Täthet")
     st.write("- Dag/natt-befolkning")
+
     st.write("### Service och livskvalitet")
     st.write("- Kommunal service")
     st.write("- Kultur/idrottsutbud")
+
     st.write("### Avstånd till kollektivtrafik (lokalt)")
-    st.write("Här kommer lokal analys och karta för hållplatser i orten.")
+    visa_hallplatser_karta(namn)
+
     st.write("### Inflyttning")
     st.write("Här visas statistik om inflyttning per år och ort")
+
     st.write("### Demografi")
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik=f"Ålderspyramid – {namn} (hela kommunen som exempel)")
