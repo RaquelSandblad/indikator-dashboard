@@ -17,6 +17,7 @@ val = st.sidebar.radio("Välj sida", [
 ])
 
 # ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
+@st.cache_data
 def hamta_aldersfordelning():
     url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
     payload = {
@@ -58,36 +59,28 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         st.info("Ingen data att visa.")
         return
 
-    # Konvertera och sortera korrekt
     df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
     df = df.dropna(subset=["Ålder"])
     df["Ålder"] = df["Ålder"].astype(int)
     df = df[df["Ålder"] <= 100]
 
-    # Summera per ålder och kön
     df_pivot = df.pivot_table(index="Ålder", columns="Kön", values="Antal", aggfunc="sum", fill_value=0)
     df_pivot = df_pivot.sort_index()
 
-    # Säkerställ att båda könen finns
-    if "Män" not in df_pivot.columns:
-        df_pivot["Män"] = 0
-    if "Kvinnor" not in df_pivot.columns:
-        df_pivot["Kvinnor"] = 0
+    for kol in ["Män", "Kvinnor"]:
+        if kol not in df_pivot.columns:
+            df_pivot[kol] = 0
 
-    # Negativa staplar för män
     df_pivot["Män"] = -df_pivot["Män"]
-
-    # Maxvärde för skala
     max_val = max(abs(df_pivot["Män"].min()), df_pivot["Kvinnor"].max())
 
-    # Rita snyggt
-    fig, ax = plt.subplots(figsize=(5, 7))
+    fig, ax = plt.subplots(figsize=(6, 8))
     ax.barh(df_pivot.index, df_pivot["Män"], color="#69b3a2", label="Män")
     ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="#ff9999", label="Kvinnor")
 
     ax.set_xlim(-max_val * 1.05, max_val * 1.05)
     ax.set_ylim(0, 100)
-    ax.invert_yaxis()  # yngst längst ner
+    ax.invert_yaxis()
     ax.set_xlabel("Antal personer")
     ax.set_ylabel("Ålder")
     ax.set_title(rubrik, fontsize=14)
@@ -96,7 +89,6 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{abs(int(x)):,}"))
     ax.legend(loc="upper right", frameon=False)
 
-    # Layoutjustering
     plt.tight_layout()
     st.pyplot(fig)
 
