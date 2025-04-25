@@ -13,7 +13,11 @@ from shapely.geometry import Point
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
 st.sidebar.title("Välj sida")
 val = st.sidebar.radio("Välj sida", [
-    "Introduktion", "Kommunnivå", "Kungsbacka stad",
+    "Introduktion",
+    "Kommunnivå - Planbesked",
+    "Kommunnivå - Befolkning",
+    "Kommunnivå - Värmekarta",
+    "Kungsbacka stad",
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"
 ])
 
@@ -108,14 +112,6 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
     plt.tight_layout()
     st.pyplot(fig)
 
-# ---------------- FUNKTION: placeholder för lokal hållplatskarta ----------------
-def visa_hallplatser_karta(ort):
-    st.map(pd.DataFrame({
-        "lat": [57.5],
-        "lon": [12.1],
-    }), zoom=12)
-    st.caption("(Karta över hållplatser i "+ort+" – dummydata)")
-
 # ---------------- FUNKTION: visa värmekarta ----------------
 def visa_varmekarta():
     st.subheader("🏘️ Befolkningstäthet i kommunen")
@@ -149,10 +145,9 @@ Här kan du följa upp indikatorer för:
     bild = Image.open("image.png")
     st.image(bild, caption="Strategi för Kungsbacka kommun", width=700)
 
-# ---------------- KOMMUN ----------------
-elif val == "Kommunnivå":
-    st.title("Kommunnivå – befolkning, demografi och näringsliv")
-
+# ---------------- KOMMUNNIVÅ ----------------
+elif val == "Kommunnivå - Planbesked":
+    st.title("Kommunnivå – Planbesked")
     st.write("### Planbesked – följer de ÖP?")
     st.markdown("""
 Här visas planbesked och huruvida de stämmer överens med ÖP:
@@ -174,8 +169,9 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
             icon=folium.Icon(color=farg)
         ).add_to(plan_karta)
     st_folium(plan_karta, width=700, height=500)
-    st.markdown("<hr style='margin-top: 15px; margin-bottom: 10px;'>", unsafe_allow_html=True)
 
+elif val == "Kommunnivå - Befolkning":
+    st.title("Kommunnivå – Befolkningsstatistik")
     bef_2022 = 85682
     bef_2023 = 85476
     tillvaxt = ((bef_2023 - bef_2022) / bef_2022) * 100
@@ -191,14 +187,9 @@ Här visas planbesked och huruvida de stämmer överens med ÖP:
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
 
-    st.write("**🌍 Befolkningstäthet**")
+elif val == "Kommunnivå - Värmekarta":
+    st.title("Kommunnivå – Värmekarta för befolkningstäthet")
     visa_varmekarta()
-
-    st.write("**🚶‍♂️ Avstånd till kollektivtrafik (kommunnivå)**")
-    st.markdown("""
-- 90 % av befolkningen bör ha en hållplats inom **1 km**  
-- 50 % bör ha en hållplats inom **400 meter**
-""")
 
 # ---------------- ORTER ----------------
 def ort_sida(namn):
@@ -216,7 +207,7 @@ def ort_sida(namn):
     st.write("- Kultur/idrottsutbud")
 
     st.write("### Avstånd till kollektivtrafik (lokalt)")
-    visa_hallplatser_karta(namn)
+    st.write("Här kommer lokal analys och karta för hållplatser i orten.")
 
     st.write("### Inflyttning")
     st.write("Här visas statistik om inflyttning per år och ort")
