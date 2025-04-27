@@ -11,7 +11,7 @@ import json
 import geopandas as gpd
 from shapely.geometry import Point
 import os
-from SCB_Dataservice.py import SCB_Dataservice
+from SCB_Dataservice import SCBService
 scb_service = SCBService()
 
 # Konfigurera API-bas-URL (används när vi kopplar in mikroservices)
