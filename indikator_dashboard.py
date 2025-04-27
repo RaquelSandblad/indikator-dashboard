@@ -51,19 +51,19 @@ def visa_planbesked_karta(planbesked, op):
         "weight": 1,
         "fillOpacity": 0.1,
     }).add_to(karta)
-    for idx, row in planbesked.iterrows():
-        color = "green" if row["följer_op"] else "red"
-        popup_text = row.get("projektnamn", "Planbesked")
-        folium.GeoJson(
-            row.geometry,
-            style_function=lambda x, color=color: {
-                "fillColor": color,
-                "color": color,
-                "weight": 2,
-                "fillOpacity": 0.4,
-            },
-            tooltip=popup_text
-        ).add_to(karta)
+for idx, row in planbesked.iterrows():
+    color = "green" if row["följer_op"] else "red"
+    popup_text = row.get("projektnamn", "Planbesked")
+    folium.GeoJson(
+        row.geometry.__geo_interface__,  # <-- denna fix
+        style_function=lambda feature, color=color: {
+            "fillColor": color,
+            "color": color,
+            "weight": 2,
+            "fillOpacity": 0.4,
+        },
+        tooltip=popup_text
+    ).add_to(karta)
     st_folium(karta, width=800, height=600)
 
 # ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
