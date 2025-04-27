@@ -121,7 +121,7 @@ class SCBService:
         query = {
             "query": [
                 {"code": "Region", "selection": {"filter": "item", "values": [region_code]}},
-                {"code": "Kon", "selection": {"filter": "item", "values": ["1+2"]}},  # Båda könen
+                {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},  # Båda könen
                 {"code": "Alder", "selection": {"filter": "agg:Ålder5år", "values": ["TOT"]}},  # Alla åldrar
                 {"code": "Tid", "selection": {"filter": "item", "values": years}}
             ],
