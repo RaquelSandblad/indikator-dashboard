@@ -30,6 +30,42 @@ val = st.sidebar.radio("Välj sida", [
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"
 ])
 
+# ---------------- FUNKTION: Läs in planbesked och ÖP ----------------
+@st.cache_data
+def las_in_planbesked_och_op():
+    planbesked = gpd.read_file("planbesked.json")
+    op = gpd.read_file("op.json")
+    planbesked = planbesked.to_crs(epsg=4326)
+    op = op.to_crs(epsg=4326)
+    planbesked["följer_op"] = planbesked.geometry.apply(
+        lambda geom: op.intersects(geom).any()
+    )
+    return planbesked, op
+
+# ---------------- FUNKTION: Visa planbesked på karta ----------------
+def visa_planbesked_karta(planbesked, op):
+    st.subheader("\ud83d\udccd Planbesked och Översiktsplan (ÖP)")
+    karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
+    folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
+        "color": "blue",
+        "weight": 1,
+        "fillOpacity": 0.1,
+    }).add_to(karta)
+    for idx, row in planbesked.iterrows():
+        color = "green" if row["följer_op"] else "red"
+        popup_text = row.get("projektnamn", "Planbesked")
+        folium.GeoJson(
+            row.geometry,
+            style_function=lambda x, color=color: {
+                "fillColor": color,
+                "color": color,
+                "weight": 2,
+                "fillOpacity": 0.4,
+            },
+            tooltip=popup_text
+        ).add_to(karta)
+    st_folium(karta, width=800, height=600)
+
 # ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
 @st.cache_data
 def hamta_aldersfordelning():
