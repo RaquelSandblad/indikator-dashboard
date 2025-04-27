@@ -1,4 +1,5 @@
-# scb_service.py
+# SCB_Dataservice.py
+
 import requests
 import pandas as pd
 from datetime import datetime
@@ -121,8 +122,8 @@ class SCBService:
         query = {
             "query": [
                 {"code": "Region", "selection": {"filter": "item", "values": [region_code]}},
-                {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},  # Båda könen
-                {"code": "Alder", "selection": {"filter": "agg:Ålder5år", "values": ["TOT"]}},  # Alla åldrar
+                {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
+                {"code": "Alder", "selection": {"filter": "agg:Ålder5år", "values": ["TOT"]}},
                 {"code": "Tid", "selection": {"filter": "item", "values": years}}
             ],
             "response": {"format": "json"}
@@ -138,6 +139,10 @@ class SCBService:
             parsed.append({"År": år, "Antal": antal})
         
         df = pd.DataFrame(parsed)
+        
+        # Summera Män och Kvinnor för varje år
+        df = df.groupby("År", as_index=False).sum()
+        
         return df
 
 # Exempel på användning
