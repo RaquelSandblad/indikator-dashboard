@@ -224,27 +224,15 @@ Här kan du följa upp indikatorer för:
 # ---------------- KOMMUNNIVÅ ----------------
 elif val == "Kommunnivå - Planbesked":
     st.title("Kommunnivå – Planbesked")
-    st.write("### Planbesked – följer de ÖP?")
+    st.write("Här visas planbesked och huruvida de stämmer överens med ÖP:")
     st.markdown("""
-Här visas planbesked och huruvida de stämmer överens med ÖP:
-- 🟢 Grön = i linje med ÖP
-- 🔴 Röd = avviker från ÖP:s strategi
-""")
+    - 🟢 Grön = i linje med ÖP
+    - 🔴 Röd = avviker från ÖP:s strategi
+    """)
 
-    planbesked = [
-        {"namn": "Tölö Ängar", "koordinat": [57.500, 12.078], "status": "i linje"},
-        {"namn": "Idala by", "koordinat": [57.420, 12.280], "status": "avviker"},
-    ]
+    planbesked, op = las_in_planbesked_och_op()
+    visa_planbesked_karta(planbesked, op)
 
-    plan_karta = folium.Map(location=[57.47, 12.1], zoom_start=10)
-    for pb in planbesked:
-        farg = "green" if pb["status"] == "i linje" else "red"
-        folium.Marker(
-            location=pb["koordinat"],
-            popup=pb["namn"],
-            icon=folium.Icon(color=farg)
-        ).add_to(plan_karta)
-    st_folium(plan_karta, width=700, height=500)
 
 elif val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
