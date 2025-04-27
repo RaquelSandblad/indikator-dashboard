@@ -123,7 +123,7 @@ class SCBService:
             "query": [
                 {"code": "Region", "selection": {"filter": "item", "values": [region_code]}},
                 {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
-                {"code": "Alder", "selection": {"filter": "agg:Ålder5år", "values": ["TOT"]}},
+                {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(0, 100)] + ["100+"]}},
                 {"code": "Tid", "selection": {"filter": "item", "values": years}}
             ],
             "response": {"format": "json"}
