@@ -38,9 +38,9 @@ def las_in_planbesked_och_op():
     planbesked = planbesked.to_crs(epsg=4326)
     op = op.to_crs(epsg=4326)
     
-    # Korrekt spatial check: Använd WITHIN
+    # Byt tillbaka till intersects, MEN på rätt nivå:
     planbesked["följer_op"] = planbesked.geometry.apply(
-        lambda geom: op.geometry.contains(geom).any()
+        lambda geom: op.geometry.intersects(geom).any()
     )
 
     return planbesked, op
