@@ -11,6 +11,8 @@ import json
 import geopandas as gpd
 from shapely.geometry import Point
 import os
+from SCB_Dataservice.py import SCB_Dataservice.py
+scb_service = SCBService()
 
 # Konfigurera API-bas-URL (används när vi kopplar in mikroservices)
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
@@ -31,72 +33,14 @@ val = st.sidebar.radio("Välj sida", [
 # ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
 @st.cache_data
 def hamta_aldersfordelning():
-    url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
-    payload = {
-        "query": [
-            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
-            {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
-            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(0, 100)] + ["100+"]}},
-            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
-        ],
-        "response": {"format": "json"}
-    }
+    return scb_service.get_population_by_age_gender(region_code="1384", year="2023")
 
-    try:
-        response = requests.post(url, json=payload)
-        response.raise_for_status()
-        data = response.json()
-
-        rows = data.get("data", [])
-        parsed = []
-        for row in rows:
-            kön = "Män" if row["key"][1] == "1" else "Kvinnor"
-            ålder = row["key"][2]
-            antal = int(row["values"][0])
-            parsed.append({"Kön": kön, "Ålder": ålder, "Antal": antal})
-
-        df = pd.DataFrame(parsed)
-        df["Ålder"] = df["Ålder"].replace("100+", 100).astype(int)
-        return df.sort_values(by="Ålder")
-
-    except Exception as e:
-        st.error(f"Kunde inte hämta data från SCB: {e}")
-        return pd.DataFrame(columns=["Kön", "Ålder", "Antal"])
 
 # ---------------- FUNKTION: hämta befolkningstrend från SCB ----------------
 @st.cache_data
 def hamta_befolkningstrend(region_code="1384", years=None):
-    """Hämtar befolkningsutveckling över tid för en specifik region."""
-    if years is None:
-        years = [str(år) for år in range(2013, 2024)]  # Senaste 10 åren
-    
-    url = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
-    payload = {
-        "query": [
-            {"code": "Region", "selection": {"filter": "item", "values": [region_code]}},
-            {"code": "Kon", "selection": {"filter": "item", "values": ["1+2"]}},  # Båda könen
-            {"code": "Alder", "selection": {"filter": "agg:Ålder5år", "values": ["TOT"]}},  # Alla åldrar
-            {"code": "Tid", "selection": {"filter": "item", "values": years}}
-        ],
-        "response": {"format": "json"}
-    }
+    return scb_service.get_population_trend(region_code=region_code, years=years)
 
-    try:
-        response = requests.post(url, json=payload)
-        response.raise_for_status()
-        data = response.json()
-
-        rows = data.get("data", [])
-        parsed = []
-        for row in rows:
-            år = row["key"][3]
-            antal = int(row["values"][0])
-            parsed.append({"År": år, "Antal": antal})
-
-        return pd.DataFrame(parsed)
-    except Exception as e:
-        st.error(f"Kunde inte hämta befolkningstrend från SCB: {e}")
-        return pd.DataFrame(columns=["År", "Antal"])
 
 # ---------------- FUNKTION: hämta invånare per ort (dummyversion) ----------------
 def hamta_invanare_ort():
