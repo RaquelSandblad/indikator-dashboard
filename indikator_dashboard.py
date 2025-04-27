@@ -37,9 +37,12 @@ def las_in_planbesked_och_op():
     op = gpd.read_file("op.json")
     planbesked = planbesked.to_crs(epsg=4326)
     op = op.to_crs(epsg=4326)
+    
+    # Korrekt spatial check: Använd WITHIN
     planbesked["följer_op"] = planbesked.geometry.apply(
-        lambda geom: op.geometry.intersects(geom).any()
+        lambda geom: op.geometry.contains(geom).any()
     )
+
     return planbesked, op
 
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
