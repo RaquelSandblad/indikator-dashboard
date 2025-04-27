@@ -44,7 +44,7 @@ def las_in_planbesked_och_op():
 
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
 def visa_planbesked_karta(planbesked, op):
-    st.subheader("\ud83d\udccd Planbesked och Översiktsplan (ÖP)")
+    st.subheader("Planbesked och Översiktsplan (ÖP)")
     karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
     folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
         "color": "blue",
