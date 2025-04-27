@@ -74,6 +74,9 @@ def visa_planbesked_karta(planbesked, op):
 
     # Visa kartan en gång, efter loopen!
     st_folium(karta, width=800, height=600)
+    
+    st.subheader("Tabell över planbesked")
+    st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={"projektnamn": "Projektnamn", "följer_op": "Följer ÖP"}))
 
 # ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
 @st.cache_data
