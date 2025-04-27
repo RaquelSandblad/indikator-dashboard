@@ -44,26 +44,32 @@ def las_in_planbesked_och_op():
 
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
 def visa_planbesked_karta(planbesked, op):
-    st.subheader("Planbesked och Översiktsplan (ÖP)")
+    st.subheader("Planbesked och Översiktsplan (ÖP)")  # Utan emoji!
     karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
+
+    # Lägg till Översiktsplan
     folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
         "color": "blue",
         "weight": 1,
         "fillOpacity": 0.1,
     }).add_to(karta)
-for idx, row in planbesked.iterrows():
-    color = "green" if row["följer_op"] else "red"
-    popup_text = row.get("projektnamn", "Planbesked")
-    folium.GeoJson(
-        row.geometry.__geo_interface__,  # <-- denna fix
-        style_function=lambda feature, color=color: {
-            "fillColor": color,
-            "color": color,
-            "weight": 2,
-            "fillOpacity": 0.4,
-        },
-        tooltip=popup_text
-    ).add_to(karta)
+
+    # Lägg till varje planbesked
+    for idx, row in planbesked.iterrows():
+        color = "green" if row["följer_op"] else "red"
+        popup_text = row.get("projektnamn", "Planbesked")
+        folium.GeoJson(
+            row.geometry.__geo_interface__,  # Denna fix!
+            style_function=lambda feature, color=color: {
+                "fillColor": color,
+                "color": color,
+                "weight": 2,
+                "fillOpacity": 0.4,
+            },
+            tooltip=popup_text
+        ).add_to(karta)
+
+    # Visa kartan en gång, efter loopen!
     st_folium(karta, width=800, height=600)
 
 # ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
