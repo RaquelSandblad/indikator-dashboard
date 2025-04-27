@@ -38,7 +38,7 @@ def las_in_planbesked_och_op():
     planbesked = planbesked.to_crs(epsg=4326)
     op = op.to_crs(epsg=4326)
     planbesked["följer_op"] = planbesked.geometry.apply(
-        lambda geom: op.intersects(geom).any()
+        lambda geom: op.geometry.intersects(geom).any()
     )
     return planbesked, op
 
