@@ -270,8 +270,8 @@ elif val == "Kommunnivå - Planbesked":
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
 op_debug.plot(ax=ax, color="blue", alpha=0.5)
-    plt.title("ÖP Geometrier")
-    st.pyplot(fig)
+plt.title("ÖP Geometrier")
+st.pyplot(fig)
 
     planbesked, op = las_in_planbesked_och_op()
     visa_planbesked_karta(planbesked, op)
