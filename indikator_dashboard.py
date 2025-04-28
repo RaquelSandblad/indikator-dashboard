@@ -98,11 +98,6 @@ def visa_planbesked_karta(planbesked, op):
     st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={"projektnamn": "Projektnamn", "följer_op": "Följer ÖP"}))
 
 # ---------------- ANVÄNDNING ----------------
-
-planbesked, op = las_in_planbesked_och_op()
-visa_planbesked_karta(planbesked, op)
-
-
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
 def visa_planbesked_karta(planbesked, op):
     st.subheader("Planbesked och Översiktsplan (ÖP)")  # Utan emoji!
@@ -299,6 +294,8 @@ elif val == "Kommunnivå - Planbesked":
     - 🟢 Grön = i linje med ÖP
     - 🔴 Röd = avviker från ÖP:s strategi
     """)
+    planbesked, op = las_in_planbesked_och_op()
+    visa_planbesked_karta(planbesked, op)
 
 # ---------------- DEBUG av ÖP ----------------
     st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
