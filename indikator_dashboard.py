@@ -252,28 +252,30 @@ elif val == "Kommunnivå - Planbesked":
     - 🔴 Röd = avviker från ÖP:s strategi
     """)
 
- 
+# ---------------- DEBUG av ÖP ----------------
 if True:
-    # ---------------- DEBUG av ÖP ----------------
-    st.subheader("🔍 Debugg av Översiktsplan (ÖP)")
+st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
 
-# Läs ÖP igen om behövs (du har säkert redan gjort detta i las_in_planbesked_och_op)
-    op_debug = gpd.read_file("op.json")
+    # Läs ÖP igen om behövs (du har säkert redan gjort detta i las_in_planbesked_och_op)
+op_debug = gpd.read_file("op.json")
 
-# Visa antal geometrier
-    st.write(f"Antal ytor i ÖP: {len(op_debug)}")
+    # Visa antal geometrier
+st.write(f"Antal ytor i ÖP: {len(op_debug)}")
 
-# Visa exempel på första ytorna
-    st.write(op_debug.head())
+    # Visa exempel på första ytorna
+st.write(op_debug.head())
 
-# Plot snabbt för att SE kartan
+    # Plot snabbt för att SE kartan
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
 op_debug.plot(ax=ax, color="blue", alpha=0.5)
 plt.title("ÖP Geometrier")
 st.pyplot(fig)
 
+    # Läs in planbesked och ÖP
 planbesked, op = las_in_planbesked_och_op()
+
+    # Visa planbesked på karta
 visa_planbesked_karta(planbesked, op)
 
 
