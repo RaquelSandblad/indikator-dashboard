@@ -254,29 +254,29 @@ elif val == "Kommunnivå - Planbesked":
 
 # ---------------- DEBUG av ÖP ----------------
 if True:
-st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
+    st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
 
     # Läs ÖP igen om behövs (du har säkert redan gjort detta i las_in_planbesked_och_op)
-op_debug = gpd.read_file("op.json")
+    op_debug = gpd.read_file("op.json")
 
     # Visa antal geometrier
-st.write(f"Antal ytor i ÖP: {len(op_debug)}")
+    st.write(f"Antal ytor i ÖP: {len(op_debug)}")
 
     # Visa exempel på första ytorna
-st.write(op_debug.head())
+    st.write(op_debug.head())
 
     # Plot snabbt för att SE kartan
-import matplotlib.pyplot as plt
-fig, ax = plt.subplots()
-op_debug.plot(ax=ax, color="blue", alpha=0.5)
-plt.title("ÖP Geometrier")
-st.pyplot(fig)
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    op_debug.plot(ax=ax, color="blue", alpha=0.5)
+    plt.title("ÖP Geometrier")
+    st.pyplot(fig)
 
     # Läs in planbesked och ÖP
-planbesked, op = las_in_planbesked_och_op()
+    planbesked, op = las_in_planbesked_och_op()
 
     # Visa planbesked på karta
-visa_planbesked_karta(planbesked, op)
+    visa_planbesked_karta(planbesked, op)
 
 
 elif val == "Kommunnivå - Befolkning":
