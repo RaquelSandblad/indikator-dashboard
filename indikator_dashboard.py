@@ -269,7 +269,7 @@ elif val == "Kommunnivå - Planbesked":
 # Plot snabbt för att SE kartan
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
-    op_debug.plot(ax=ax, color="blue", alpha=0.5)
+op_debug.plot(ax=ax, color="blue", alpha=0.5)
     plt.title("ÖP Geometrier")
     st.pyplot(fig)
 
