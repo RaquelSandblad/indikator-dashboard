@@ -277,9 +277,8 @@ elif val == "Kommunnivå - Planbesked":
 
 # Plot snabbt för att SE kartan
     # Plot snabbt för att SE kartan
-    import matplotlib.pyplot as plt
-
-    if not op_debug_clean.empty:
+    
+    if not op_debug_clean.empty and op_debug_clean.is_valid.all():
         fig, ax = plt.subplots()
         op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
         plt.title("ÖP Geometrier")
