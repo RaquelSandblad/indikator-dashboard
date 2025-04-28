@@ -253,22 +253,32 @@ elif val == "Kommunnivå - Planbesked":
     """)
 
 # ---------------- DEBUG av ÖP ----------------
-if True:
     st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
 
-    # Läs ÖP igen om behövs (du har säkert redan gjort detta i las_in_planbesked_och_op)
+# Läs in ÖP om det behövs
     op_debug = gpd.read_file("op.json")
 
-    # Visa antal geometrier
-    st.write(f"Antal ytor i ÖP: {len(op_debug)}")
+# Visa antal ytor före filtrering
+    st.write(f"Antal ytor i ÖP före rensning: {len(op_debug)}")
 
-    # Visa exempel på första ytorna
-    st.write(op_debug.head())
+# Filtrera bort ytor utan geometri
+    op_debug_clean = op_debug[op_debug.geometry.notnull()]
 
-    # Plot snabbt för att SE kartan
+# Visa varning om vi tog bort några ytor
+    antal_borttagna = len(op_debug) - len(op_debug_clean)
+    if antal_borttagna > 0:
+        st.warning(f"⚠️ {antal_borttagna} ytor utan geometri togs bort innan kartvisning.")
+
+# Visa antal ytor efter rensning
+    st.write(f"Antal ytor i ÖP efter rensning: {len(op_debug_clean)}")
+
+# Visa exempel på första ytorna
+    st.write(op_debug_clean.head())
+
+# Plot snabbt för att SE kartan
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
-    op_debug.plot(ax=ax, color="blue", alpha=0.5)
+    op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
     plt.title("ÖP Geometrier")
     st.pyplot(fig)
 
