@@ -37,10 +37,20 @@ def las_in_planbesked_och_op():
     op = gpd.read_file("op.json")
     planbesked = planbesked.to_crs(epsg=4326)
     op = op.to_crs(epsg=4326)
-    
-    # Byt tillbaka till intersects, MEN på rätt nivå:
-    planbesked["följer_op"] = planbesked.geometry.apply(
-        lambda geom: op.geometry.intersects(geom).any()
+
+    # Funktion för spatial kontroll
+    def kontrollera_planbesked(row, op_geom, tröskel=0.5):
+        if row.geometry.intersects(op_geom):
+            intersektion = row.geometry.intersection(op_geom)
+            andel_inom = intersektion.area / row.geometry.area
+            return andel_inom >= tröskel
+        return False
+
+    op_union = op.unary_union  # Effektivisering
+
+    planbesked["följer_op"] = planbesked.apply(
+        lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5),
+        axis=1
     )
 
     return planbesked, op
