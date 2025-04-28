@@ -273,8 +273,8 @@ op_debug.plot(ax=ax, color="blue", alpha=0.5)
 plt.title("ÖP Geometrier")
 st.pyplot(fig)
 
-    planbesked, op = las_in_planbesked_och_op()
-    visa_planbesked_karta(planbesked, op)
+planbesked, op = las_in_planbesked_och_op()
+visa_planbesked_karta(planbesked, op)
 
 
 elif val == "Kommunnivå - Befolkning":
