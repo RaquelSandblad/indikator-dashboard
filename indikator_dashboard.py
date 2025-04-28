@@ -253,7 +253,7 @@ elif val == "Kommunnivå - Planbesked":
     """)
 
  
-
+if True:
     # ---------------- DEBUG av ÖP ----------------
     st.subheader("🔍 Debugg av Översiktsplan (ÖP)")
 
