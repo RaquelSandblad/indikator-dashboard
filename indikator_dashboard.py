@@ -31,29 +31,77 @@ val = st.sidebar.radio("Välj sida", [
 ])
 
 # ---------------- FUNKTION: Läs in planbesked och ÖP ----------------
+# ---------------- FIX: Bättre spatial kontroll ----------------
+
 @st.cache_data
 def las_in_planbesked_och_op():
-    planbesked = gpd.read_file("planbesked.json")
-    op = gpd.read_file("op.json")
-    planbesked = planbesked.to_crs(epsg=4326)
-    op = op.to_crs(epsg=4326)
+    # Läs in data
+    planbesked = gpd.read_file("planbesked.json").to_crs(epsg=4326)
+    op = gpd.read_file("op.json").to_crs(epsg=4326)
 
-    # Funktion för spatial kontroll
+    # Projektera till metersystem (SWEREF 99 TM)
+    planbesked_m = planbesked.to_crs(epsg=3006)
+    op_m = op.to_crs(epsg=3006)
+
+    # Skapa en sammanslagen geometri av ÖP (snabbar upp)
+    op_union = op_m.unary_union
+
+    # Funktion för kontroll
     def kontrollera_planbesked(row, op_geom, tröskel=0.5):
         if row.geometry.intersects(op_geom):
             intersektion = row.geometry.intersection(op_geom)
-            andel_inom = intersektion.area / row.geometry.area
-            return andel_inom >= tröskel
+            if not intersektion.is_empty:
+                andel_inom = intersektion.area / row.geometry.area
+                return andel_inom >= tröskel
         return False
 
-    op_union = op.unary_union  # Effektivisering
-
-    planbesked["följer_op"] = planbesked.apply(
+    # Kör spatial kontroll
+    planbesked_m["följer_op"] = planbesked_m.apply(
         lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5),
         axis=1
     )
 
+    # Flytta tillbaka följer_op till original-data i EPSG:4326
+    planbesked["följer_op"] = planbesked_m["följer_op"]
+
     return planbesked, op
+
+# ---------------- FUNKTION: Visa planbesked på karta ----------------
+def visa_planbesked_karta(planbesked, op):
+    st.subheader("Planbesked och Översiktsplan (ÖP)")
+    karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
+
+    # Lägg till Översiktsplan
+    folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
+        "color": "blue",
+        "weight": 1,
+        "fillOpacity": 0.1,
+    }).add_to(karta)
+
+    # Lägg till varje planbesked
+    for idx, row in planbesked.iterrows():
+        color = "green" if row["följer_op"] else "red"
+        popup_text = row.get("projektnamn", "Planbesked")
+        folium.GeoJson(
+            row.geometry.__geo_interface__,
+            style_function=lambda feature, color=color: {
+                "fillColor": color,
+                "color": color,
+                "weight": 2,
+                "fillOpacity": 0.4,
+            },
+            tooltip=popup_text
+        ).add_to(karta)
+
+    st_folium(karta, width=800, height=600)
+    st.subheader("Tabell över planbesked")
+    st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={"projektnamn": "Projektnamn", "följer_op": "Följer ÖP"}))
+
+# ---------------- ANVÄNDNING ----------------
+
+planbesked, op = las_in_planbesked_och_op()
+visa_planbesked_karta(planbesked, op)
+
 
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
 def visa_planbesked_karta(planbesked, op):
