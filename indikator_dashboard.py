@@ -276,11 +276,17 @@ elif val == "Kommunnivå - Planbesked":
     st.write(op_debug_clean.head())
 
 # Plot snabbt för att SE kartan
+    # Plot snabbt för att SE kartan
     import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
-    op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
-    plt.title("ÖP Geometrier")
-    st.pyplot(fig)
+
+    if not op_debug_clean.empty:
+        fig, ax = plt.subplots()
+        op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
+        plt.title("ÖP Geometrier")
+        st.pyplot(fig)
+    else:
+        st.warning("⚠️ Kunde inte visa kartan – inga giltiga geometrier.")
+
 
     # Läs in planbesked och ÖP
     planbesked, op = las_in_planbesked_och_op()
