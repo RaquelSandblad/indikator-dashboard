@@ -123,12 +123,16 @@ def visa_planbesked_karta(planbesked, op):
     st.subheader("Planbesked och Översiktsplan (ÖP)") 
     karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
 
-    # Lägg till Översiktsplan
-    folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
-        "color": "blue",
-        "weight": 1,
-        "fillOpacity": 0.1,
-    }).add_to(karta)
+    # Visa eller göm ÖP-lagret
+    visa_op = st.checkbox("Visa Översiktsplan (ÖP)", value=True)
+
+    if visa_op:
+        folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
+            "color": "blue",
+            "weight": 1,
+            "fillOpacity": 0.1,
+        }).add_to(karta)
+
 
     # Lägg till varje planbesked
     for idx, row in planbesked.iterrows():
