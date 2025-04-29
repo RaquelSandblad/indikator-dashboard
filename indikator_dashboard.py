@@ -372,15 +372,7 @@ elif val == "Kommunnivå - Befolkning":
         
         # Visa befolkningsutveckling över tid
         st.write("**📊 Befolkningsutveckling över tid**")
-        visa_befolkningsutveckling(trend_df, rubrik=f"Befolkningsutveckling i Kungsbacka kommun {trend_df['År'].min()}-{trend_df['År'].max()}")
-    else:
-        st.error("Kunde inte hämta befolkningsutveckling från SCB.")
-        bef_2022 = 85682
-        bef_2023 = 85476
-        tillvaxt = ((bef_2023 - bef_2022) / bef_2022) * 100
-        skillnad = bef_2023 - bef_2022
-
-        st.write(f"**📈 Befolkningstillväxt:** {tillvaxt:.2f} %")
+        
         if skillnad >= 0:
             st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
         else:
