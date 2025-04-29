@@ -32,40 +32,45 @@ class SCBService:
         return str(hash(json.dumps(query, sort_keys=True)))
     
     def fetch_data(self, endpoint, query, max_cache_age_hours=24):
-        """Hämtar data från SCB API med cache-stöd."""
-        query_hash = self._query_hash(query)
-        cache_path = self._get_cache_path(endpoint, query_hash)
-        
-        # Kontrollera cache
-        if self._check_cache(cache_path, max_cache_age_hours):
-            try:
-                with open(cache_path, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception as e:
-                print(f"Cache-läsfel: {e}")
-        
-        # Hämta från API om cache saknas eller är gammal
+    """Hämtar data från SCB API med cache-stöd."""
+    query_hash = self._query_hash(query)
+    cache_path = self._get_cache_path(endpoint, query_hash)
+    
+    # Kontrollera cache
+    if self._check_cache(cache_path, max_cache_age_hours):
         try:
-            url = f"{self.base_url}/{endpoint}"
-            response = requests.post(url, json=query)
-            response.raise_for_status()
-            data = response.json()
-
-            # Spara till cache
-            with open(cache_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False)
-
-            return data
-
-        except requests.exceptions.HTTPError as http_err:
-            print(f"[SCBService] HTTP-fel: {http_err}")
-            print("➡ Skickad query:")
-            print(json.dumps(query, indent=2, ensure_ascii=False))
-            raise
-
+            with open(cache_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
         except Exception as e:
-            print(f"[SCBService] Annat fel: {e}")
-            raise
+            print(f"Cache-läsfel: {e}")
+    
+    # Hämta från API om cache saknas eller är gammal
+    try:
+        url = f"{self.base_url}/{endpoint}"
+        response = requests.post(url, json=query)
+        response.raise_for_status()  # Kontrollera om statuskoden indikerar fel
+
+        # Om svaret är giltigt, returnera JSON-data
+        data = response.json()
+
+        # Spara till cache
+        with open(cache_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+
+        return data
+
+    except requests.exceptions.HTTPError as http_err:
+        # Logga detaljerad information om HTTP-felet
+        print(f"[SCBService] HTTP-fel: {http_err}")
+        print(f"➡ Statuskod: {response.status_code}")
+        print(f"➡ Svarstext: {response.text}")
+        print(f"➡ Skickad query: {json.dumps(query, indent=2, ensure_ascii=False)}")
+        raise
+
+    except Exception as e:
+        # Logga andra oväntade fel
+        print(f"[SCBService] Annat fel: {e}")
+        raise
     
     def get_population_by_age_gender(self, region_code="1384", year="2023"):
         """Hämtar befolkningsdata per ålder och kön för en specifik region och år."""
