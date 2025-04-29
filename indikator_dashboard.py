@@ -386,9 +386,11 @@ elif val == "Kommunnivå - Befolkning":
         else:
             st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
 
-    st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
+        st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
     df = hamta_aldersfordelning()
-    visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
+    if st.button("Visa ålderspyramid"):
+        visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
+
       
     kön_val = st.selectbox("Välj kön", {"Totalt": ["1", "2"], "Kvinnor": ["2"], "Män": ["1"]})
     ålder_val = st.selectbox("Välj åldersintervall", [f"{i}-{i+4}" for i in range(0, 100, 5)])
@@ -397,6 +399,10 @@ elif val == "Kommunnivå - Befolkning":
     trend_df = hamta_befolkningstrend()
     if not trend_df.empty and len(trend_df) >= 2:
         visa_befolkningsutveckling(trend_df)
+
+        st.write("**Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
+
+
     
 elif val == "Kommunnivå - Värmekarta":
     st.title("Kommunnivå – Värmekarta för befolkningstäthet")
