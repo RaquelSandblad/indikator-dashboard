@@ -325,27 +325,27 @@ elif val == "Kommunnivå - Planbesked":
         }))
 
 # ---------------- DEBUG av ÖP ----------------
-if st.checkbox("Visa debug-info för Översiktsplan"):
-    st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
+        if st.checkbox("Visa debug-info för Översiktsplan"):
+            st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
 
-    op_debug = gpd.read_file("op.json")
-    st.write(f"Antal ytor i ÖP före rensning: {len(op_debug)}")
+            op_debug = gpd.read_file("op.json")
+            st.write(f"Antal ytor i ÖP före rensning: {len(op_debug)}")
 
-    op_debug_clean = op_debug[op_debug.geometry.notnull()]
-    antal_borttagna = len(op_debug) - len(op_debug_clean)
-    if antal_borttagna > 0:
-        st.warning(f"⚠️ {antal_borttagna} ytor utan geometri togs bort.")
+            op_debug_clean = op_debug[op_debug.geometry.notnull()]
+            antal_borttagna = len(op_debug) - len(op_debug_clean)
+            if antal_borttagna > 0:
+                st.warning(f"⚠️ {antal_borttagna} ytor utan geometri togs bort.")
 
-    st.write(f"Antal ytor i ÖP efter rensning: {len(op_debug_clean)}")
-    st.write(op_debug_clean.head())
+            st.write(f"Antal ytor i ÖP efter rensning: {len(op_debug_clean)}")
+            st.write(op_debug_clean.head())
 
-    if not op_debug_clean.empty and op_debug_clean.is_valid.all():
-        fig, ax = plt.subplots()
-        op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
-        plt.title("ÖP Geometrier")
-        st.pyplot(fig)
-    else:
-        st.warning("⚠️ Kunde inte visa kartan – inga giltiga geometrier.")
+            if not op_debug_clean.empty and op_debug_clean.is_valid.all():
+                fig, ax = plt.subplots()
+                op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
+                plt.title("ÖP Geometrier")
+                st.pyplot(fig)
+            else:
+                st.warning("⚠️ Kunde inte visa kartan – inga giltiga geometrier.")
 
 
 elif val == "Kommunnivå - Befolkning":
