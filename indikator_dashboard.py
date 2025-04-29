@@ -63,13 +63,29 @@ val = st.sidebar.radio("Välj sida", [
 
 # Ny funktion: hämta befolkning baserat på kön och ålder
 
-def hamta_filterad_befolkning(kon, alder_intervall):
+def hamta_filterad_befolkning(region_code="1384", kon=["1", "2"], alder_intervall=["20", "21", "22", "23", "24"], year="2023"):
     query = {
         "query": [
-            {"code": "Kon", "selection": {"filter": "item", "values": [kon]}},
-            {"code": "Alder", "selection": {"filter": "item", "values": alder_intervall}}
+            {
+                "code": "Region",
+                "selection": { "filter": "item", "values": [region_code] }
+            },
+            {
+                "code": "Kon",
+                "selection": { "filter": "item", "values": kon }
+            },
+            {
+                "code": "Alder",
+                "selection": { "filter": "item", "values": alder_intervall }
+            },
+            {
+                "code": "Tid",
+                "selection": { "filter": "item", "values": [year] }
+            }
         ],
-        "response": {"format": "json"}
+        "response": {
+            "format": "json"
+        }
     }
     print(f"[DEBUG] Genererad query: {query}")  # Debugutskrift
     return scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
