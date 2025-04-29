@@ -56,56 +56,6 @@ val = st.sidebar.radio("Välj sida", [
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"
 ])
 
-# Läs och kontrollera Planbesked och ÖP
-
-def las_in_planbesked_och_op():
-    planbesked = gpd.read_file("planbesked.json").to_crs(epsg=4326)
-    op = gpd.read_file("op.json").to_crs(epsg=4326)
-
-    planbesked_m = planbesked.to_crs(epsg=3006)
-    op_m = op.to_crs(epsg=3006)
-    op_union = op_m.unary_union
-
-    def kontrollera_planbesked(row, op_geom, tröskel=0.5):
-        if row.geometry.intersects(op_geom):
-            intersektion = row.geometry.intersection(op_geom)
-            if not intersektion.is_empty:
-                andel_inom = intersektion.area / row.geometry.area
-                return andel_inom >= tröskel
-        return False
-
-    planbesked_m["följer_op"] = planbesked_m.apply(
-        lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5), axis=1
-    )
-
-    planbesked["följer_op"] = planbesked_m["följer_op"]
-    return planbesked, op
-
-# Visa Planbesked
-
-def visa_planbesked_karta(planbesked, op):
-    st.subheader("Planbesked och Översiktsplan (ÖP)")
-    karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
-
-    folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
-        "color": "blue", "weight": 1, "fillOpacity": 0.1
-    }).add_to(karta)
-
-    for idx, row in planbesked.iterrows():
-        color = "green" if row["följer_op"] else "red"
-        popup_text = row.get("projektnamn", "Planbesked")
-        folium.GeoJson(
-            row.geometry.__geo_interface__,
-            style_function=lambda feature, color=color: {
-                "fillColor": color, "color": color, "weight": 2, "fillOpacity": 0.4
-            },
-            tooltip=popup_text
-        ).add_to(karta)
-
-    st_folium(karta, width=800, height=600)
-    st.subheader("Tabell över planbesked")
-    st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={"projektnamn": "Projektnamn", "följer_op": "Följer ÖP"}))
-
 # Ny funktion: hämta befolkning baserat på kön och ålder
 
 def hamta_filterad_befolkning(region_code="1384", kon=["1", "2"], alder_intervall="20-24", year="2023"):
