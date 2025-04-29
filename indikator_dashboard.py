@@ -332,13 +332,6 @@ elif val == "Kommunnivå - Planbesked":
         st.warning("⚠️ Kunde inte visa kartan – inga giltiga geometrier.")
 
 
-    # Läs in planbesked och ÖP
-    planbesked, op = las_in_planbesked_och_op()
-
-    # Visa planbesked på karta
-    visa_planbesked_karta(planbesked, op)
-
-
 elif val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
     
