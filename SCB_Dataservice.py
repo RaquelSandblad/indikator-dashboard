@@ -46,19 +46,27 @@ class SCBService:
         
         # Hämta från API om cache saknas eller är gammal
         try:
-            url = f"{self.base_url}/{endpoint}"
-            response = requests.post(url, json=query)
-            response.raise_for_status()
-            data = response.json()
-            
-            # Spara till cache
-            with open(cache_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False)
-            
-            return data
-        except Exception as e:
-            print(f"API-fel: {e}")
-            raise
+    url = f"{self.base_url}/{endpoint}"
+    response = requests.post(url, json=query)
+    response.raise_for_status()
+    data = response.json()
+
+    # Spara till cache
+    with open(cache_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False)
+
+    return data
+
+except requests.exceptions.HTTPError as http_err:
+    print(f"[SCBService] HTTP-fel: {http_err}")
+    print("➡ Skickad query:")
+    print(json.dumps(query, indent=2, ensure_ascii=False))
+    raise
+
+except Exception as e:
+    print(f"[SCBService] Annat fel: {e}")
+    raise
+
     
     def get_population_by_age_gender(self, region_code="1384", year="2023"):
         """Hämtar befolkningsdata per ålder och kön för en specifik region och år."""
