@@ -95,37 +95,6 @@ def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
     plt.tight_layout()
     st.pyplot(fig)
 
-def visa_alderspyramid(df, rubrik="Ålderspyramid"):
-    import matplotlib.ticker as ticker
-    if df.empty:
-        st.info("Ingen data att visa.")
-        return
-    df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
-    df = df.dropna(subset=["Ålder"])
-    df["Ålder"] = df["Ålder"].astype(int)
-    df = df[df["Ålder"] <= 100]
-    df_pivot = df.pivot_table(index="Ålder", columns="Kön", values="Antal", aggfunc="sum", fill_value=0)
-    df_pivot = df_pivot.sort_index()
-    for kol in ["Män", "Kvinnor"]:
-        if kol not in df_pivot.columns:
-            df_pivot[kol] = 0
-    df_pivot["Män"] = -df_pivot["Män"]
-    max_val = max(abs(df_pivot["Män"].min()), df_pivot["Kvinnor"].max())
-    fig, ax = plt.subplots(figsize=(6, 8))
-    ax.barh(df_pivot.index, df_pivot["Män"], color="#69b3a2", label="Män")
-    ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="#ff9999", label="Kvinnor")
-    ax.set_xlim(-max_val * 1.05, max_val * 1.05)
-    ax.set_ylim(0, 100)
-    ax.invert_yaxis()
-    ax.set_xlabel("Antal personer")
-    ax.set_ylabel("Ålder")
-    ax.set_title(rubrik, fontsize=14)
-    ax.axvline(0, color="gray", linewidth=0.5)
-    ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{abs(int(x)):,}"))
-    ax.legend(loc="upper right", frameon=False)
-    plt.tight_layout()
-    st.pyplot(fig)
-
 # Visa i befolkningssidan
 if val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
@@ -176,12 +145,6 @@ def visa_planbesked_karta(planbesked, op):
     
     st.subheader("Tabell över planbesked")
     st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={"projektnamn": "Projektnamn", "följer_op": "Följer ÖP"}))
-
-# ---------------- FUNKTION: hämta åldersfördelning från SCB ----------------
-@st.cache_data
-def hamta_aldersfordelning():
-    return scb_service.get_population_by_age_gender(region_code="1384", year="2023")
-
 
 # ---------------- FUNKTION: hämta befolkningstrend från SCB ----------------
 @st.cache_data
