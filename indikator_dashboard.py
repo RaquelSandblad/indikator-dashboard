@@ -26,16 +26,23 @@ def las_in_planbesked_och_op():
     op_m = op.to_crs(epsg=3006)
     op_union = op_m.unary_union
 
-    def kontrollera_planbesked(row, op_geom, tröskel=0.5):
-        if row.geometry.is_empty or row.geometry.area == 0:
-            return False
-        if row.geometry.intersects(op_geom):
-            intersektion = row.geometry.intersection(op_geom)
-            if not intersektion.is_empty:
-                if row.geometry.area > 0:
-                    andel_inom = intersektion.area / row.geometry.area
-                    return andel_inom >= tröskel
+def kontrollera_planbesked(row, op_geom, tröskel=0.5):
+    geom = row.geometry
+
+    if geom is None or geom.is_empty or not geom.is_valid or geom.area == 0:
         return False
+
+    if not geom.intersects(op_geom):
+        return False
+
+    intersektion = geom.intersection(op_geom)
+
+    if intersektion.is_empty or not intersektion.is_valid:
+        return False
+
+    andel_inom = intersektion.area / geom.area if geom.area > 0 else 0
+    return andel_inom >= tröskel
+
 
     planbesked_m["följer_op"] = planbesked_m.apply(
         lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5), axis=1
