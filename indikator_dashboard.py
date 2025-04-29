@@ -321,7 +321,7 @@ elif val == "Kommunnivå - Planbesked":
         }))
 
 # ---------------- DEBUG av ÖP ----------------
-    if st.checkbox("Visa debug-info för Översiktsplan"):
+if st.checkbox("Visa debug-info för Översiktsplan"):
     st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
 
     op_debug = gpd.read_file("op.json")
