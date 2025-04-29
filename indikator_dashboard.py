@@ -31,9 +31,10 @@ def kontrollera_planbesked(row, op_geom, tröskel=0.5):
         return False
     if row.geometry.intersects(op_geom):
         intersektion = row.geometry.intersection(op_geom)
-        if not intersektion.is_empty and row.geometry.area > 0:
-            andel_inom = intersektion.area / row.geometry.area
-            return andel_inom >= tröskel
+        if not intersektion.is_empty:
+            if row.geometry.area > 0:  # Extra säkerhet
+                andel_inom = intersektion.area / row.geometry.area
+                return andel_inom >= tröskel
     return False
 
     planbesked_m["följer_op"] = planbesked_m.apply(
