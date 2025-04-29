@@ -124,7 +124,7 @@ def visa_planbesked_karta(planbesked, op):
     karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
 
     # Visa eller göm ÖP-lagret
-    visa_op = st.checkbox("Visa Översiktsplan (ÖP)", value=True)
+    visa_op = st.checkbox("Visa Översiktsplan (ÖP)", value=False)
 
     if visa_op:
         folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
