@@ -27,12 +27,14 @@ def las_in_planbesked_och_op():
     op_union = op_m.unary_union
 
     def kontrollera_planbesked(row, op_geom, tröskel=0.5):
-        if row.geometry.intersects(op_geom):
-            intersektion = row.geometry.intersection(op_geom)
-            if not intersektion.is_empty:
-                andel_inom = intersektion.area / row.geometry.area
-                return andel_inom >= tröskel
+    if row.geometry.is_empty or row.geometry.area == 0:
         return False
+    if row.geometry.intersects(op_geom):
+        intersektion = row.geometry.intersection(op_geom)
+        if not intersektion.is_empty and row.geometry.area > 0:
+            andel_inom = intersektion.area / row.geometry.area
+            return andel_inom >= tröskel
+    return False
 
     planbesked_m["följer_op"] = planbesked_m.apply(
         lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5), axis=1
