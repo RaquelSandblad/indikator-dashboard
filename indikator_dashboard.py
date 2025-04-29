@@ -120,7 +120,7 @@ def visa_planbesked_karta(planbesked, op):
 # ---------------- ANVÄNDNING ----------------
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
 def visa_planbesked_karta(planbesked, op):
-    st.subheader("Planbesked och Översiktsplan (ÖP)")  # Utan emoji!
+    st.subheader("Planbesked och Översiktsplan (ÖP)") 
     karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
 
     # Lägg till Översiktsplan
@@ -316,7 +316,7 @@ elif val == "Kommunnivå - Planbesked":
     - 🔴 Röd = avviker från ÖP:s strategi
     """)
 
-    planbesked, op = datahantering.las_in_planbesked_och_op()
+    planbesked, op = las_in_planbesked_och_op()
 
     # Kartan i en placeholder så layouten blir stabil
     with st.container():
