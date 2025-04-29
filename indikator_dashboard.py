@@ -287,6 +287,7 @@ Här kan du följa upp indikatorer för:
         st.warning("Bilden 'image.png' kunde inte laddas. Kontrollera att den finns i samma mapp som skriptet.")
 
 # ---------------- KOMMUNNIVÅ ----------------
+# ---------------- KOMMUNNIVÅ ----------------
 elif val == "Kommunnivå - Planbesked":
     st.title("Kommunnivå – Planbesked")
     st.write("Här visas planbesked och huruvida de stämmer överens med ÖP:")
@@ -294,8 +295,20 @@ elif val == "Kommunnivå - Planbesked":
     - 🟢 Grön = i linje med ÖP
     - 🔴 Röd = avviker från ÖP:s strategi
     """)
-    planbesked, op = las_in_planbesked_och_op()
-    visa_planbesked_karta(planbesked, op)
+
+    planbesked, op = datahantering.las_in_planbesked_och_op()
+
+    # Kartan i en placeholder så layouten blir stabil
+    with st.container():
+        visualisering.visa_planbesked_karta(planbesked, op)
+
+    # Tabellen direkt efter
+    with st.container():
+        st.subheader("Tabell över planbesked")
+        st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={
+            "projektnamn": "Projektnamn",
+            "följer_op": "Följer ÖP"
+        }))
 
 # ---------------- DEBUG av ÖP ----------------
     st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
