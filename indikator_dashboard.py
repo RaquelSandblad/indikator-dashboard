@@ -63,21 +63,17 @@ val = st.sidebar.radio("Välj sida", [
 
 # Ny funktion: hämta befolkning baserat på kön och ålder
 
-def hamta_filterad_befolkning(region_code="1384", kon=["1", "2"], alder_intervall="20-24", year="2023"):
-    start, end = map(int, alder_intervall.split("-"))
-    alder_values = [str(i) for i in range(start, end+1)]
+def hamta_filterad_befolkning(kon, alder_intervall):
     query = {
         "query": [
-            {"code": "Region", "selection": {"filter": "item", "values": [region_code]}},
-            {"code": "Kon", "selection": {"filter": "item", "values": kon}},
-            {"code": "Alder", "selection": {"filter": "item", "values": alder_values}},
-            {"code": "Tid", "selection": {"filter": "item", "values": [year]}}
+            {"code": "Kon", "selection": {"filter": "item", "values": [kon]}},
+            {"code": "Alder", "selection": {"filter": "item", "values": alder_intervall}}
         ],
         "response": {"format": "json"}
     }
-    data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
-    antal = sum(int(d["values"][0].replace("..", "0")) for d in data.get("data", []))
-    return antal
+    print(f"[DEBUG] Genererad query: {query}")  # Debugutskrift
+    return scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+    
 def hamta_befolkningstrend(region_code="1384", years=None):
     return scb_service.get_population_trend(region_code=region_code, years=years)
 
