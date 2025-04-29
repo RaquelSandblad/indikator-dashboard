@@ -14,6 +14,9 @@ import os
 from SCB_Dataservice import SCBService
 scb_service = SCBService()
 
+# Streamlit config
+st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
+
 @st.cache_data(ttl=86400)
 def las_in_planbesked_och_op():
     planbesked = gpd.read_file("planbesked.json").to_crs(epsg=4326)
@@ -26,12 +29,16 @@ def las_in_planbesked_och_op():
     def kontrollera_planbesked(row, op_geom, tröskel=0.5):
         if row.geometry.intersects(op_geom):
             intersektion = row.geometry.intersection(op_geom)
-            return not intersektion.is_empty and (intersektion.area / row.geometry.area) >= tröskel
+            if not intersektion.is_empty:
+                andel_inom = intersektion.area / row.geometry.area
+                return andel_inom >= tröskel
         return False
 
-    planbesked_m["följer_op"] = planbesked_m.apply(lambda row: kontrollera_planbesked(row, op_union), axis=1)
-    planbesked["följer_op"] = planbesked_m["följer_op"]
+    planbesked_m["följer_op"] = planbesked_m.apply(
+        lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5), axis=1
+    )
 
+    planbesked["följer_op"] = planbesked_m["följer_op"]
     return planbesked, op
 
 # Konfigurera API-bas-URL (används när vi kopplar in mikroservices)
@@ -116,6 +123,58 @@ def hamta_filterad_befolkning(region_code="1384", kon=["1", "2"], alder_interval
     data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
     antal = sum(int(d["values"][0].replace("..", "0")) for d in data.get("data", []))
     return antal
+def hamta_befolkningstrend(region_code="1384", years=None):
+    return scb_service.get_population_trend(region_code=region_code, years=years)
+
+def hamta_aldersfordelning():
+    return scb_service.get_population_by_age_gender(region_code="1384", year="2023")
+
+def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
+    if df.empty:
+        st.info("Ingen data att visa.")
+        return
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(df["År"], df["Antal"], marker='o', linestyle='-', color="#1f77b4")
+    ax.set_title(rubrik, fontsize=14)
+    ax.set_xlabel("År")
+    ax.set_ylabel("Antal invånare")
+    ax.grid(True, linestyle='--', alpha=0.7)
+    ax.get_yaxis().set_major_formatter(
+        plt.matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',').replace(',', ' '))
+    )
+    plt.tight_layout()
+    st.pyplot(fig)
+
+def visa_alderspyramid(df, rubrik="Ålderspyramid"):
+    import matplotlib.ticker as ticker
+    if df.empty:
+        st.info("Ingen data att visa.")
+        return
+    df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
+    df = df.dropna(subset=["Ålder"])
+    df["Ålder"] = df["Ålder"].astype(int)
+    df = df[df["Ålder"] <= 100]
+    df_pivot = df.pivot_table(index="Ålder", columns="Kön", values="Antal", aggfunc="sum", fill_value=0)
+    df_pivot = df_pivot.sort_index()
+    for kol in ["Män", "Kvinnor"]:
+        if kol not in df_pivot.columns:
+            df_pivot[kol] = 0
+    df_pivot["Män"] = -df_pivot["Män"]
+    max_val = max(abs(df_pivot["Män"].min()), df_pivot["Kvinnor"].max())
+    fig, ax = plt.subplots(figsize=(6, 8))
+    ax.barh(df_pivot.index, df_pivot["Män"], color="#69b3a2", label="Män")
+    ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="#ff9999", label="Kvinnor")
+    ax.set_xlim(-max_val * 1.05, max_val * 1.05)
+    ax.set_ylim(0, 100)
+    ax.invert_yaxis()
+    ax.set_xlabel("Antal personer")
+    ax.set_ylabel("Ålder")
+    ax.set_title(rubrik, fontsize=14)
+    ax.axvline(0, color="gray", linewidth=0.5)
+    ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{abs(int(x)):,}"))
+    ax.legend(loc="upper right", frameon=False)
+    plt.tight_layout()
+    st.pyplot(fig)
 
 # Visa i befolkningssidan
 if val == "Kommunnivå - Befolkning":
@@ -324,7 +383,6 @@ Här kan du följa upp indikatorer för:
         st.warning("Bilden 'image.png' kunde inte laddas. Kontrollera att den finns i samma mapp som skriptet.")
 
 # ---------------- KOMMUNNIVÅ ----------------
-# ---------------- KOMMUNNIVÅ ----------------
 elif val == "Kommunnivå - Planbesked":
     st.title("Kommunnivå – Planbesked")
     st.write("Här visas planbesked och huruvida de stämmer överens med ÖP:")
@@ -423,7 +481,15 @@ elif val == "Kommunnivå - Befolkning":
     st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
-
+      
+    kön_val = st.selectbox("Välj kön", {"Totalt": ["1", "2"], "Kvinnor": ["2"], "Män": ["1"]})
+    ålder_val = st.selectbox("Välj åldersintervall", [f"{i}-{i+4}" for i in range(0, 100, 5)])
+    antal = hamta_filterad_befolkning(kon=kön_val, alder_intervall=ålder_val)
+    st.metric("Totalt antal i valt urval", f"{antal:,}")
+    trend_df = hamta_befolkningstrend()
+    if not trend_df.empty and len(trend_df) >= 2:
+        visa_befolkningsutveckling(trend_df)
+    
 elif val == "Kommunnivå - Värmekarta":
     st.title("Kommunnivå – Värmekarta för befolkningstäthet")
     visa_varmekarta()
