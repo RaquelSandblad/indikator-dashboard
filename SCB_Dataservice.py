@@ -66,7 +66,6 @@ class SCBService:
             return data
 
         except requests.exceptions.HTTPError as http_err:
-            # Logga detaljerad information om HTTP-felet
             print(f"[SCBService] HTTP-fel: {http_err}")
             print(f"➡ Statuskod: {response.status_code}")
             print(f"➡ Svarstext: {response.text}")
@@ -74,7 +73,6 @@ class SCBService:
             raise
 
         except Exception as e:
-            # Logga andra oväntade fel
             print(f"[SCBService] Annat fel: {e}")
             raise
 
