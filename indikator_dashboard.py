@@ -37,8 +37,7 @@ def las_in_planbesked_och_op():
 # Konfigurera API-bas-URL (används när vi kopplar in mikroservices)
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
 
-# ---------------- SIDBAR ----------------
-st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
+# SIDVAL
 st.sidebar.title("Välj sida")
 val = st.sidebar.radio("Välj sida", [
     "Introduktion",
@@ -50,23 +49,16 @@ val = st.sidebar.radio("Välj sida", [
     "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"
 ])
 
-# ---------------- FUNKTION: Läs in planbesked och ÖP ----------------
-# ---------------- FIX: Bättre spatial kontroll ----------------
+# Läs och kontrollera Planbesked och ÖP
 
-@st.cache_data
 def las_in_planbesked_och_op():
-    # Läs in data
     planbesked = gpd.read_file("planbesked.json").to_crs(epsg=4326)
     op = gpd.read_file("op.json").to_crs(epsg=4326)
 
-    # Projektera till metersystem (SWEREF 99 TM)
     planbesked_m = planbesked.to_crs(epsg=3006)
     op_m = op.to_crs(epsg=3006)
-
-    # Skapa en sammanslagen geometri av ÖP (snabbar upp)
     op_union = op_m.unary_union
 
-    # Funktion för kontroll
     def kontrollera_planbesked(row, op_geom, tröskel=0.5):
         if row.geometry.intersects(op_geom):
             intersektion = row.geometry.intersection(op_geom)
@@ -75,40 +67,30 @@ def las_in_planbesked_och_op():
                 return andel_inom >= tröskel
         return False
 
-    # Kör spatial kontroll
     planbesked_m["följer_op"] = planbesked_m.apply(
-        lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5),
-        axis=1
+        lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5), axis=1
     )
 
-    # Flytta tillbaka följer_op till original-data i EPSG:4326
     planbesked["följer_op"] = planbesked_m["följer_op"]
-
     return planbesked, op
 
-# ---------------- FUNKTION: Visa planbesked på karta ----------------
+# Visa Planbesked
+
 def visa_planbesked_karta(planbesked, op):
     st.subheader("Planbesked och Översiktsplan (ÖP)")
     karta = folium.Map(location=[57.5, 12.0], zoom_start=11)
 
-    # Lägg till Översiktsplan
     folium.GeoJson(op, name="Översiktsplan", style_function=lambda x: {
-        "color": "blue",
-        "weight": 1,
-        "fillOpacity": 0.1,
+        "color": "blue", "weight": 1, "fillOpacity": 0.1
     }).add_to(karta)
 
-    # Lägg till varje planbesked
     for idx, row in planbesked.iterrows():
         color = "green" if row["följer_op"] else "red"
         popup_text = row.get("projektnamn", "Planbesked")
         folium.GeoJson(
             row.geometry.__geo_interface__,
             style_function=lambda feature, color=color: {
-                "fillColor": color,
-                "color": color,
-                "weight": 2,
-                "fillOpacity": 0.4,
+                "fillColor": color, "color": color, "weight": 2, "fillOpacity": 0.4
             },
             tooltip=popup_text
         ).add_to(karta)
@@ -116,6 +98,41 @@ def visa_planbesked_karta(planbesked, op):
     st_folium(karta, width=800, height=600)
     st.subheader("Tabell över planbesked")
     st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={"projektnamn": "Projektnamn", "följer_op": "Följer ÖP"}))
+
+# Ny funktion: hämta befolkning baserat på kön och ålder
+
+def hamta_filterad_befolkning(region_code="1384", kon=["1", "2"], alder_intervall="20-24", year="2023"):
+    start, end = map(int, alder_intervall.split("-"))
+    alder_values = [str(i) for i in range(start, end+1)]
+    query = {
+        "query": [
+            {"code": "Region", "selection": {"filter": "item", "values": [region_code]}},
+            {"code": "Kon", "selection": {"filter": "item", "values": kon}},
+            {"code": "Alder", "selection": {"filter": "item", "values": alder_values}},
+            {"code": "Tid", "selection": {"filter": "item", "values": [year]}}
+        ],
+        "response": {"format": "json"}
+    }
+    data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+    antal = sum(int(d["values"][0].replace("..", "0")) for d in data.get("data", []))
+    return antal
+
+# Visa i befolkningssidan
+if val == "Kommunnivå - Befolkning":
+    st.title("Kommunnivå – Befolkningsstatistik")
+
+    kön_val = st.selectbox("Välj kön", {"Totalt": ["1", "2"], "Kvinnor": ["2"], "Män": ["1"]})
+    ålder_val = st.selectbox("Välj åldersintervall", [f"{i}-{i+4}" for i in range(0, 100, 5)])
+
+    antal = hamta_filterad_befolkning(kon=kön_val, alder_intervall=ålder_val)
+    st.metric("Totalt antal i valt urval", f"{antal:,}")
+
+    trend_df = hamta_befolkningstrend()
+    if not trend_df.empty and len(trend_df) >= 2:
+        visa_befolkningsutveckling(trend_df)
+
+    df = hamta_aldersfordelning()
+    visa_alderspyramid(df)
 
 # ---------------- ANVÄNDNING ----------------
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
