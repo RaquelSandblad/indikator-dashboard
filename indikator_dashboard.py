@@ -26,7 +26,7 @@ def las_in_planbesked_och_op():
     op_m = op.to_crs(epsg=3006)
     op_union = op_m.unary_union
 
-    def kontrollera_planbesked(row, op_geom, tröskel=0.5):
+def kontrollera_planbesked(row, op_geom, tröskel=0.5):
     if row.geometry.is_empty or row.geometry.area == 0:
         return False
     if row.geometry.intersects(op_geom):
