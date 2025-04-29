@@ -320,7 +320,7 @@ elif val == "Kommunnivå - Planbesked":
 
     # Kartan i en placeholder så layouten blir stabil
     with st.container():
-        visualisering.visa_planbesked_karta(planbesked, op)
+        visa_planbesked_karta(planbesked, op)
 
     # Tabellen direkt efter
     with st.container():
