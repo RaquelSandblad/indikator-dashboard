@@ -48,7 +48,12 @@ class SCBService:
         # Hämta från API om cache saknas eller är gammal
         try:
             url = f"{self.base_url}/{endpoint}"
+            print(f"[DEBUG] Skickar POST-förfrågan till URL: {url}")
+            print(f"[DEBUG] Med query: {json.dumps(query, indent=2, ensure_ascii=False)}")
+
             response = requests.post(url, json=query)
+            print(f"[DEBUG] Statuskod från API: {response.status_code}")
+
             response.raise_for_status()  # Kontrollera om statuskoden indikerar fel
 
             # Om svaret är giltigt, returnera JSON-data
