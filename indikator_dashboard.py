@@ -26,23 +26,17 @@ def las_in_planbesked_och_op():
     op_m = op.to_crs(epsg=3006)
     op_union = op_m.unary_union
 
-def kontrollera_planbesked(row, op_geom, tröskel=0.5):
-    geom = row.geometry
-
-    if geom is None or geom.is_empty or not geom.is_valid or geom.area == 0:
-        return False
-
-    if not geom.intersects(op_geom):
-        return False
-
-    intersektion = geom.intersection(op_geom)
-
-    if intersektion.is_empty or not intersektion.is_valid:
-        return False
-
-    andel_inom = intersektion.area / geom.area if geom.area > 0 else 0
-    return andel_inom >= tröskel
-
+    def kontrollera_planbesked(row, op_geom, tröskel=0.5):
+        geom = row.geometry
+        if geom is None or geom.is_empty or not geom.is_valid or geom.area == 0:
+            return False
+        if not geom.intersects(op_geom):
+            return False
+        intersektion = geom.intersection(op_geom)
+        if intersektion.is_empty or not intersektion.is_valid:
+            return False
+        andel_inom = intersektion.area / geom.area if geom.area > 0 else 0
+        return andel_inom >= tröskel
 
     planbesked_m["följer_op"] = planbesked_m.apply(
         lambda row: kontrollera_planbesked(row, op_union, tröskel=0.5), axis=1
@@ -50,7 +44,7 @@ def kontrollera_planbesked(row, op_geom, tröskel=0.5):
 
     planbesked["följer_op"] = planbesked_m["följer_op"]
 
-    return planbesked, op  # ← MÅSTE ha indrag!
+    return planbesked, op  # 
 
 # Konfigurera API-bas-URL (används när vi kopplar in mikroservices)
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
