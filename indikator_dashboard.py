@@ -14,6 +14,26 @@ import os
 from SCB_Dataservice import SCBService
 scb_service = SCBService()
 
+@st.cache_data(ttl=86400)
+def las_in_planbesked_och_op():
+    planbesked = gpd.read_file("planbesked.json").to_crs(epsg=4326)
+    op = gpd.read_file("op.json").to_crs(epsg=4326)
+
+    planbesked_m = planbesked.to_crs(epsg=3006)
+    op_m = op.to_crs(epsg=3006)
+    op_union = op_m.unary_union
+
+    def kontrollera_planbesked(row, op_geom, tröskel=0.5):
+        if row.geometry.intersects(op_geom):
+            intersektion = row.geometry.intersection(op_geom)
+            return not intersektion.is_empty and (intersektion.area / row.geometry.area) >= tröskel
+        return False
+
+    planbesked_m["följer_op"] = planbesked_m.apply(lambda row: kontrollera_planbesked(row, op_union), axis=1)
+    planbesked["följer_op"] = planbesked_m["följer_op"]
+
+    return planbesked, op
+
 # Konfigurera API-bas-URL (används när vi kopplar in mikroservices)
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
 
