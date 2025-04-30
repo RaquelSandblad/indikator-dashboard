@@ -99,38 +99,34 @@ def hamta_aldersfordelning():
         "query": [
             {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
             {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
-            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(0, 101)]}},
+            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(0, 101)]}},  # Fixad åldersintervall
             {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
         ],
         "response": {"format": "json"}
     }
 
-    # Debug: Visa query som skickas till SCB
+    # Debug: Visa query
     st.write("Debug: Skickad query till SCB API för åldersfördelning")
     st.json(query)
 
     try:
-        # Försök att hämta data från SCB
+        # Skicka query till SCB API
         data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
-
-        # Debug: Visa data som returneras från SCB
         st.write("Debug: Data returnerad från SCB API:")
         st.write(data)
 
-        # Omvandla till DataFrame, hantera om data saknas
+        # Omvandla till DataFrame om data finns
         if "data" in data:
-            return pd.DataFrame(data["data"])  # Returnera som DataFrame
+            return pd.DataFrame(data["data"])
         else:
             st.error("🚨 Inga data returnerades från SCB API.")
             return pd.DataFrame()  # Returnera tom DataFrame
     except requests.exceptions.HTTPError as e:
-        # Hantera HTTP-fel
         st.error(f"🚨 Kunde inte hämta data från SCB API: {e}")
-        return pd.DataFrame()  # Returnera tom DataFrame vid fel
+        return pd.DataFrame()  # Returnera tom DataFrame
     except Exception as e:
-        # Hantera andra fel
         st.error(f"🚨 Ett oväntat fel inträffade: {e}")
-        return pd.DataFrame()  # Returnera tom DataFrame vid fel
+        return pd.DataFrame()  # Returnera tom DataFrame
 
 def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
     if df.empty:
@@ -263,47 +259,27 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         st.error("🚨 Data saknar nödvändiga kolumner för att skapa ålderspyramiden.")
         st.write(f"Debug: Tillgängliga kolumner: {df.columns}")
         return
-    
-    # Kontrollera att det finns giltiga åldersvärden
+
+    # Kontrollera åldersvärden
     df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
     if df["Ålder"].isnull().all():
         st.error("🚨 Data innehåller inga giltiga åldersvärden.")
         return
-        
+
+    # Fortsätt med att skapa ålderspyramidgrafen
     import matplotlib.ticker as ticker
-
-    if df.empty:
-        st.info("Ingen data att visa.")
-        return
-
-    df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
-    df = df.dropna(subset=["Ålder"])
-    df["Ålder"] = df["Ålder"].astype(int)
-    df = df[df["Ålder"] <= 100]
-
     df_pivot = df.pivot_table(index="Ålder", columns="Kön", values="Antal", aggfunc="sum", fill_value=0)
-    df_pivot = df_pivot.sort_index()
-
-    for kol in ["Män", "Kvinnor"]:
-        if kol not in df_pivot.columns:
-            df_pivot[kol] = 0
-
-    df_pivot["Män"] = -df_pivot["Män"]
+    df_pivot["Män"] = -df_pivot.get("Män", 0)  # Negativa värden för män
     max_val = max(abs(df_pivot["Män"].min()), df_pivot["Kvinnor"].max())
 
     fig, ax = plt.subplots(figsize=(6, 8))
     ax.barh(df_pivot.index, df_pivot["Män"], color="#69b3a2", label="Män")
     ax.barh(df_pivot.index, df_pivot["Kvinnor"], color="#ff9999", label="Kvinnor")
-
     ax.set_xlim(-max_val * 1.05, max_val * 1.05)
-    ax.set_ylim(0, 100)
-    ax.invert_yaxis()
     ax.set_xlabel("Antal personer")
     ax.set_ylabel("Ålder")
     ax.set_title(rubrik, fontsize=14)
     ax.axvline(0, color="gray", linewidth=0.5)
-
-    ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{abs(int(x)):,}"))
     ax.legend(loc="upper right", frameon=False)
 
     plt.tight_layout()
@@ -501,8 +477,11 @@ elif val == "Kommunnivå - Befolkning":
     
     # Hämta åldersdata och visa ålderspyramid
     df = hamta_aldersfordelning()
-    if st.button("Visa ålderspyramid"):
-        visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
+    if df.empty:
+        st.error("🚨 Ingen data kunde hämtas. Försök igen senare.")
+    else:
+        if st.button("Visa ålderspyramid"):
+            visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
 
     # Välj kön och åldersintervall
     kön_val = st.selectbox("Välj kön", {"Totalt": ["1", "2"], "Kvinnor": ["2"], "Män": ["1"]})
