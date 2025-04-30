@@ -402,13 +402,32 @@ elif val == "Kommunnivå - Planbesked":
         values = [antal_följer, antal_avviker]
         colors = ["#69b3a2", "#ff6666"]
 
-        fig, ax = plt.subplots(figsize=(4, 4))  # Mindre storlek
-        ax.pie(values, labels=labels, autopct="%1.1f%%", colors=colors, startangle=90)
+        fig, ax = plt.subplots(figsize=(5, 4))  # Lite bredare
+
+        # Rita pajdiagram utan etiketter direkt på cirkeln
+        wedges, texts, autotexts = ax.pie(
+            values,
+            autopct="%1.1f%%",
+            colors=colors,
+            startangle=90,
+            wedgeprops=dict(width=0.5),  # Valfritt för tunnare cirkel
+            textprops=dict(color="white")
+        )
+
+        # Lägg legenden bredvid
+        ax.legend(
+            wedges,
+            labels,
+            title="Status",
+            loc="center left",
+            bbox_to_anchor=(1, 0.5),
+    )
+
         ax.axis("equal")
-
+        plt.tight_layout()
+        st.pyplot(fig, clear_figure=True)
         plt.tight_layout()  # Ta bort onödigt mellanrum runt
-        st.pyplot(fig, clear_figure=True)  # Rensar också gammalt innehåll från ytan
-
+        
     # Tabellen direkt efter
     with st.container():
         st.subheader("Tabell över planbesked")
