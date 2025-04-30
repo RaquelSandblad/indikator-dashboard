@@ -434,8 +434,6 @@ def visa_planbesked_paj(planbesked_df):
 
     ax.set_aspect("equal")
     st.pyplot(fig)
-
-
         
     # Tabellen direkt efter
     with st.container():
