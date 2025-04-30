@@ -410,6 +410,8 @@ elif val == "Kommunnivå - Planbesked":
     # Kartan i en placeholder så layouten blir stabil
     with st.container():
         visa_planbesked_karta(planbesked, op)
+    with st.container():
+        visa_planbesked_paj(planbesked)
 
 # ---------------- KOMMUNNIVÅ – BEFOLKNINGSSTATISTIK ----------------
 elif val == "Kommunnivå - Befolkning":
