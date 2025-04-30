@@ -94,7 +94,23 @@ def hamta_befolkningstrend(region_code="1384", years=None):
     return scb_service.get_population_trend(region_code=region_code, years=years)
 
 def hamta_aldersfordelning():
-    return scb_service.get_population_by_age_gender(region_code="1384", year="2023")
+    query = {
+        "query": [
+            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
+            {"code": "Kon", "selection": {"filter": "item", "values": ["1", "2"]}},
+            {"code": "Alder", "selection": {"filter": "item", "values": [str(i) for i in range(0, 101)]}},
+            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
+        ],
+        "response": {"format": "json"}
+    }
+    st.write("Debug: Skickad query till SCB API för åldersfördelning")
+    st.json(query)
+
+    data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+    st.write("Debug: Data returnerad från SCB API:")
+    st.write(data)
+
+    return data
 
 def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
     if df.empty:
@@ -220,6 +236,20 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
     if df.empty:
         st.error("🚨 Ålderspyramiden kunde inte visas eftersom det saknas data.")
         return
+    
+    # Kontrollera att nödvändiga kolumner finns och att värden är korrekta
+    required_columns = {"Ålder", "Kön", "Antal"}
+    if not required_columns.issubset(df.columns):
+        st.error("🚨 Data saknar nödvändiga kolumner för att skapa ålderspyramiden.")
+        st.write(f"Debug: Tillgängliga kolumner: {df.columns}")
+        return
+    
+    # Kontrollera att det finns giltiga åldersvärden
+    df["Ålder"] = pd.to_numeric(df["Ålder"], errors="coerce")
+    if df["Ålder"].isnull().all():
+        st.error("🚨 Data innehåller inga giltiga åldersvärden.")
+        return
+        
     import matplotlib.ticker as ticker
 
     if df.empty:
