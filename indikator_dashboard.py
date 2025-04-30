@@ -387,7 +387,7 @@ elif val == "Kommunnivå - Planbesked":
     with st.container():
         visa_planbesked_karta(planbesked, op)
 
-    # Cirkeldiagram över planbesked med etiketter utanför
+    # ---------------- FUNKTION: Visa cirkeldiagram för planbesked ----------------
 def visa_planbesked_paj(planbesked_df):
     följer = planbesked_df["följer_op"].sum()
     avviker = len(planbesked_df) - följer
@@ -404,53 +404,41 @@ def visa_planbesked_paj(planbesked_df):
     # Lägg etiketter till höger om varje wedge, justerat manuellt
     for i, wedge in enumerate(wedges):
         label = f"{labels[i]} ({values[i]} st, {values[i]/total:.1%})"
-        x = 1.2  # fixerat till höger
-        y = 0.5 - i * 0.3  # vertikalt steg mellan etiketter
+        x = 1.2
+        y = 0.5 - i * 0.3
         ax.text(x, y, label, ha="left", va="center", **text_props)
 
     ax.set_aspect("equal")
     st.pyplot(fig)
-        
-    # Tabellen direkt efter
-    with st.container():
-        st.subheader("Tabell över planbesked")
-        st.dataframe(planbesked[["projektnamn", "följer_op"]].rename(columns={
-            "projektnamn": "Projektnamn",
-            "följer_op": "Följer ÖP"
-        }))
 
-# ---------------- BEFOLKNINGSSTATISTIK ----------------
+# ---------------- KOMMUNNIVÅ – BEFOLKNINGSSTATISTIK ----------------
 elif val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
-    
+
     # Hämta data för befolkningsutveckling
     trend_df = hamta_befolkningstrend()
-    
+
     if not trend_df.empty and len(trend_df) >= 2:
         senaste_ar = trend_df["År"].max()
         nast_senaste_ar = trend_df["År"].unique()[-2]
-        
+
         bef_senaste = trend_df[trend_df["År"] == senaste_ar]["Antal"].values[0]
         bef_nast_senaste = trend_df[trend_df["År"] == nast_senaste_ar]["Antal"].values[0]
-        
+
         tillvaxt = ((bef_senaste - bef_nast_senaste) / bef_nast_senaste) * 100
         skillnad = bef_senaste - bef_nast_senaste
-        
+
         st.write(f"**📈 Befolkningstillväxt:** {tillvaxt:.2f} %")
         if skillnad >= 0:
             st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
         else:
             st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
-        
-        # Visa befolkningsutveckling över tid
+
         st.write("**📊 Befolkningsutveckling över tid**")
-        
-        if skillnad >= 0:
-            st.markdown(f"⬆️ {skillnad} personer", unsafe_allow_html=True)
-        else:
-            st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
+        visa_befolkningsutveckling(trend_df)
 
         st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
+
     
     # Hämta åldersdata och visa ålderspyramid
     df = hamta_aldersfordelning()
