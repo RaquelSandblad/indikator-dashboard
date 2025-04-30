@@ -127,9 +127,7 @@ if val == "Kommunnivå - Befolkning":
         start, end = map(int, ålder_val.split("-"))
         alder_values = [str(i) for i in range(start, end + 1)]
     # Skapa query för debugvisning
-    start, end = map(int, ålder_val.split("-"))
-    alder_values = [str(i) for i in range(start, end + 1)]
-    query = {
+       query = {
         "query": [
             {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
             {"code": "Kon", "selection": {"filter": "item", "values": kön_val}},
