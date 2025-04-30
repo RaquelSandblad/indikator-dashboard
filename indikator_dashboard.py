@@ -444,29 +444,29 @@ def visa_planbesked_paj(planbesked_df):
         }))
 
 # ---------------- DEBUG av ÖP ----------------
-        if st.checkbox("Visa debug-info för Översiktsplan"):
-            st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
+if st.checkbox("Visa debug-info för Översiktsplan"):
+    st.subheader("🧹 Debugg av Översiktsplan (ÖP)")
 
-            op_debug = gpd.read_file("op.json")
-            st.write(f"Antal ytor i ÖP före rensning: {len(op_debug)}")
+    op_debug = gpd.read_file("op.json")
+    st.write(f"Antal ytor i ÖP före rensning: {len(op_debug)}")
 
-            op_debug_clean = op_debug[op_debug.geometry.notnull()]
-            antal_borttagna = len(op_debug) - len(op_debug_clean)
-            if antal_borttagna > 0:
-                st.warning(f"⚠️ {antal_borttagna} ytor utan geometri togs bort.")
+    op_debug_clean = op_debug[op_debug.geometry.notnull()]
+    antal_borttagna = len(op_debug) - len(op_debug_clean)
+    if antal_borttagna > 0:
+        st.warning(f"⚠️ {antal_borttagna} ytor utan geometri togs bort.")
 
-            st.write(f"Antal ytor i ÖP efter rensning: {len(op_debug_clean)}")
-            st.write(op_debug_clean.head())
+    st.write(f"Antal ytor i ÖP efter rensning: {len(op_debug_clean)}")
+    st.write(op_debug_clean.head())
 
-            if not op_debug_clean.empty and op_debug_clean.is_valid.all():
-                fig, ax = plt.subplots()
-                op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
-                plt.title("ÖP Geometrier")
-                st.pyplot(fig)
-            else:
-                st.warning("⚠️ Kunde inte visa kartan – inga giltiga geometrier.")
+    if not op_debug_clean.empty and op_debug_clean.is_valid.all():
+        fig, ax = plt.subplots()
+        op_debug_clean.plot(ax=ax, color="blue", alpha=0.5)
+        plt.title("ÖP Geometrier")
+        st.pyplot(fig)
+    else:
+        st.warning("⚠️ Kunde inte visa kartan – inga giltiga geometrier.")
 
-
+# ---------------- BEFOLKNINGSSTATISTIK ----------------
 elif val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
     
@@ -498,21 +498,26 @@ elif val == "Kommunnivå - Befolkning":
             st.markdown(f"<span style='color:red;'>⬇️ {skillnad} personer</span>", unsafe_allow_html=True)
 
         st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
+    
+    # Hämta åldersdata och visa ålderspyramid
     df = hamta_aldersfordelning()
     if st.button("Visa ålderspyramid"):
         visa_alderspyramid(df, rubrik="Ålderspyramid – Kungsbacka kommun 2023")
 
-      
+    # Välj kön och åldersintervall
     kön_val = st.selectbox("Välj kön", {"Totalt": ["1", "2"], "Kvinnor": ["2"], "Män": ["1"]})
     ålder_val = st.selectbox("Välj åldersintervall", [f"{i}-{i+4}" for i in range(0, 100, 5)])
+    
+    # Hämta filtrerad befolkningsdata
     antal = hamta_filterad_befolkning(kon=kön_val, alder_intervall=ålder_val)
     st.metric("Totalt antal i valt urval", f"{antal:,}")
+    
+    # Visa trenddata om den finns
     trend_df = hamta_befolkningstrend()
     if not trend_df.empty and len(trend_df) >= 2:
         visa_befolkningsutveckling(trend_df)
 
         st.write("**Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
-    
 elif val == "Kommunnivå - Värmekarta":
     st.title("Kommunnivå – Värmekarta för befolkningstäthet")
     visa_varmekarta()
