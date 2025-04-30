@@ -361,6 +361,21 @@ elif val == "Kommunnivå - Planbesked":
     with st.container():
         visa_planbesked_karta(planbesked, op)
 
+        # Visa cirkeldiagram över planbesked
+    with st.container():
+        st.subheader("Andel planbesked som följer ÖP")
+
+        antal_följer = planbesked["följer_op"].sum()
+        antal_avviker = len(planbesked) - antal_följer
+
+        labels = ["Följer ÖP", "Avviker från ÖP"]
+        values = [antal_följer, antal_avviker]
+        colors = ["#69b3a2", "#ff6666"]
+
+        fig, ax = plt.subplots()
+        ax.pie(values, labels=labels, autopct="%1.1f%%", colors=colors, startangle=90)
+        ax.axis("equal")
+        st.pyplot(fig)
     # Tabellen direkt efter
     with st.container():
         st.subheader("Tabell över planbesked")
