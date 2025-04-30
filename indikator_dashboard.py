@@ -118,23 +118,30 @@ if val == "Kommunnivå - Befolkning":
 
     kön_val = st.selectbox("Välj kön", {"Totalt": ["1", "2"], "Kvinnor": ["2"], "Män": ["1"]})
     ålder_val = st.selectbox("Välj åldersintervall", [f"{i}-{i+4}" for i in range(0, 100, 5)])
-
+    
+    # Kontrollera att ålder_val är korrekt
+    st.write(f"Debug: Åldersintervall som valts: {ålder_val}")
+    if ålder_val is None or "-" not in ålder_val:
+        st.error("🚨 Vänligen välj ett giltigt åldersintervall.")
+    else:
+        start, end = map(int, ålder_val.split("-"))
+        alder_values = [str(i) for i in range(start, end + 1)]
     # Skapa query för debugvisning
-start, end = map(int, ålder_val.split("-"))
-alder_values = [str(i) for i in range(start, end + 1)]
-query = {
-    "query": [
-        {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
-        {"code": "Kon", "selection": {"filter": "item", "values": kön_val}},
-        {"code": "Alder", "selection": {"filter": "item", "values": alder_values}},
-        {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
-    ],
-    "response": {"format": "json"}
-}
+    start, end = map(int, ålder_val.split("-"))
+    alder_values = [str(i) for i in range(start, end + 1)]
+    query = {
+        "query": [
+            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
+            {"code": "Kon", "selection": {"filter": "item", "values": kön_val}},
+            {"code": "Alder", "selection": {"filter": "item", "values": alder_values}},
+            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
+        ],
+        "response": {"format": "json"}
+    }
 
-# Visa debug (valfritt)
-with st.expander("📦 Visa skickad SCB-query"):
-    st.json(query)
+    # Visa debug (valfritt)
+    with st.expander("📦 Visa skickad SCB-query"):
+        st.json(query)
 
 # Försök hämta antal – med skydd
 try:
@@ -212,6 +219,9 @@ def hamta_invanare_ort():
 
 # ---------------- FUNKTION: visa ålderspyramid ----------------
 def visa_alderspyramid(df, rubrik="Ålderspyramid"):
+    if df.empty:
+        st.error("🚨 Ålderspyramiden kunde inte visas eftersom det saknas data.")
+        return
     import matplotlib.ticker as ticker
 
     if df.empty:
@@ -430,8 +440,6 @@ elif val == "Kommunnivå - Befolkning":
         visa_befolkningsutveckling(trend_df)
 
         st.write("**Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
-
-
     
 elif val == "Kommunnivå - Värmekarta":
     st.title("Kommunnivå – Värmekarta för befolkningstäthet")
