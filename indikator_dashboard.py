@@ -402,10 +402,13 @@ elif val == "Kommunnivå - Planbesked":
         values = [antal_följer, antal_avviker]
         colors = ["#69b3a2", "#ff6666"]
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(4, 4))  # Mindre storlek
         ax.pie(values, labels=labels, autopct="%1.1f%%", colors=colors, startangle=90)
         ax.axis("equal")
-        st.pyplot(fig)
+
+        plt.tight_layout()  # Ta bort onödigt mellanrum runt
+        st.pyplot(fig, clear_figure=True)  # Rensar också gammalt innehåll från ytan
+
     # Tabellen direkt efter
     with st.container():
         st.subheader("Tabell över planbesked")
