@@ -391,42 +391,49 @@ elif val == "Kommunnivå - Planbesked":
     with st.container():
         visa_planbesked_karta(planbesked, op)
 
-        # Visa cirkeldiagram över planbesked
-    with st.container():
-        st.subheader("Andel planbesked som följer ÖP")
+            # Cirkeldiagram över planbesked
+    foljer = planbesked["följer_op"].sum()
+    avviker = len(planbesked) - foljer
+    labels = ["Följer ÖP", "Avviker från ÖP"]
+    values = [foljer, avviker]
+    colors = ["#66b2a3", "#ff6f69"]
 
-        antal_följer = planbesked["följer_op"].sum()
-        antal_avviker = len(planbesked) - antal_följer
+    fig, ax = plt.subplots(figsize=(4, 3))
 
-        labels = ["Följer ÖP", "Avviker från ÖP"]
-        values = [antal_följer, antal_avviker]
-        colors = ["#69b3a2", "#ff6666"]
-
-        fig, ax = plt.subplots(figsize=(5, 4))  # Lite bredare
-
-        # Rita pajdiagram utan etiketter direkt på cirkeln
-        wedges, texts, autotexts = ax.pie(
-            values,
-            autopct="%1.1f%%",
-            colors=colors,
-            startangle=90,
-            wedgeprops=dict(width=0.5),  # Valfritt för tunnare cirkel
-            textprops=dict(color="white")
-        )
-
-        # Lägg legenden bredvid
-        ax.legend(
-            wedges,
-            labels,
-            title="Status",
-            loc="center left",
-            bbox_to_anchor=(1, 0.5),
+    # Rita donut-pie
+    wedges, texts = ax.pie(
+        values,
+        colors=colors,
+        startangle=90,
+        radius=1,
+        wedgeprops=dict(width=0.4)
     )
 
-        ax.axis("equal")
-        plt.tight_layout()
-        st.pyplot(fig, clear_figure=True)
-        plt.tight_layout()  # Ta bort onödigt mellanrum runt
+    # Procentetiketter utanför cirkeln
+    import numpy as np
+    total = sum(values)
+    angles = np.cumsum([0] + values) / total * 360
+    for i, wedge in enumerate(wedges):
+        angle = (angles[i] + angles[i+1]) / 2
+        x = 1.15 * np.cos(np.deg2rad(angle))
+        y = 1.15 * np.sin(np.deg2rad(angle))
+        procent = f"{values[i] / total:.1%}"
+        ax.text(x, y, procent, ha="center", va="center", fontsize=9)
+
+    # Legenden till höger
+    ax.legend(
+        wedges,
+        labels,
+        title="Status",
+        loc="center left",
+        bbox_to_anchor=(0.95, 0.5),
+        fontsize=9
+    )
+
+    ax.axis("equal")
+    plt.tight_layout()
+    st.pyplot(fig)
+
         
     # Tabellen direkt efter
     with st.container():
