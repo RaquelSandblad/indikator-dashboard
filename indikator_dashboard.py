@@ -106,11 +106,20 @@ def hamta_aldersfordelning():
     st.write("Debug: Skickad query till SCB API för åldersfördelning")
     st.json(query)
 
-    data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
-    st.write("Debug: Data returnerad från SCB API:")
-    st.write(data)
+    try:
+        # Försök att hämta data från SCB
+        data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+        return pd.DataFrame(data.get("data", []))  # Omvandla till DataFrame
+    except requests.exceptions.HTTPError as e:
+        st.error(f"🚨 Kunde inte hämta data från SCB API: {e}")
+        return pd.DataFrame()  # Returnera en tom DataFrame vid fel
 
-    return data
+    try:
+        # Försök att hämta data från SCB
+        data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+        st.write("Debug: Data returnerad från SCB API:")
+        st.write(data)
+        return pd.DataFrame(data.get("data", []))  # Omvandla till DataFrame
 
 def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
     if df.empty:
@@ -237,7 +246,7 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
         st.error("🚨 Ålderspyramiden kunde inte visas eftersom det saknas data.")
         return
     
-    # Kontrollera att nödvändiga kolumner finns och att värden är korrekta
+    # Kontrollera att nödvändiga kolumner finns
     required_columns = {"Ålder", "Kön", "Antal"}
     if not required_columns.issubset(df.columns):
         st.error("🚨 Data saknar nödvändiga kolumner för att skapa ålderspyramiden.")
