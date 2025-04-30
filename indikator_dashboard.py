@@ -412,31 +412,29 @@ elif val == "Kommunnivå - Planbesked":
         visa_planbesked_karta(planbesked, op)
 
     # Cirkeldiagram över planbesked med etiketter utanför
-    foljer = planbesked["följer_op"].sum()
-    avviker = len(planbesked) - foljer
+def visa_planbesked_paj(planbesked_df):
+    följer = planbesked_df["följer_op"].sum()
+    avviker = len(planbesked_df) - följer
     labels = ["Följer ÖP", "Avviker från ÖP"]
-    values = [foljer, avviker]
-    colors = ["#66b2a3", "#ff6f69"]
+    values = [följer, avviker]
+    colors = ["#6ab7a8", "#ff6f69"]
 
-    fig, ax = plt.subplots(figsize=(5, 3.5))
+    fig, ax = plt.subplots(figsize=(6, 4))
+    wedges, texts = ax.pie(values, colors=colors, startangle=90, radius=1)
 
-    def make_label(label, value, total):
-        procent = value / total * 100
-        return f"{label} ({value} st, {procent:.1f}%)"
+    total = sum(values)
+    text_props = {"fontsize": 12}
 
-    final_labels = [make_label(lbl, val, sum(values)) for lbl, val in zip(labels, values)]
+    # Lägg etiketter till höger om varje wedge, justerat manuellt
+    for i, wedge in enumerate(wedges):
+        label = f"{labels[i]} ({values[i]} st, {values[i]/total:.1%})"
+        x = 1.2  # fixerat till höger
+        y = 0.5 - i * 0.3  # vertikalt steg mellan etiketter
+        ax.text(x, y, label, ha="left", va="center", **text_props)
 
-    wedges, texts = ax.pie(
-        values,
-        labels=final_labels,
-        colors=colors,
-        startangle=90,
-        labeldistance=1.2,       
-    )
-
-    ax.axis("equal")
-    plt.tight_layout()
+    ax.set_aspect("equal")
     st.pyplot(fig)
+
 
         
     # Tabellen direkt efter
