@@ -150,6 +150,8 @@ except Exception as e:
         visa_befolkningsutveckling(trend_df)
 
     df = hamta_aldersfordelning()
+    st.write("Debug: Dataframe innehåll från hamta_aldersfordelning:")
+    st.write(df)
     visa_alderspyramid(df)
 
 # ---------------- ANVÄNDNING ----------------
