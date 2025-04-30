@@ -127,15 +127,15 @@ if val == "Kommunnivå - Befolkning":
         start, end = map(int, ålder_val.split("-"))
         alder_values = [str(i) for i in range(start, end + 1)]
     # Skapa query för debugvisning
-       query = {
-            "query": [
-                {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
-                {"code": "Kon", "selection": {"filter": "item", "values": kön_val}},
-                {"code": "Alder", "selection": {"filter": "item", "values": alder_values}},
-                {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
-            ],
-            "response": {"format": "json"}
-        }
+    query = {
+        "query": [
+            {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
+            {"code": "Kon", "selection": {"filter": "item", "values": kön_val}},
+            {"code": "Alder", "selection": {"filter": "item", "values": alder_values}},
+            {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
+        ],
+        "response": {"format": "json"}
+    }
 
     # Visa debug (valfritt)
     with st.expander("📦 Visa skickad SCB-query"):
