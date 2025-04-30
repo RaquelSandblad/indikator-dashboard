@@ -391,43 +391,28 @@ elif val == "Kommunnivå - Planbesked":
     with st.container():
         visa_planbesked_karta(planbesked, op)
 
-            # Cirkeldiagram över planbesked
+                # Cirkeldiagram över planbesked med etiketter utanför
     foljer = planbesked["följer_op"].sum()
     avviker = len(planbesked) - foljer
     labels = ["Följer ÖP", "Avviker från ÖP"]
     values = [foljer, avviker]
     colors = ["#66b2a3", "#ff6f69"]
 
-    fig, ax = plt.subplots(figsize=(4, 3))
+    fig, ax = plt.subplots(figsize=(5, 3.5))
 
-    # Rita donut-pie
-    wedges, texts = ax.pie(
+    def make_label(label, value, total):
+        procent = value / total * 100
+        return f"{label} ({value} st, {procent:.1f}%)"
+
+    final_labels = [make_label(lbl, val, sum(values)) for lbl, val in zip(labels, values)]
+
+    wedges, texts, autotexts = ax.pie(
         values,
+        labels=final_labels,
         colors=colors,
         startangle=90,
-        radius=1,
-        wedgeprops=dict(width=0.4)
-    )
-
-    # Procentetiketter utanför cirkeln
-    import numpy as np
-    total = sum(values)
-    angles = np.cumsum([0] + values) / total * 360
-    for i, wedge in enumerate(wedges):
-        angle = (angles[i] + angles[i+1]) / 2
-        x = 1.15 * np.cos(np.deg2rad(angle))
-        y = 1.15 * np.sin(np.deg2rad(angle))
-        procent = f"{values[i] / total:.1%}"
-        ax.text(x, y, procent, ha="center", va="center", fontsize=9)
-
-    # Legenden till höger
-    ax.legend(
-        wedges,
-        labels,
-        title="Status",
-        loc="center left",
-        bbox_to_anchor=(0.95, 0.5),
-        fontsize=9
+        labeldistance=1.2,
+        autopct=None
     )
 
     ax.axis("equal")
