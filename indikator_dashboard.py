@@ -355,6 +355,30 @@ def visa_kollektivtrafikkarta(kommun="Kungsbacka"):
     
     st_folium(folium_map, height=500)
 
+# ---------------- FUNKTION: Visa cirkeldiagram för planbesked ----------------
+def visa_planbesked_paj(planbesked_df):
+    följer = planbesked_df["följer_op"].sum()
+    avviker = len(planbesked_df) - följer
+    labels = ["Följer ÖP", "Avviker från ÖP"]
+    values = [följer, avviker]
+    colors = ["#6ab7a8", "#ff6f69"]
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    wedges, texts = ax.pie(values, colors=colors, startangle=90, radius=1)
+
+    total = sum(values)
+    text_props = {"fontsize": 12}
+
+    # Lägg etiketter till höger om varje wedge, justerat manuellt
+    for i, wedge in enumerate(wedges):
+        label = f"{labels[i]} ({values[i]} st, {values[i]/total:.1%})"
+        x = 1.2
+        y = 0.5 - i * 0.3
+        ax.text(x, y, label, ha="left", va="center", **text_props)
+
+    ax.set_aspect("equal")
+    st.pyplot(fig)
+
 # ---------------- INTRO ----------------
 if val == "Introduktion":
     st.title("Uppföljning av Översiktsplanen för Kungsbacka kommun")
@@ -387,30 +411,6 @@ elif val == "Kommunnivå - Planbesked":
     with st.container():
         visa_planbesked_karta(planbesked, op)
 
-    # ---------------- FUNKTION: Visa cirkeldiagram för planbesked ----------------
-def visa_planbesked_paj(planbesked_df):
-    följer = planbesked_df["följer_op"].sum()
-    avviker = len(planbesked_df) - följer
-    labels = ["Följer ÖP", "Avviker från ÖP"]
-    values = [följer, avviker]
-    colors = ["#6ab7a8", "#ff6f69"]
-
-    fig, ax = plt.subplots(figsize=(6, 4))
-    wedges, texts = ax.pie(values, colors=colors, startangle=90, radius=1)
-
-    total = sum(values)
-    text_props = {"fontsize": 12}
-
-    # Lägg etiketter till höger om varje wedge, justerat manuellt
-    for i, wedge in enumerate(wedges):
-        label = f"{labels[i]} ({values[i]} st, {values[i]/total:.1%})"
-        x = 1.2
-        y = 0.5 - i * 0.3
-        ax.text(x, y, label, ha="left", va="center", **text_props)
-
-    ax.set_aspect("equal")
-    st.pyplot(fig)
-
 # ---------------- KOMMUNNIVÅ – BEFOLKNINGSSTATISTIK ----------------
 elif val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
@@ -439,7 +439,6 @@ elif val == "Kommunnivå - Befolkning":
 
         st.write("**🥣 Ålderspyramid & åldersfördelning per geografiskt område**")
 
-    
     # Hämta åldersdata och visa ålderspyramid
     df = hamta_aldersfordelning()
     if df.empty:
