@@ -54,6 +54,12 @@ class SCBService:
             response = requests.post(url, json=query)
             print(f"[DEBUG] Statuskod från API: {response.status_code}")
 
+            # Logga svaret även om det är ett fel
+            try:
+                print(f"[DEBUG] API-svar: {response.json()}")
+            except Exception:
+                print(f"[DEBUG] API-svar (icke JSON): {response.text}")
+
             response.raise_for_status()  # Kontrollera om statuskoden indikerar fel
 
             # Om svaret är giltigt, returnera JSON-data
