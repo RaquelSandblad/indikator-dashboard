@@ -119,8 +119,31 @@ if val == "Kommunnivå - Befolkning":
     kön_val = st.selectbox("Välj kön", {"Totalt": ["1", "2"], "Kvinnor": ["2"], "Män": ["1"]})
     ålder_val = st.selectbox("Välj åldersintervall", [f"{i}-{i+4}" for i in range(0, 100, 5)])
 
-    antal = hamta_filterad_befolkning(kon=kön_val, alder_intervall=ålder_val)
-    st.metric("Totalt antal i valt urval", f"{antal:,}")
+    # Skapa query för debugvisning
+start, end = map(int, ålder_val.split("-"))
+alder_values = [str(i) for i in range(start, end + 1)]
+query = {
+    "query": [
+        {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
+        {"code": "Kon", "selection": {"filter": "item", "values": kön_val}},
+        {"code": "Alder", "selection": {"filter": "item", "values": alder_values}},
+        {"code": "Tid", "selection": {"filter": "item", "values": ["2023"]}}
+    ],
+    "response": {"format": "json"}
+}
+
+# Visa debug (valfritt)
+with st.expander("📦 Visa skickad SCB-query"):
+    st.json(query)
+
+# Försök hämta antal – med skydd
+try:
+    antal = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+    total = sum(int(d["values"][0].replace("..", "0")) for d in antal.get("data", []))
+    st.metric("Totalt antal i valt urval", f"{total:,}")
+except Exception as e:
+    st.error("🚨 Kunde inte hämta data från SCB – kontrollera att urvalet är giltigt.")
+
 
     trend_df = hamta_befolkningstrend()
     if not trend_df.empty and len(trend_df) >= 2:
