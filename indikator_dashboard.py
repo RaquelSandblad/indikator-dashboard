@@ -94,6 +94,7 @@ def hamta_befolkningstrend(region_code="1384", years=None):
     return scb_service.get_population_trend(region_code=region_code, years=years)
 
 def hamta_aldersfordelning():
+    # Skapa query för att hämta åldersfördelning
     query = {
         "query": [
             {"code": "Region", "selection": {"filter": "item", "values": ["1384"]}},
@@ -103,23 +104,33 @@ def hamta_aldersfordelning():
         ],
         "response": {"format": "json"}
     }
+
+    # Debug: Visa query som skickas till SCB
     st.write("Debug: Skickad query till SCB API för åldersfördelning")
     st.json(query)
 
     try:
         # Försök att hämta data från SCB
         data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
-        return pd.DataFrame(data.get("data", []))  # Omvandla till DataFrame
-    except requests.exceptions.HTTPError as e:
-        st.error(f"🚨 Kunde inte hämta data från SCB API: {e}")
-        return pd.DataFrame()  # Returnera en tom DataFrame vid fel
 
-    try:
-        # Försök att hämta data från SCB
-        data = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+        # Debug: Visa data som returneras från SCB
         st.write("Debug: Data returnerad från SCB API:")
         st.write(data)
-        return pd.DataFrame(data.get("data", []))  # Omvandla till DataFrame
+
+        # Omvandla till DataFrame, hantera om data saknas
+        if "data" in data:
+            return pd.DataFrame(data["data"])  # Returnera som DataFrame
+        else:
+            st.error("🚨 Inga data returnerades från SCB API.")
+            return pd.DataFrame()  # Returnera tom DataFrame
+    except requests.exceptions.HTTPError as e:
+        # Hantera HTTP-fel
+        st.error(f"🚨 Kunde inte hämta data från SCB API: {e}")
+        return pd.DataFrame()  # Returnera tom DataFrame vid fel
+    except Exception as e:
+        # Hantera andra fel
+        st.error(f"🚨 Ett oväntat fel inträffade: {e}")
+        return pd.DataFrame()  # Returnera tom DataFrame vid fel
 
 def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
     if df.empty:
@@ -400,7 +411,7 @@ elif val == "Kommunnivå - Planbesked":
     with st.container():
         visa_planbesked_karta(planbesked, op)
 
-                # Cirkeldiagram över planbesked med etiketter utanför
+    # Cirkeldiagram över planbesked med etiketter utanför
     foljer = planbesked["följer_op"].sum()
     avviker = len(planbesked) - foljer
     labels = ["Följer ÖP", "Avviker från ÖP"]
@@ -415,13 +426,12 @@ elif val == "Kommunnivå - Planbesked":
 
     final_labels = [make_label(lbl, val, sum(values)) for lbl, val in zip(labels, values)]
 
-    wedges, texts, autotexts = ax.pie(
+    wedges, texts = ax.pie(
         values,
         labels=final_labels,
         colors=colors,
         startangle=90,
-        labeldistance=1.2,
-        autopct=None
+        labeldistance=1.2,       
     )
 
     ax.axis("equal")
