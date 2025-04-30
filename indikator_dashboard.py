@@ -142,22 +142,22 @@ if val == "Kommunnivå - Befolkning":
         st.json(query)
 
 # Försök hämta antal – med skydd
-try:
-    antal = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
-    total = sum(int(d["values"][0].replace("..", "0")) for d in antal.get("data", []))
-    st.metric("Totalt antal i valt urval", f"{total:,}")
-except Exception as e:
-    st.error("🚨 Kunde inte hämta data från SCB – kontrollera att urvalet är giltigt.")
+    try:
+        antal = scb_service.fetch_data("BE/BE0101/BE0101A/BefolkningNy", query)
+        total = sum(int(d["values"][0].replace("..", "0")) for d in antal.get("data", []))
+        st.metric("Totalt antal i valt urval", f"{total:,}")
+    except Exception as e:
+        st.error("🚨 Kunde inte hämta data från SCB – kontrollera att urvalet är giltigt.")
 
 
-    trend_df = hamta_befolkningstrend()
-    if not trend_df.empty and len(trend_df) >= 2:
-        visa_befolkningsutveckling(trend_df)
+        trend_df = hamta_befolkningstrend()
+        if not trend_df.empty and len(trend_df) >= 2:
+            visa_befolkningsutveckling(trend_df)
 
-    df = hamta_aldersfordelning()
-    st.write("Debug: Dataframe innehåll från hamta_aldersfordelning:")
-    st.write(df)
-    visa_alderspyramid(df)
+        df = hamta_aldersfordelning()
+        st.write("Debug: Dataframe innehåll från hamta_aldersfordelning:")
+        st.write(df)
+        visa_alderspyramid(df)
 
 # ---------------- ANVÄNDNING ----------------
 # ---------------- FUNKTION: Visa planbesked på karta ----------------
