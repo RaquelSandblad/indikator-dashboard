@@ -421,6 +421,17 @@ elif val == "Kommunnivå - Planbesked":
     with st.container():
         visa_planbesked_paj(planbesked)
 
+elif val == "Kommunnivå - Förhandsbesked":
+    st.title("Kommunnivå – Förhandsbesked")
+    st.write("Här kan du analysera inkomna förhandsbesked och deras relation till ÖP.")
+    
+    # Exempel på innehåll
+    st.markdown("📌 *Här kan ni t.ex. visa statistik, karta eller lista över förhandsbesked.*")
+
+    # TODO: Ersätt detta med din riktiga data eller funktion
+    st.info("🔧 Denna sida är under uppbyggnad. Vill du visa karta, tabell eller analys här?")
+
+
 # ---------------- KOMMUNNIVÅ – BEFOLKNINGSSTATISTIK ----------------
 elif val == "Kommunnivå - Befolkning":
     st.title("Kommunnivå – Befolkningsstatistik")
