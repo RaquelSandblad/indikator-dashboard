@@ -285,6 +285,14 @@ def visa_alderspyramid(df, rubrik="Ålderspyramid"):
     plt.tight_layout()
     st.pyplot(fig)
 
+# ---------------- FUNKTION: Visa temarubrik med färgkod ----------------
+def temarubrik(titel, färg="#f1c40f"):  # Standardfärg: gul
+    st.markdown(f"""
+    <div style='background-color:{färg};padding:0.5em 1em;border-radius:8px;margin-top:1em;margin-bottom:1em'>
+        <h4 style='color:white;margin:0'>{titel}</h4>
+    </div>
+    """, unsafe_allow_html=True)
+
 # ---------------- FUNKTION: visa befolkningsutveckling ----------------
 def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
     if df.empty:
@@ -474,27 +482,50 @@ elif val == "Kommunnivå - Kollektivtrafik":
 # ---------------- ORTER ----------------
 def ort_sida(namn):
     st.title(f"{namn} – utveckling och indikatorer")
-    st.write("### Befolkning och struktur")
+
     inv_data = hamta_invanare_ort()
+
+    # Planbesked
+    temarubrik("Planbesked och förhandsbesked", färg="#f1c40f")
+    st.write("- Hur förhåller det sig till ÖP?")
+    st.write("- Byggs det mer i prioriterade orter?")
+    # ➕ Här kan du lägga in karta eller analysdata om du har ortspecifik planbesked-info
+
+    # Befolkning
+    temarubrik("Befolkning", färg="#c40000")
     if namn in inv_data:
         st.write(f"- Antal invånare: **{inv_data[namn]:,}**")
     else:
         st.write("- Antal invånare: saknas")
     st.write("- Dag/natt-befolkning")
-
-    st.write("### Service och livskvalitet")
-    st.write("- Kommunal service")
-    st.write("- Kultur/idrottsutbud")
-
-    st.write("### Avstånd till kollektivtrafik (lokalt)")
-    st.write("Här kommer lokal analys och karta för hållplatser i orten.")
-
-    st.write("### Inflyttning")
-    st.write("Här visas statistik om inflyttning per år och ort")
-
-    st.write("### Demografi")
     df = hamta_aldersfordelning()
     visa_alderspyramid(df, rubrik=f"Ålderspyramid – {namn} (hela kommunen som exempel)")
+
+    # Bebyggelse
+    temarubrik("Bebyggelsen", färg="#f5a081")
+    st.write("- Fördelning mellan bostadstyper (flerbostadshus, villor, etc)")
+    st.write("- Täthetskarta (när det finns data)")
+
+    # Naturresurser
+    temarubrik("Naturresurser", färg="#4ba3a4")
+    st.write("- Påverkan på jordbruksmark vid planbesked / byggande")
+
+    # Trafik
+    temarubrik("Trafik", färg="#8b6f4a")
+    st.write("- Avstånd till kollektivtrafik")
+    st.write("- Andel som bor inom 400 m eller 1 km")
+    visa_kollektivtrafikkarta(namn)  # Simulerad just nu
+
+    # Kommunal service
+    temarubrik("Kommunal service", färg="#f248b9")
+    st.write("- Hur väl fungerar servicen?")
+    st.write("- Upplevs som för lite eller för mycket")
+
+    # Kultur och fritid
+    temarubrik("Kultur och fritid", färg="#5e2ca5")
+    st.write("- Finns det i orten?")
+    st.write("- Har det ökat eller minskat?")
+
 
 orter = ["Kungsbacka stad", "Anneberg", "Åsa", "Kullavik", "Särö", "Vallda", "Onsala", "Fjärås", "Frillesås"]
 if val in orter:
