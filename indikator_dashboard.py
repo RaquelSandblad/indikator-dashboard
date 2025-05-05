@@ -50,8 +50,8 @@ def las_in_planbesked_och_op():
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
 
 # SIDVAL
-st.sidebar.title("Välj sida")
-val = st.sidebar.radio("Välj sida", [
+st.sidebar.title("Välj sida")  
+val = st.sidebar.radio("", [   
     "Introduktion",
     "Kommunnivå - Planbesked",
     "Kommunnivå - Befolkning",
