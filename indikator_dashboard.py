@@ -389,7 +389,7 @@ def visa_planbesked_paj(planbesked_df):
 
 # ---------------- INTRO ----------------
 if val == "Introduktion":
-    st.title("Uppföljning av Översiktsplanering för Kungsbacka kommun")
+    st.title("Uppföljning av översiktsplanering för Kungsbacka kommun")
     st.write("""
 Här kan du följa upp indikatorer för:
 - Kommunen som helhet
