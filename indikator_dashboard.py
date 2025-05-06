@@ -319,7 +319,7 @@ def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
 def visa_befolkningstatet_heatmap():
     # Läs in GeoPackage
     try:
-        gdf = gpd.read_file("befolkning_1km_2024.gpkg")
+        gdf = gpd.read_file("/mnt/data/befolkning_1km_2024.gpkg")
 
         # Säkerställ att den har korrekt koordinatsystem
         gdf = gdf.to_crs(epsg=4326)
