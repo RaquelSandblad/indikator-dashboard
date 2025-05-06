@@ -316,24 +316,33 @@ def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
     st.pyplot(fig)
 
 # ---------------- FUNKTION: visa värmekarta ----------------
-def visa_varmekarta():
-    st.subheader("🏘️ Befolkningstäthet i kommunen")
-    st.caption("(Simulerad värmekarta – ersätt med riktig statistik och geometri)")
-    data = pd.DataFrame({
-        'lat': [57.5, 57.48, 57.52, 57.51],
-        'lon': [12.1, 12.11, 12.09, 12.13],
-        'antal': [5000, 1500, 7000, 3000]
-    })
-    folium_map = folium.Map(location=[57.5, 12.1], zoom_start=11)
-    for _, row in data.iterrows():
-        folium.Circle(
-            location=[row['lat'], row['lon']],
-            radius=row['antal'] * 0.5,
-            color="crimson",
-            fill=True,
-            fill_opacity=0.4
-        ).add_to(folium_map)
-    st_folium(folium_map, height=500)
+def visa_befolkningstatet_heatmap():
+    # Läs in GeoPackage
+    try:
+        gdf = gpd.read_file("befolkning_1km_2024.gpkg")
+
+        # Säkerställ att den har korrekt koordinatsystem
+        gdf = gdf.to_crs(epsg=4326)
+
+        # Skapa karta
+        karta = folium.Map(location=[57.5, 12.0], zoom_start=10)
+
+        # Lägg till polygoner som heatmap/stylade lager
+        folium.Choropleth(
+            geo_data=gdf,
+            data=gdf,
+            columns=["id", "Totalt"],  # Anpassa om kolumnen heter något annat
+            key_on="feature.properties.id",  # Eller annan nyckel
+            fill_color="YlOrRd",
+            fill_opacity=0.7,
+            line_opacity=0.2,
+            legend_name="Befolkning per km²"
+        ).add_to(karta)
+
+        st_folium(karta, height=600, width=900)
+    
+    except Exception as e:
+        st.error(f"Kunde inte läsa eller rendera filen: {e}")
 
 # ---------------- FUNKTION: visa kollektivtrafikkarta ----------------
 def visa_kollektivtrafikkarta(kommun="Kungsbacka"):
@@ -483,8 +492,8 @@ elif val == "Kommunnivå - Befolkning":
 
         st.write("**Näringslivstrender**: arbetstillfällen, detaljplanerad mark – data kan kopplas från SCB eller kommunen")
 elif val == "Kommunnivå - Värmekarta":
-    st.title("Kommunnivå – Värmekarta för befolkningstäthet")
-    visa_varmekarta()
+    st.title("Kommunnivå – Befolkningstäthet (1 km-rutor)")
+    visa_befolkningstatet_heatmap()
 
 elif val == "Kommunnivå - Kollektivtrafik":
     st.title("Kommunnivå – Kollektivtrafik")
