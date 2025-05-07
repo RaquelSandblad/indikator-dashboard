@@ -317,33 +317,85 @@ def visa_befolkningsutveckling(df, rubrik="Befolkningsutveckling"):
 
 # ---------------- FUNKTION: visa värmekarta ----------------
 def visa_befolkningstatet_heatmap():
-    # Läs in GeoPackage
+    # Konfigurera API-slutpunkt och query för SCB
+    BASE_URL = "https://api.scb.se/OV0104/v1/doris/sv/ssd/"
+    query = {
+        "query": [
+            {
+                "code": "Region",
+                "selection": {
+                    "filter": "item",
+                    "values": ["1384"]  # Kommunens kod (Kungsbacka)
+                }
+            },
+            {
+                "code": "Tid",
+                "selection": {
+                    "filter": "item",
+                    "values": ["2024"]  # Årtal för data
+                }
+            }
+        ],
+        "response": {
+            "format": "json"
+        }
+    }
+
     try:
-        gdf = gpd.read_file("https://1drv.ms/u/c/64172d1a832af083/EV-G7Qjp_f5AnEaLi2zuhpEB5vo99EsnGbaPsNwobJnWwQ?e=wLLfv2")
+        # Hämta data från SCB:s API
+        response = requests.post(BASE_URL + "BE/BE0101/BE0101A/BefolkningNy", json=query)
+        response.raise_for_status()
+        data = response.json()
 
-        # Säkerställ att den har korrekt koordinatsystem
-        gdf = gdf.to_crs(epsg=4326)
+        # Kontrollera att data returneras
+        if "data" not in data:
+            st.error("Inga data returnerades från SCB API.")
+            return
 
-        # Skapa karta
-        karta = folium.Map(location=[57.5, 12.0], zoom_start=10)
+        # Konvertera data till en DataFrame
+        import pandas as pd
+        df = pd.DataFrame(data["data"])
+        df["value"] = df["values"].apply(lambda x: int(x[0].replace("..", "0")))  # Hantera ".." som 0
+        df["id"] = df["key"].apply(lambda x: x[0])  # Extrahera region-ID
+        st.write("Debug: Data hämtad från SCB API:")
+        st.write(df.head())
 
-        # Lägg till polygoner som heatmap/stylade lager
+        # Läs in geometridata (testa med op.geojson eller op.json)
+        try:
+            geo_path = "op.geojson"  # Första valet
+            geo_df = gpd.read_file(geo_path)
+        except FileNotFoundError:
+            geo_path = "op.json"  # Andra valet
+            geo_df = gpd.read_file(geo_path)
+
+        # Kombinera SCB-data med geometridata
+        geo_df = geo_df.merge(df, left_on="id", right_on="id")
+
+        # Säkerställ att geometrin har rätt koordinatsystem
+        geo_df = geo_df.to_crs(epsg=4326)
+
+        # Skapa karta med Folium
+        karta = folium.Map(location=[57.5, 12.0], zoom_start=10)  # Justera till Kungsbackas koordinater
         folium.Choropleth(
-            geo_data=gdf,
-            data=gdf,
-            columns=["id", "Totalt"],  # Anpassa om kolumnen heter något annat
-            key_on="feature.properties.id",  # Eller annan nyckel
+            geo_data=geo_df,
+            data=geo_df,
+            columns=["id", "value"],  # ID och befolkningstäthet
+            key_on="feature.properties.id",
             fill_color="YlOrRd",
             fill_opacity=0.7,
             line_opacity=0.2,
             legend_name="Befolkning per km²"
         ).add_to(karta)
 
+        # Visa kartan i Streamlit
         st_folium(karta, height=600, width=900)
-    
-    except Exception as e:
-        st.error(f"Kunde inte läsa eller rendera filen: {e}")
 
+    except requests.exceptions.RequestException as e:
+        st.error(f"Fel vid anrop till SCB:s API: {e}")
+    except FileNotFoundError:
+        st.error("Filen 'op.geojson' eller 'op.json' kunde inte hittas. Kontrollera att filerna finns i projektmappen.")
+    except Exception as e:
+        st.error(f"Ett oväntat fel inträffade: {e}")
 # ---------------- FUNKTION: visa kollektivtrafikkarta ----------------
 def visa_kollektivtrafikkarta(kommun="Kungsbacka"):
     st.subheader("🚌 Kollektivtrafik - Hållplatser")
