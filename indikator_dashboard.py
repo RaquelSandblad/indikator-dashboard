@@ -17,6 +17,37 @@ scb_service = SCBService()
 # Streamlit config
 st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
 
+# Anpassad stil för att likna Regionfakta
+st.markdown("""
+<style>
+    body {
+        background-color: #f9f9f9;
+        font-family: 'Helvetica Neue', sans-serif;
+    }
+    .block-container {
+        padding-top: 2rem;
+    }
+    h1, h2, h3, h4 {
+        color: #333333;
+    }
+    .stRadio > div {
+        gap: 0.5rem;
+    }
+    .stMetric {
+        font-size: 1.2rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# --------- Temarubrik ---------
+def temarubrik(titel, farg="#f3d55b"):
+    st.markdown(f"""
+    <div style='background-color:{farg};padding:0.5em 1em;border-radius:8px;margin-top:1em;margin-bottom:1em'>
+        <h4 style='color:white;margin:0'>{titel}</h4>
+    </div>
+    """, unsafe_allow_html=True)
+
+
 @st.cache_data(ttl=86400)
 def las_in_planbesked_och_op():
     planbesked = gpd.read_file("planbesked.json").to_crs(epsg=4326)
@@ -50,7 +81,7 @@ def las_in_planbesked_och_op():
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
 
 # SIDVAL
-val = st.sidebar.radio("Välj sida", [
+val = st.sidebar.radio("Navigering", [
     "Introduktion",
     "Kommunnivå - Planbesked",
     "Kommunnivå - Förhandsbesked",   # 👈 Ny sida här!
