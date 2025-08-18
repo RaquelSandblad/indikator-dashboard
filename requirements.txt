@@ -1,12 +1,24 @@
-streamlit
-streamlit-folium
-pillow
-pandas
-folium
-matplotlib
-geopandas
-shapely
-plotly
-requests
-numpy
-pyproj
+# Streamlit och webb-komponenter
+streamlit>=1.28.0
+streamlit-folium>=0.15.0
+
+# Data hantering
+pandas>=2.0.0
+numpy>=1.24.0
+requests>=2.31.0
+
+# Visualisering
+plotly>=5.15.0
+matplotlib>=3.7.0
+folium>=0.14.0
+
+# Geospatial
+geopandas>=0.13.0
+shapely>=2.0.0
+pyproj>=3.6.0
+
+# Bildhantering
+pillow>=10.0.0
+
+# Optimering för deployment
+setuptools>=68.0.0
