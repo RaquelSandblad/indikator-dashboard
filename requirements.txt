@@ -6,3 +6,7 @@ folium
 matplotlib
 geopandas
 shapely
+plotly
+requests
+numpy
+pyproj

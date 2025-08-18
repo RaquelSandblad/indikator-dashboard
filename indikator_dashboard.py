@@ -1,4 +1,4 @@
-# indikator_dashboard.py
+# indikator_dashboard.py - Förbättrad huvudapplikation
 
 import streamlit as st
 from PIL import Image
@@ -11,11 +11,25 @@ import json
 import geopandas as gpd
 from shapely.geometry import Point
 import os
-from SCB_Dataservice import SCBService
-scb_service = SCBService()
+import plotly.express as px
+import plotly.graph_objects as go
+
+# Importera våra nya moduler
+from data_sources import get_all_data_sources, scb_data, kolada_data, smhi_data, gis_data
+from indicators import PlanningIndicators, create_indicator_dashboard
+from config import KOMMUN_KOD, ORTER, COLORS
 
 # Streamlit config
-st.set_page_config(page_title="Uppföljning av ÖP - Kungsbacka", layout="wide")
+st.set_page_config(
+    page_title="Kungsbacka Planeringsdashboard", 
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://github.com/RaquelSandblad/indikator-dashboard',
+        'Report a bug': 'https://github.com/RaquelSandblad/indikator-dashboard/issues',
+        'About': "# Kungsbacka Planeringsdashboard\nEtt verktyg för uppföljning av översiktsplanering"
+    }
+)
 
 # Anpassad stil för att likna Regionfakta
 st.markdown("""
