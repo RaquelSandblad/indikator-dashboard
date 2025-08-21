@@ -1,0 +1,29 @@
+,Önskad datamängd,Rutin för datamängden,Att göra för att komma igång
+Uppskattning,"Planbesked inom perioden:
+Antal bostäder 
+Kunna skilja ut antal småhus
+Areal verksamhetsmark 
+kommunal service. Antal anläggningar","Rita ut planbeskedsytan
+Använda tjänsten och få uppskattade siffror som förs in i Antura","Definiera täthetsschabloner för zonerna i ÖP:s utvecklingsorter (SBK)
+gränsvärde för vad som är en ovanligt hög andel bostäder för en övrig ort (SBK)
+Specificera andelen småhus inom varje schablon (SBK)
+Koppla schabloner till ÖP:s ytor och kombinera med planbeskedsytan (Geodata)"
+,Ej startade planer i systemet - lista,Föra över projektet i rätt kategori,
+Prognos,"Förhandsbesked inom perioden:
+Antal bostäder
+Är det en verksamhet","Märka ut platsen på kartan
+Vid beslut registrera i rätt system",
+,"Aktiva detaljplaner:
+Antal bostäder 
+Kunna skilja ut antal småhus
+Areal verksamhetsmark 
+kommunal service. Antal anläggningar","Se över ytan för detaljplaneområdet
+Planbeskrivningens antal bostäder, ev skola, areal verksamhetsmark förs in i Antura vid samråd, granskning och antagande",
+,Pausade planer i systemet - lista,Föra över projektet i rätt kategori,
+,Planreserv - lista flagga det som står still,Föra över projektet i rätt kategori,
+Utfall,"Byggnation
+Total bostadsbyggnation denna perioden jfr total byggnation förra perioden
+Antal lgh, småhus, anläggning för kommunal service inom DP fastställd förra perioden
+Kvm nybyggd verksamhet (huset)
+Bygglov utom plan","Vid slutbesked registrera i rätt system
+Koppla samman - geodatahjälp",
