@@ -69,6 +69,7 @@ def main():
             "Välj sida:",
             [
                 "Hem & Översikt",
+                "🆕 Komplett dataöversikt",
                 "Indikatorer & KPI:er", 
                 "Kartor & Planbesked",
                 "Befolkningsanalys",
@@ -110,6 +111,9 @@ def main():
     # Router
     if page == "Hem & Översikt":
         show_home_page()
+        
+    elif page == "🆕 Komplett dataöversikt":
+        show_complete_data_overview()
         
     elif page == "Indikatorer & KPI:er":
         show_indicators_page(planbesked_gdf, op_gdf)
@@ -211,6 +215,368 @@ def show_home_page():
     for activity in activities:
         st.write(f"**{activity['date']}** - {activity['activity']}")
 
+def show_complete_data_overview():
+    """Ny sida som visar ALL data från alla källor"""
+    
+    st.header("🔍 Komplett dataöversikt - Kungsbacka kommun")
+    st.markdown("Denna sida visar all tillgänglig data från SCB, Kolada och Boendebarometern för Kungsbacka kommun.")
+    
+    # Import enhanced data sources
+    try:
+        from enhanced_data_sources import enhanced_data_manager, get_kungsbacka_complete_dataset
+        
+        # Cache control
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.info("💡 **Tips:** Data cachas automatiskt för bättre prestanda. Använd 'Uppdatera data' för att hämta senaste informationen.")
+        
+        with col2:
+            if st.button("🔄 Uppdatera data", type="primary"):
+                st.cache_data.clear()
+        
+        # Hämta all data
+        @st.cache_data(ttl=3600)  # Cache i 1 timme
+        def load_all_data():
+            return get_kungsbacka_complete_dataset()
+        
+        with st.spinner("Laddar all tillgänglig data..."):
+            all_data = load_all_data()
+        
+        if not all_data:
+            st.error("Kunde inte hämta data från någon källa")
+            return
+        
+        # Skapa tabs för olika datakällor
+        tabs = st.tabs(["📊 SCB Data", "📈 Kolada KPI:er", "🏠 Boendebarometer", "🔍 Jämförelser", "📋 Sammanfattning"])
+        
+        # SCB Data Tab
+        with tabs[0]:
+            st.subheader("📊 Data från Statistiska Centralbyrån (SCB)")
+            
+            # Befolkningsdata
+            if 'scb_befolkning' in all_data and not all_data['scb_befolkning'].empty:
+                st.markdown("### 👥 Befolkningsdata")
+                
+                df_befolkning = all_data['scb_befolkning']
+                
+                # Visa senaste siffror
+                if not df_befolkning.empty:
+                    latest_data = df_befolkning[df_befolkning['År'] == df_befolkning['År'].max()]
+                    
+                    col1, col2, col3 = st.columns(3)
+                    
+                    if not latest_data.empty:
+                        total_pop = latest_data['Antal'].sum()
+                        men = latest_data[latest_data['Kön'] == 'Män']['Antal'].sum()
+                        women = latest_data[latest_data['Kön'] == 'Kvinnor']['Antal'].sum()
+                        
+                        with col1:
+                            st.metric("Total befolkning", f"{total_pop:,}", 
+                                     delta="Senaste år från SCB")
+                        with col2:
+                            st.metric("Män", f"{men:,}", 
+                                     delta=f"{men/total_pop*100:.1f}%" if total_pop > 0 else "")
+                        with col3:
+                            st.metric("Kvinnor", f"{women:,}", 
+                                     delta=f"{women/total_pop*100:.1f}%" if total_pop > 0 else "")
+                
+                # Visa tabell
+                with st.expander("📋 Detaljerad befolkningsdata"):
+                    st.dataframe(df_befolkning, use_container_width=True)
+                
+                # Visa trend
+                if len(df_befolkning['År'].unique()) > 1:
+                    st.markdown("### 📈 Befolkningstrend")
+                    yearly_total = df_befolkning.groupby('År')['Antal'].sum().reset_index()
+                    
+                    import plotly.express as px
+                    fig = px.line(yearly_total, x='År', y='Antal', 
+                                 title='Befolkningsutveckling Kungsbacka',
+                                 markers=True)
+                    fig.update_layout(height=400)
+                    st.plotly_chart(fig, use_container_width=True)
+            
+            # Åldersfördelning
+            if 'scb_alder' in all_data and not all_data['scb_alder'].empty:
+                st.markdown("### 👶👨👴 Åldersfördelning")
+                
+                with st.expander("📊 Åldersfördelningsdata"):
+                    st.dataframe(all_data['scb_alder'], use_container_width=True)
+            
+            # Bostadsdata
+            if 'scb_bostader' in all_data and not all_data['scb_bostader'].empty:
+                st.markdown("### 🏠 Bostadsdata från SCB")
+                
+                with st.expander("🏘️ Bostadsstatistik"):
+                    st.dataframe(all_data['scb_bostader'], use_container_width=True)
+        
+        # Kolada Tab
+        with tabs[1]:
+            st.subheader("📈 Kommunala nyckeltal från Kolada")
+            
+            if 'kolada_kpi' in all_data and not all_data['kolada_kpi'].empty:
+                df_kolada = all_data['kolada_kpi']
+                
+                # Visa antal KPI:er
+                total_kpis = len(df_kolada['kpi_id'].unique())
+                latest_year = df_kolada['year'].max() if 'year' in df_kolada.columns else 'N/A'
+                
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Antal KPI:er", total_kpis)
+                with col2:
+                    st.metric("Senaste år", latest_year)
+                with col3:
+                    st.metric("Datapunkter", len(df_kolada))
+                
+                # Kategorisera KPI:er
+                st.markdown("### 📊 KPI:er per kategori")
+                
+                # Skapa kategorier baserat på KPI-titlar
+                def categorize_kpi(title):
+                    title_lower = title.lower()
+                    if any(word in title_lower for word in ['befolkning', 'invånare', 'född', 'död']):
+                        return 'Demografi'
+                    elif any(word in title_lower for word in ['bostad', 'byggnad', 'lägenhet']):
+                        return 'Bostäder'
+                    elif any(word in title_lower for word in ['arbetslös', 'arbete', 'sysselsättning']):
+                        return 'Arbetsmarknad'
+                    elif any(word in title_lower for word in ['miljö', 'avfall', 'klimat', 'energi']):
+                        return 'Miljö'
+                    elif any(word in title_lower for word in ['kollektiv', 'trafik', 'transport']):
+                        return 'Transport'
+                    elif any(word in title_lower for word in ['skola', 'utbildning', 'elev']):
+                        return 'Utbildning'
+                    elif any(word in title_lower for word in ['vård', 'hälsa', 'omsorg']):
+                        return 'Vård & Omsorg'
+                    else:
+                        return 'Övrigt'
+                
+                df_kolada['Kategori'] = df_kolada['kpi_title'].apply(categorize_kpi)
+                
+                # Visa kategorier
+                category_counts = df_kolada.groupby('Kategori')['kpi_id'].nunique().sort_values(ascending=False)
+                
+                col1, col2 = st.columns([1, 1])
+                
+                with col1:
+                    import plotly.express as px
+                    fig_cat = px.bar(
+                        x=category_counts.index,
+                        y=category_counts.values,
+                        title='Antal KPI:er per kategori',
+                        labels={'x': 'Kategori', 'y': 'Antal KPI:er'}
+                    )
+                    fig_cat.update_layout(height=400, xaxis_tickangle=-45)
+                    st.plotly_chart(fig_cat, use_container_width=True)
+                
+                with col2:
+                    st.markdown("**KPI:er per kategori:**")
+                    for cat, count in category_counts.items():
+                        st.write(f"• **{cat}**: {count} KPI:er")
+                
+                # Visa senaste värden för viktiga KPI:er
+                st.markdown("### 🎯 Senaste värden för viktiga KPI:er")
+                
+                latest_data = df_kolada[df_kolada['year'] == df_kolada['year'].max()]
+                important_kpis = latest_data.nlargest(10, 'year')[['kpi_title', 'value', 'year']].dropna()
+                
+                if not important_kpis.empty:
+                    for _, row in important_kpis.iterrows():
+                        if pd.notna(row['value']):
+                            col1, col2 = st.columns([3, 1])
+                            with col1:
+                                st.write(f"**{row['kpi_title']}**")
+                            with col2:
+                                st.write(f"{row['value']} ({row['year']})")
+                
+                # Visa full data
+                with st.expander("📋 All Kolada-data"):
+                    # Sortera efter år och visa snyggare
+                    display_cols = ['kpi_title', 'value', 'year', 'Kategori', 'kpi_description']
+                    available_cols = [col for col in display_cols if col in df_kolada.columns]
+                    
+                    st.dataframe(
+                        df_kolada[available_cols].sort_values(['year', 'kpi_title'], ascending=[False, True]),
+                        use_container_width=True,
+                        height=400
+                    )
+            else:
+                st.warning("Ingen Kolada-data tillgänglig")
+        
+        # Boendebarometer Tab
+        with tabs[2]:
+            st.subheader("🏠 Bostadsprisdata från Boendebarometern")
+            
+            if 'boendebarometer_priser' in all_data and not all_data['boendebarometer_priser'].empty:
+                df_boende = all_data['boendebarometer_priser']
+                
+                # Visa senaste bostadspriser
+                latest_year = df_boende['år'].max()
+                latest_data = df_boende[df_boende['år'] == latest_year].iloc[0]
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    villa_price = latest_data.get('medianpris_villa', 0)
+                    st.metric("Medianpris villa", f"{villa_price:,.0f} kr" if villa_price else "N/A")
+                
+                with col2:
+                    br_price = latest_data.get('medianpris_bostadsratt', 0)
+                    st.metric("Medianpris bostadsrätt", f"{br_price:,.0f} kr" if br_price else "N/A")
+                
+                with col3:
+                    sales = latest_data.get('antal_försäljningar', 0)
+                    st.metric("Antal försäljningar/år", f"{sales:,.0f}" if sales else "N/A")
+                
+                # Visa prisutveckling
+                st.markdown("### 📈 Prisutveckling över tid")
+                
+                import plotly.graph_objects as go
+                
+                fig = go.Figure()
+                
+                if 'medianpris_villa' in df_boende.columns:
+                    fig.add_trace(go.Scatter(
+                        x=df_boende['år'],
+                        y=df_boende['medianpris_villa'],
+                        mode='lines+markers',
+                        name='Villa',
+                        line=dict(color='#1f77b4')
+                    ))
+                
+                if 'medianpris_bostadsratt' in df_boende.columns:
+                    fig.add_trace(go.Scatter(
+                        x=df_boende['år'],
+                        y=df_boende['medianpris_bostadsratt'],
+                        mode='lines+markers',
+                        name='Bostadsrätt',
+                        line=dict(color='#ff7f0e')
+                    ))
+                
+                fig.update_layout(
+                    title='Bostadsprisutveckling Kungsbacka',
+                    xaxis_title='År',
+                    yaxis_title='Medianpris (kr)',
+                    height=400
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Visa full data
+                with st.expander("📊 Detaljerad bostadsprisdata"):
+                    st.dataframe(df_boende, use_container_width=True)
+            else:
+                st.warning("Ingen bostadsprisdata tillgänglig")
+        
+        # Jämförelser Tab  
+        with tabs[3]:
+            st.subheader("🔍 Jämförelser med andra kommuner")
+            
+            if 'jamforelse' in all_data and not all_data['jamforelse'].empty:
+                df_comp = all_data['jamforelse']
+                
+                st.markdown("### 📊 Kungsbacka vs andra kommuner")
+                
+                # Kommunnamn mapping
+                kommun_names = {
+                    "1380": "Kungsbacka",
+                    "1401": "Härryda",
+                    "1402": "Partille", 
+                    "1407": "Öckerö",
+                    "1384": "Kungälv",
+                    "1315": "Halmstad",
+                    "1321": "Varberg"
+                }
+                
+                df_comp['Kommun'] = df_comp['municipality_id'].map(kommun_names)
+                
+                # Visa jämförelse för senaste år
+                latest_comp = df_comp[df_comp['year'] == df_comp['year'].max()]
+                
+                for kpi_id in latest_comp['kpi_id'].unique():
+                    kpi_data = latest_comp[latest_comp['kpi_id'] == kpi_id]
+                    
+                    if not kpi_data.empty:
+                        st.markdown(f"#### KPI: {kpi_id}")
+                        
+                        # Hitta Kungsbackas position
+                        kungsbacka_value = kpi_data[kpi_data['municipality_id'] == '1380']['value'].iloc[0] if len(kpi_data[kpi_data['municipality_id'] == '1380']) > 0 else None
+                        
+                        fig_comp = px.bar(
+                            kpi_data.sort_values('value', ascending=False),
+                            x='Kommun',
+                            y='value',
+                            title=f'Jämförelse {kpi_id} ({kpi_data["year"].iloc[0]})',
+                            color='Kommun'
+                        )
+                        
+                        # Markera Kungsbacka
+                        fig_comp.update_traces(marker_color=['#ff6b6b' if x == 'Kungsbacka' else '#4ecdc4' for x in kpi_data.sort_values('value', ascending=False)['Kommun']])
+                        
+                        fig_comp.update_layout(height=300)
+                        st.plotly_chart(fig_comp, use_container_width=True)
+                
+                with st.expander("📋 All jämförelsedata"):
+                    st.dataframe(df_comp, use_container_width=True)
+            else:
+                st.warning("Ingen jämförelsedata tillgänglig")
+        
+        # Sammanfattning Tab
+        with tabs[4]:
+            st.subheader("📋 Sammanfattning av all data")
+            
+            # Datasammanfattning
+            summary_data = []
+            
+            for source, data in all_data.items():
+                if isinstance(data, pd.DataFrame) and not data.empty:
+                    summary_data.append({
+                        'Datakälla': source,
+                        'Antal rader': len(data),
+                        'Antal kolumner': len(data.columns),
+                        'Senaste uppdatering': data.get('year', data.get('År', 'N/A')).max() if 'year' in data.columns or 'År' in data.columns else 'N/A',
+                        'Status': '✅ Tillgänglig'
+                    })
+                else:
+                    summary_data.append({
+                        'Datakälla': source,
+                        'Antal rader': 0,
+                        'Antal kolumner': 0,
+                        'Senaste uppdatering': 'N/A',
+                        'Status': '❌ Ej tillgänglig'
+                    })
+            
+            summary_df = pd.DataFrame(summary_data)
+            st.dataframe(summary_df, use_container_width=True)
+            
+            # Åtgärdsrekommendationer
+            st.markdown("### 💡 Rekommendationer")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**✅ Tillgänglig data:**")
+                available_sources = [item['Datakälla'] for item in summary_data if item['Status'] == '✅ Tillgänglig']
+                for source in available_sources:
+                    st.write(f"• {source}")
+            
+            with col2:
+                st.markdown("**❌ Saknad data:**")
+                missing_sources = [item['Datakälla'] for item in summary_data if item['Status'] == '❌ Ej tillgänglig']
+                for source in missing_sources:
+                    st.write(f"• {source}")
+                
+                if missing_sources:
+                    st.info("💡 Kontrollera API-nycklar och nätverksanslutning för saknade datakällor.")
+    
+    except ImportError:
+        st.error("Enhanced data sources är inte tillgängliga. Kontrollera att enhanced_data_sources.py är korrekt installerad.")
+    
+    except Exception as e:
+        st.error(f"Fel vid visning av komplett dataöversikt: {e}")
+        st.info("Försök uppdatera sidan eller kontrollera internetanslutningen.")
+
 def show_indicators_page(planbesked_gdf, op_gdf):
     """Sida för indikatorer och KPI:er"""
     
@@ -310,7 +676,59 @@ def show_maps_page(planbesked_gdf, op_gdf):
     
     st.header("Kartor & Planbesked")
     
-    # Visa karta direkt utan inställningar
+    # Lägg till tabs för olika karttyper
+    tab1, tab2 = st.tabs(["Lokala planbesked", "Boendebarometer (Regional)"])
+    
+    with tab1:
+        st.subheader("Kungsbacka planbesked och översiktsplan")
+        show_local_maps(planbesked_gdf, op_gdf)
+    
+    with tab2:
+        st.subheader("Boendebarometer - Uppsala universitet")
+        st.markdown("""
+        Denna interaktiva karta från Uppsala universitet visar boendepriser och marknadsdata för hela Sverige.
+        Den ger värdefull kontext för hur Kungsbacka kommun förhåller sig till resten av landet när det gäller bostadsmarknad.
+        """)
+        
+        # Bädda in Boendebarometern
+        st.components.v1.iframe(
+            src="https://boendebarometern.uu.se/?embedded=true#$chart-type=extapimap&url=v2",
+            width=None,
+            height=600,
+            scrolling=True
+        )
+        
+        # Lägg till förklarande text
+        st.info("""
+        💡 **Tips för användning:**
+        - Zooma in på Hallands län/Kungsbacka för lokal data
+        - Jämför med närliggande kommuner som Göteborg, Varberg
+        - Använd olika kartlager för att se priser, förändring, etc.
+        """)
+        
+        # Länk till mer information
+        with st.expander("ℹ️ Om Boendebarometern"):
+            st.markdown("""
+            **Källa:** Uppsala universitet, Institutet för bostads- och urbanforskning (IBF)
+            
+            **Vad den visar:**
+            - Bostadspriser och utveckling
+            - Marknadsanalys per kommun
+            - Jämförelser över tid
+            - Regional utveckling
+            
+            **Användningsområden för planering:**
+            - Benchmarking mot andra kommuner
+            - Förstå regionala trender
+            - Bostadsmarknadsutveckling
+            - Underlag för översiktsplan
+            
+            [🔗 Besök fullständig version](https://boendebarometern.uu.se/)
+            """)
+
+def show_local_maps(planbesked_gdf, op_gdf):
+    """Visa lokala kartor för planbesked"""
+    
     try:
         map_data = create_streamlit_map(planbesked_gdf, op_gdf)
         

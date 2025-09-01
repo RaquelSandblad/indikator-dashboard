@@ -22,3 +22,5 @@ pillow>=10.0.0
 
 # Optimering för deployment
 setuptools>=68.0.0
+# PPTX parsing for infonet slides
+python-pptx>=0.7.1

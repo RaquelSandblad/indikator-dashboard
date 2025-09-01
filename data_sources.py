@@ -9,6 +9,13 @@ from datetime import datetime, timedelta
 import os
 import time
 from config import SCB_CONFIG, SCB_TABLES, GIS_SOURCES, EXTERNAL_APIS, get_standard_query
+from pathlib import Path
+
+# PPTX loader (infonet)
+try:
+    from data.infonet_loader import load_pptx_tables
+except Exception:
+    load_pptx_tables = None
 
 class SCBDataSource:
     """Förbättrad SCB-klass med bättre felhantering och fler endpoints"""
@@ -447,3 +454,140 @@ def get_all_data_sources():
         "SMHI": smhi_api,
         "Trafikverket": trafikverket_api
     }
+
+
+def normalize_infonet_tables(filepath: str) -> Dict[str, pd.DataFrame]:
+    """Läser tabeller från en infonet-presentation (.pptx) och försöker mappa dem
+    till meningsfulla DataFrames som dashboarden kan använda.
+
+    Heuristisk mapping baserat på kolumnnamn.
+    """
+    if load_pptx_tables is None:
+        raise RuntimeError("pptx-loader saknas. Installera python-pptx och säkerställ att data/infonet_loader.py finns.")
+
+    tables, text = load_pptx_tables(filepath)
+    mapped: Dict[str, pd.DataFrame] = {}
+    others = []
+
+    def make_unique_columns(df: pd.DataFrame) -> pd.DataFrame:
+        cols = list(df.columns)
+        seen = {}
+        new_cols = []
+        for c in cols:
+            name = str(c)
+            if name in seen:
+                seen[name] += 1
+                new_name = f"{name}_{seen[name]}"
+            else:
+                seen[name] = 0
+                new_name = name
+            new_cols.append(new_name)
+        df = df.copy()
+        df.columns = new_cols
+        return df
+
+    for df in tables:
+        # Ensure unique column names to avoid pyarrow/streamlit errors on display
+        try:
+            df = make_unique_columns(df)
+        except Exception:
+            pass
+        # Normalisera kolumnnamn till str
+        cols = [str(c).strip() for c in df.columns]
+        cols_join = " ".join(cols).lower()
+
+        # Heuristiska regler
+        if any('ort' in c for c in cols) or 'inv/ha' in cols_join:
+            mapped['orter'] = pd.concat([mapped.get('orter', pd.DataFrame()), df], ignore_index=True)
+        elif any('planbesked' in c.lower() or 'antal bost' in c.lower() for c in cols):
+            mapped['planbesked'] = pd.concat([mapped.get('planbesked', pd.DataFrame()), df], ignore_index=True)
+        elif 'referensområde' in cols_join or 'ö p-zon' in cols_join or 'storlek (ha)' in cols_join:
+            mapped['referens'] = pd.concat([mapped.get('referens', pd.DataFrame()), df], ignore_index=True)
+        else:
+            others.append(df)
+
+    mapped['text'] = text
+    if others:
+        mapped['other'] = others
+
+    # Försök städa 'orter' tabellen
+    if 'orter' in mapped and not mapped['orter'].empty:
+        df = mapped['orter']
+        # Ensure unique columns again after concatenation
+        df = make_unique_columns(df)
+        rename_map = {}
+        for col in df.columns:
+            low = str(col).lower()
+            if 'ort' in low:
+                rename_map[col] = 'ort'
+            if 'inv/ha' in low or 'inv/ha' in col.lower():
+                rename_map[col] = 'inv_per_ha'
+            if low in ('inv', 'inv/ha', 'antal') or 'bost' in low or 'invån' in low:
+                rename_map[col] = 'befolkning'
+            if 'ha' in low and 'storlek' in low:
+                rename_map[col] = 'ha'
+
+        df = df.rename(columns=rename_map)
+
+        # Konsolidera dubblett-kolumner som kan ha uppstått vid sammanslagning
+        unique_cols = []
+        new_df = pd.DataFrame()
+        for col in df.columns:
+            if col in new_df.columns:
+                # Redundant, skip here (we'll handle fully below)
+                continue
+            # Hitta alla kolumner med detta namn (pga dubbletter efter rename)
+            cols_with_name = [c for c in df.columns if c == col]
+            if len(cols_with_name) == 1:
+                new_df[col] = df[cols_with_name[0]]
+            else:
+                # Försök summera numeriska kolumner, annars ta första icke-null
+                try:
+                    numeric = df[cols_with_name].apply(lambda s: pd.to_numeric(s.astype(str).replace({r'[^0-9\.,-]': ''}, regex=True).str.replace(',', ''), errors='coerce'))
+                    summed = numeric.sum(axis=1, skipna=True).fillna(0)
+                    new_df[col] = summed.astype(int)
+                except Exception:
+                    new_df[col] = df[cols_with_name].bfill(axis=1).iloc[:, 0]
+
+        df = new_df
+
+        # Rensa numeriska kolumner robustare (undvik .str på DataFrame)
+        for num_col in ['inv_per_ha', 'befolkning', 'ha']:
+            if num_col in df.columns:
+                try:
+                    s = df[num_col].astype(str).replace({r'[^0-9\.,-]': ''}, regex=True)
+                    s = s.str.replace(',', '', regex=False)
+                    df[num_col] = pd.to_numeric(s, errors='coerce').fillna(0).astype(int)
+                except Exception:
+                    def to_int(x):
+                        try:
+                            txt = str(x)
+                            cleaned = __import__('re').sub(r'[^0-9\.-]', '', txt).replace(',', '')
+                            return int(float(cleaned)) if cleaned not in ('', None) else 0
+                        except Exception:
+                            return 0
+                    df[num_col] = df[num_col].apply(to_int)
+
+        mapped['orter'] = df
+
+    return mapped
+
+
+def get_infonet_data(filepath: Optional[str] = None) -> Dict[str, pd.DataFrame]:
+    """Wrapper som returnerar mappade DataFrames från infonet-presentationen i repo-root.
+
+    Om filen inte finns returneras en tom dict.
+    """
+    if filepath is None:
+        default = Path.cwd() / "Första uppföljning av ÖP-steg 2.pptx"
+        filepath = str(default)
+
+    if not Path(filepath).exists():
+        print(f"Infonet PPTX hittades inte: {filepath}")
+        return {}
+
+    try:
+        return normalize_infonet_tables(filepath)
+    except Exception as e:
+        print(f"Fel vid normalisering av infonet-data: {e}")
+        return {}

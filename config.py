@@ -97,7 +97,7 @@ EXTERNAL_APIS = {
         "requires_key": False
     },
     "kolada": {
-        "base_url": "http://api.kolada.se/v2",
+        "base_url": "http://api.kolada.se",
         "description": "Kommunala nyckeltal från Kolada",
         "requires_key": False
     },

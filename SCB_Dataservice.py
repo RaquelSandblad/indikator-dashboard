@@ -101,8 +101,9 @@ class SCBService:
         rows = data.get("data", [])
         parsed = []
         for row in rows:
-            kön = "Män" if row["key"][1] == "1" else "Kvinnor"
-            ålder = row["key"][2]
+            # SCB returnerar: ['Region', 'Ålder', 'Kön', 'År']
+            ålder = row["key"][1]  # Ålder är index 1
+            kön = "Män" if row["key"][2] == "1" else "Kvinnor"  # Kön är index 2
             antal = int(row["values"][0])
             parsed.append({"Kön": kön, "Ålder": ålder, "Antal": antal})
 

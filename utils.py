@@ -133,7 +133,8 @@ def create_population_pyramid(df: pd.DataFrame, title: str = "Ålderspyramid") -
         xaxis_title="Antal personer",
         yaxis_title="Ålder",
         barmode="overlay",
-        height=600,
+        height=400,  # Mindre höjd för att göra pyramiden mindre bred
+        width=600,   # Mindre bredd
         xaxis=dict(range=[-max_val*1.1, max_val*1.1]),
         legend=dict(x=0.85, y=0.95),
         hovermode="y unified"
@@ -172,7 +173,7 @@ def create_trend_chart(df: pd.DataFrame, x_col: str, y_col: str,
             y=p(range(len(df))),
             mode="lines",
             name="Trend",
-            line=dict(color="red", width=2, dash="dash"),
+            line=dict(color="#ff6b35", width=2, dash="dash"),  # Ändrat till orange/coral färg
             hoverinfo="skip"
         ))
     
@@ -398,9 +399,9 @@ def create_streamlit_map(planbesked_gdf: gpd.GeoDataFrame, op_gdf: gpd.GeoDataFr
                     icon_name = 'ok-sign'
                     status_text = "✅ Följer ÖP"
                 else:
-                    icon_color = 'red' 
+                    icon_color = 'orange'  # Ändrat från 'red' till 'orange' för bättre synlighet
                     icon_name = 'remove-sign'
-                    status_text = "❌ Följer inte ÖP"
+                    status_text = "⚠️ Följer inte ÖP"
                 
                 # Skapa popup med namn om det finns
                 popup_text = f"<b>Planbesked {idx + 1}</b><br>{status_text}"
@@ -427,7 +428,7 @@ def create_streamlit_map(planbesked_gdf: gpd.GeoDataFrame, op_gdf: gpd.GeoDataFr
                 border:2px solid grey; padding: 10px">
     <p><b>Planbesked status</b></p>
     <p><i class="fa fa-circle" style="color:green"></i> Följer ÖP</p>
-    <p><i class="fa fa-circle" style="color:red"></i> Följer inte ÖP</p>
+    <p><i class="fa fa-circle" style="color:orange"></i> Följer inte ÖP</p>
     </div>
     '''
     m.get_root().html.add_child(folium.Element(legend_html))
