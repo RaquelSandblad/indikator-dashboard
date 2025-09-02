@@ -408,24 +408,9 @@ def show_complete_data_overview():
         with tabs[2]:
             st.subheader("🏠 Boendebarometer - Demografi & Hållbarhet")
             
-            st.markdown("""
-            **Boendebarometer från Uppsala Universitet**
+            st.markdown('<iframe src="//boendebarometern.uu.se/?embedded=true#$chart-type=extapimap&url=v2" style="width: 100%; height: 500px; margin: 0 0 0 0; border: 1px solid grey;" allowfullscreen></iframe>', unsafe_allow_html=True)
             
-            Detta verktyg fokuserar på demografiska aspekter och hållbarhetsmål:
-            - Demografisk analys och utvecklingstrender  
-            - Social hållbarhet och inkludering
-            - Miljöperspektiv och klimatsmart boende
-            - Regional utveckling och planering
-            """)
-            
-            # Bädda in rätt Boendebarometer
-            st.components.v1.iframe(
-                src="//boendebarometern.uu.se/?embedded=true#$chart-type=extapimap&url=v2",
-                height=500,
-                scrolling=True
-            )
-            
-            if False:  # Inaktivera bostadsprisdata
+            if False:  # Inaktivera Data
                 df_boende = all_data['boendebarometer_priser']
                 
                 # Visa senaste bostadspriser
@@ -702,22 +687,7 @@ def show_maps_page(planbesked_gdf, op_gdf):
     
     with tab2:
         st.subheader("🏠 Boendebarometer - Uppsala Universitet")
-        st.markdown("""
-        **Forskningsbaserat verktyg för demografisk analys och hållbar utveckling**
-        
-        - Demografiska trender och befolkningsutveckling
-        - Social hållbarhet och inkludering  
-        - Miljöperspektiv och klimatanpassning
-        - Regional planering och utveckling
-        """)
-        
-        # Bädda in Boendebarometern med rätt URL
-        st.components.v1.iframe(
-            src="//boendebarometern.uu.se/?embedded=true#$chart-type=extapimap&url=v2",
-            width=None,
-            height=600,
-            scrolling=True
-        )
+        st.markdown('<iframe src="//boendebarometern.uu.se/?embedded=true#$chart-type=extapimap&url=v2" style="width: 100%; height: 500px; margin: 0 0 0 0; border: 1px solid grey;" allowfullscreen></iframe>', unsafe_allow_html=True)
         
         # Lägg till förklarande text
         st.info("""
