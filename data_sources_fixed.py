@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 import json
 from datetime import datetime, timedelta
 import os
+import time
 from config import SCB_CONFIG, SCB_TABLES, GIS_SOURCES, EXTERNAL_APIS, get_standard_query
 
 class SCBDataSource:

@@ -1,4 +1,56 @@
-# data_sources.py - Förbättrade datakällor med     def fetch_population_data(self, region_code: str = "1384") -> pd.DataFrame:
+# data_sources.py - Förbättrade datakällor med bättre felhantering och fler endpoints
+
+import requests
+import pandas as pd
+import geopandas as gpd
+from typing import Dict, List, Optional
+import json
+from datetime import datetime, timedelta
+import os
+from config import SCB_CONFIG, SCB_TABLES, GIS_SOURCES, EXTERNAL_APIS, get_standard_query
+
+# Dummy definitioner för saknade variabler och funktioner
+SCB_TABLES = {}
+def get_standard_query(query_type, region_code):
+    return {}
+
+class SCBDataSource:
+    """Förbättrad SCB-klass med bättre felhantering och fler endpoints"""
+    
+    def __init__(self):
+        self.base_url = SCB_CONFIG["base_url"]
+        self.user_agent = SCB_CONFIG["user_agent"]
+        self.timeout = SCB_CONFIG["timeout"]
+        self.cache_dir = "cache"
+        os.makedirs(self.cache_dir, exist_ok=True)
+    
+    def get_available_tables(self) -> Dict:
+        """Returnerar tillgängliga SCB-tabeller"""
+        return SCB_TABLES
+    
+    def get_regions(self) -> pd.DataFrame:
+        """Hämtar alla regioner/kommuner från SCB"""
+        try:
+            url = f"{self.base_url}/BE/BE0101/BE0101A/BefolkningNy"
+            response = requests.get(url, timeout=self.timeout)
+            response.raise_for_status()
+            
+            data = response.json()
+            region_var = next(v for v in data["variables"] if v["code"] == "Region")
+            
+            regions = []
+            for i, code in enumerate(region_var["values"]):
+                regions.append({
+                    "kod": code,
+                    "namn": region_var["valueTexts"][i]
+                })
+            
+            return pd.DataFrame(regions)
+        except Exception as e:
+            print(f"Fel vid hämtning av regioner: {e}")
+            return pd.DataFrame()
+    
+    def fetch_population_data(self, region_code: str = "1384") -> pd.DataFrame:
         """Hämtar befolkningsdata från SCB"""
         endpoint = SCB_TABLES["befolkning"]["endpoint"]
         query = get_standard_query("befolkning", region_code)
@@ -46,70 +98,6 @@
             print(f"Fel vid hämtning av åldersgruppdata: {e}")
             return pd.DataFrame()
 
-import requests
-import pandas as pd
-import geopandas as gpd
-from typing import Dict, List, Optional
-import json
-from datetime import datetime, timedelta
-import os
-from config import SCB_CONFIG, SCB_TABLES, GIS_SOURCES, EXTERNAL_APIS, get_standard_query
-
-class SCBDataSource:
-    """Förbättrad SCB-klass med bättre felhantering och fler endpoints"""
-    
-    def __init__(self):
-        self.base_url = SCB_CONFIG["base_url"]
-        self.user_agent = SCB_CONFIG["user_agent"]
-        self.timeout = SCB_CONFIG["timeout"]
-        self.cache_dir = "cache"
-        os.makedirs(self.cache_dir, exist_ok=True)
-    
-    def get_available_tables(self) -> Dict:
-        """Returnerar tillgängliga SCB-tabeller"""
-        return SCB_TABLES
-    
-    def get_regions(self) -> pd.DataFrame:
-        """Hämtar alla regioner/kommuner från SCB"""
-        try:
-            url = f"{self.base_url}/BE/BE0101/BE0101A/BefolkningNy"
-            response = requests.get(url, timeout=self.timeout)
-            response.raise_for_status()
-            
-            data = response.json()
-            region_var = next(v for v in data["variables"] if v["code"] == "Region")
-            
-            regions = []
-            for i, code in enumerate(region_var["values"]):
-                regions.append({
-                    "kod": code,
-                    "namn": region_var["valueTexts"][i]
-                })
-            
-            return pd.DataFrame(regions)
-        except Exception as e:
-            print(f"Fel vid hämtning av regioner: {e}")
-            return pd.DataFrame()
-    
-    def fetch_population_data(self, region_code: str = "1384") -> pd.DataFrame:
-        """Hämtar befolkningsdata för en kommun"""
-        endpoint = SCB_TABLES["befolkning"]["endpoint"]
-        query = get_standard_query("befolkning", region_code)
-        
-        try:
-            url = f"{self.base_url}/{endpoint}"
-            response = requests.post(url, json=query, 
-                                   headers={"User-Agent": self.user_agent},
-                                   timeout=self.timeout)
-            response.raise_for_status()
-            
-            data = response.json()
-            return self._parse_population_response(data)
-            
-        except Exception as e:
-            print(f"Fel vid hämtning av befolkningsdata: {e}")
-            return pd.DataFrame()
-    
     def _parse_population_response(self, data: Dict) -> pd.DataFrame:
         """Parsar SCB-svar för befolkningsdata"""
         rows = []
