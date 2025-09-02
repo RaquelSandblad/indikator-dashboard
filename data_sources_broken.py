@@ -212,28 +212,6 @@ class KoladaAPI:
             })
         return pd.DataFrame(rows)
 
-class SMHIWeatherAPI:
-    """SMHI väder-API (öppet, kräver ingen nyckel)"""
-    
-    def __init__(self):
-        self.base_url = "https://opendata-download-metfcst.smhi.se/api"
-    
-    def get_weather_forecast(self, lat: float = 57.49, lon: float = 12.08) -> Dict:
-        """Hämtar väderprognos för Kungsbacka"""
-        try:
-            url = f"{self.base_url}/category/pmp3g/version/2/geotype/point/lon/{lon}/lat/{lat}/data.json"
-            response = requests.get(url, timeout=20)
-            response.raise_for_status()
-            
-            data = response.json()
-            return {
-                "temperatur": data["timeSeries"][0]["parameters"][0]["values"][0],
-                "nederbörd": data["timeSeries"][0]["parameters"][7]["values"][0],
-                "vindstyrka": data["timeSeries"][0]["parameters"][4]["values"][0]
-            }
-        except:
-            return {"temperatur": 15, "nederbörd": 0, "vindstyrka": 5}
-
 class GISDataSource:
     """Klass för att hämta GIS-data från olika källor"""
     
@@ -278,7 +256,6 @@ class GISDataSource:
 scb_data = SCBDataSource()
 trafikverket_data = TrafikverketAPI()
 kolada_data = KoladaAPI()
-smhi_data = SMHIWeatherAPI()
 gis_data = GISDataSource()
 
 def get_all_data_sources():
@@ -287,6 +264,5 @@ def get_all_data_sources():
         "SCB": scb_data,
         "Trafikverket": trafikverket_data,
         "Kolada": kolada_data,
-        "SMHI": smhi_data,
         "GIS": gis_data
     }

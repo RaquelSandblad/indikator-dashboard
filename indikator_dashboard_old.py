@@ -15,7 +15,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Importera våra nya moduler
-from data_sources import get_all_data_sources, scb_data, kolada_data, smhi_data, gis_data
+from data_sources import get_all_data_sources, scb_data, kolada_data, gis_data
 from indicators import PlanningIndicators, create_indicator_dashboard
 from config import KOMMUN_KOD, ORTER, COLORS
 

@@ -379,36 +379,6 @@ class KoladaAPI:
             print(f"Fel vid hämtning av Kolada-data: {e}")
             return pd.DataFrame()
 
-class SMHIWeatherAPI:
-    """SMHI API för väderdata"""
-    
-    def __init__(self):
-        self.base_url = EXTERNAL_APIS["smhi"]["base_url"]
-        self.timeout = 30
-    
-    def get_weather_observations(self, parameter: int = 1, station: int = 71420) -> pd.DataFrame:
-        """Hämtar väderobservationer"""
-        try:
-            url = f"{self.base_url}/observations/parameter/{parameter}/station/{station}/period/latest-day/data.json"
-            response = requests.get(url, timeout=self.timeout)
-            response.raise_for_status()
-            
-            data = response.json()
-            observations = []
-            
-            for obs in data.get("value", []):
-                observations.append({
-                    "date": obs.get("date"),
-                    "value": obs.get("value"),
-                    "quality": obs.get("quality")
-                })
-            
-            return pd.DataFrame(observations)
-            
-        except Exception as e:
-            print(f"Fel vid hämtning av SMHI-data: {e}")
-            return pd.DataFrame()
-
 class TrafikverketAPI:
     """Trafikverket API för trafikdata"""
     
@@ -443,7 +413,6 @@ class TrafikverketAPI:
 # Skapa globala instanser
 scb_data = SCBDataSource()
 kolada_api = KoladaAPI()
-smhi_api = SMHIWeatherAPI()
 trafikverket_api = TrafikverketAPI()
 
 def get_all_data_sources():
@@ -451,7 +420,6 @@ def get_all_data_sources():
     return {
         "SCB": scb_data,
         "Kolada": kolada_api,
-        "SMHI": smhi_api,
         "Trafikverket": trafikverket_api
     }
 
