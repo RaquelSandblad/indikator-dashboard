@@ -255,7 +255,7 @@ def show_complete_data_overview():
             
             # Befolkningsdata
             if 'scb_befolkning' in all_data and not all_data['scb_befolkning'].empty:
-                st.markdown("### 👥 Befolkningsdata")
+                st.markdown("### Befolkningsdata")
                 
                 df_befolkning = all_data['scb_befolkning']
                 
@@ -298,7 +298,7 @@ def show_complete_data_overview():
             
             # Åldersfördelning
             if 'scb_alder' in all_data and not all_data['scb_alder'].empty:
-                st.markdown("### 👶👨👴 Åldersfördelning")
+                st.markdown("### Åldersfördelning")
                 
                 with st.expander("📊 Åldersfördelningsdata"):
                     st.dataframe(all_data['scb_alder'], use_container_width=True)
@@ -402,7 +402,7 @@ def show_complete_data_overview():
                         height=400
                     )
             else:
-                st.warning("Ingen Kolada-data tillgänglig")
+                st.warning("Ingen data tillgänglig")
         
         # Boendebarometer Tab
         with tabs[2]:
@@ -481,10 +481,10 @@ def show_complete_data_overview():
                 st.plotly_chart(fig, use_container_width=True)
                 
                 # Visa full data
-                with st.expander("📊 Detaljerad bostadsprisdata"):
+                with st.expander("📊 Detaljerad data"):
                     st.dataframe(df_boende, use_container_width=True)
             else:
-                st.warning("Ingen bostadsprisdata tillgänglig")
+                st.warning("Ingen data tillgänglig")
         
         # Jämförelser Tab  
         with tabs[3]:
