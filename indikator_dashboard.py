@@ -112,7 +112,7 @@ def main():
     if page == "Hem & Översikt":
         show_home_page()
         
-    elif page == "🆕 Komplett dataöversikt":
+    elif page == "Komplett dataöversikt":
         show_complete_data_overview()
         
     elif page == "Indikatorer & KPI:er":
@@ -298,9 +298,9 @@ def show_complete_data_overview():
             
             # Åldersfördelning
             if 'scb_alder' in all_data and not all_data['scb_alder'].empty:
-                st.markdown("### 👶👨👴 Åldersfördelning")
+                st.markdown("###Åldersfördelning")
                 
-                with st.expander("📊 Åldersfördelningsdata"):
+                with st.expander("Åldersfördelningsdata"):
                     st.dataframe(all_data['scb_alder'], use_container_width=True)
             
             # Bostadsdata
@@ -406,68 +406,9 @@ def show_complete_data_overview():
         
         # Boendebarometer Tab
         with tabs[2]:
-            st.subheader("🏠 Bostadsprisdata från Boendebarometern")
+            st.subheader("Data från Boendebarometern")
             
-            if 'boendebarometer_priser' in all_data and not all_data['boendebarometer_priser'].empty:
-                df_boende = all_data['boendebarometer_priser']
-                
-                # Visa senaste bostadspriser
-                latest_year = df_boende['år'].max()
-                latest_data = df_boende[df_boende['år'] == latest_year].iloc[0]
-                
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    villa_price = latest_data.get('medianpris_villa', 0)
-                    st.metric("Medianpris villa", f"{villa_price:,.0f} kr" if villa_price else "N/A")
-                
-                with col2:
-                    br_price = latest_data.get('medianpris_bostadsratt', 0)
-                    st.metric("Medianpris bostadsrätt", f"{br_price:,.0f} kr" if br_price else "N/A")
-                
-                with col3:
-                    sales = latest_data.get('antal_försäljningar', 0)
-                    st.metric("Antal försäljningar/år", f"{sales:,.0f}" if sales else "N/A")
-                
-                # Visa prisutveckling
-                st.markdown("### 📈 Prisutveckling över tid")
-                
-                import plotly.graph_objects as go
-                
-                fig = go.Figure()
-                
-                if 'medianpris_villa' in df_boende.columns:
-                    fig.add_trace(go.Scatter(
-                        x=df_boende['år'],
-                        y=df_boende['medianpris_villa'],
-                        mode='lines+markers',
-                        name='Villa',
-                        line=dict(color='#1f77b4')
-                    ))
-                
-                if 'medianpris_bostadsratt' in df_boende.columns:
-                    fig.add_trace(go.Scatter(
-                        x=df_boende['år'],
-                        y=df_boende['medianpris_bostadsratt'],
-                        mode='lines+markers',
-                        name='Bostadsrätt',
-                        line=dict(color='#ff7f0e')
-                    ))
-                
-                fig.update_layout(
-                    title='Bostadsprisutveckling Kungsbacka',
-                    xaxis_title='År',
-                    yaxis_title='Medianpris (kr)',
-                    height=400
-                )
-                
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Visa full data
-                with st.expander("📊 Detaljerad bostadsprisdata"):
-                    st.dataframe(df_boende, use_container_width=True)
-            else:
-                st.warning("Ingen bostadsprisdata tillgänglig")
+               
         
         # Jämförelser Tab  
         with tabs[3]:
