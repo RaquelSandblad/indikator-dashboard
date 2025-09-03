@@ -360,7 +360,7 @@ class BoendebarometerData:
         
     def get_kungsbacka_housing_prices(self) -> pd.DataFrame:
         """
-        Försöker hämta bostadsprisdata för Kungsbacka från Boendebarometern
+    Försöker hämta data för Kungsbacka från Boendebarometern
         OBS: Detta kan behöva anpassas beroende på deras API-struktur
         """
         try:
@@ -399,7 +399,7 @@ class BoendebarometerData:
             return self._create_fallback_housing_data()
 
     def _create_fallback_housing_data(self) -> pd.DataFrame:
-        """Skapar exempel bostadsprisdata för Kungsbacka"""
+        """Skapar exempel data för Kungsbacka"""
         data = []
         base_price = 4200000  # Medianpris villa Kungsbacka 2023
         
@@ -450,7 +450,7 @@ class EnhancedDataManager:
             all_data['kolada_kpi'] = self.kolada.get_all_kpi_for_municipality()
             
             # Boendebarometer data
-            st.info("💰 Hämtar bostadsprisdata från Boendebarometer...")
+            st.info("Hämtar data från Boendebarometer...")
             all_data['boendebarometer_priser'] = self.boendebarometer.get_kungsbacka_housing_prices()
             
             # Jämförelsedata

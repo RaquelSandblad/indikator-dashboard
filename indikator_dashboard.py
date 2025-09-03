@@ -777,6 +777,11 @@ def show_population_page():
                     if count > 0:
                         percentage = (count / latest_total) * 100 if latest_total > 0 else 0
                         st.write(f"**{age_group}**: {count:,} personer ({percentage:.1f}%)")
+
+                # Befolkningspyramid
+                st.subheader("Befolkningspyramid")
+                pyramid_fig = create_population_pyramid(latest_age_data)
+                st.plotly_chart(pyramid_fig, use_container_width=True)
             
             # Befolkningstrend
             if len(pop_data["År"].unique()) > 1:
