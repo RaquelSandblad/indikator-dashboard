@@ -11,9 +11,9 @@ Ett webbaserat verktyg för uppföljning av översiktsplanering och strategisk u
 Detta verktyg hjälper planerare och beslutsfattare att:
 
 - **Följa upp** översiktsplanens genomförande
-- **Analysera** befolkningsutveckling och prognoser  
-- **Visualisera** planbesked och byggprojekt på interaktiva kartor
-- **Jämföra** nyckeltal med andra kommuner
+- **Analysera** samhälls- och befolkningsutveckling och prognoser  
+- **Visualisera** fysisk planering på interaktiva kartor
+- **Jämföra** nyckeltal med andra kommuner (?)
 - **Hämta** aktuell data från SCB, Kolada och andra myndigheter automatiskt
 
 ## ✨ Funktioner
