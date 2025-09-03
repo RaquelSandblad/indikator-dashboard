@@ -69,7 +69,7 @@ def main():
             "Välj sida:",
             [
                 "Hem & Översikt",
-                "🆕 Komplett dataöversikt",
+                "Komplett dataöversikt",
                 "Indikatorer & KPI:er", 
                 "Kartor & Planbesked",
                 "Befolkningsanalys",

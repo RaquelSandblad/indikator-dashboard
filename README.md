@@ -39,7 +39,6 @@ Detta verktyg hjälper planerare och beslutsfattare att:
 ### 🌍 Datakällor
 - **SCB** - Befolkning, bostäder, arbetslöshet
 - **Kolada** - Kommunala nyckeltal
-- **SMHI** - Väderdata och klimat
 - **Naturvårdsverket** - Miljödata och naturreservat
 - **Trafikverket** - Infrastruktur och trafikflöden
 
@@ -98,8 +97,7 @@ indikator-dashboard/
 
 ### ✅ Fungerar utan nycklar
 - **SCB** - Statistiska centralbyrån (befolkning, bostäder)
-- **Kolada** - Kommunala nyckeltal  
-- **SMHI** - Väderdata
+- **Kolada** - Kommunala nyckeltal
 - **Naturvårdsverket** - Miljödata via WFS
 
 ### 🔐 Kräver registrering (gratis)
@@ -198,7 +196,7 @@ def calculate_new_indicator(self):
 
 - GIS-lager från kommunen behöver konfigureras
 - Vissa API:er kräver registrering för full funktionalitet
-- Naturreservat kan vara långsamt att ladda
+- Naturreservat (exempelvis) kan vara långsamt att ladda
 
 ## 📞 Support
 
@@ -210,15 +208,6 @@ def calculate_new_indicator(self):
 
 Detta projekt är licensierat under MIT License - se [LICENSE](LICENSE) filen för detaljer.
 
-## 🙏 Tack till
-
-- **SCB** för öppna API:er och data
-- **Kolada** för kommunala nyckeltal
-- **Streamlit** för fantastiskt ramverk
-- **OpenStreetMap** och **Lantmäteriet** för kartdata
-
----
-
-**Senast uppdaterad**: 2024-08-18  
+**Senast uppdaterad**: 2025-09-03  
 **Version**: 2.0.0  
 **Utvecklad för**: Kungsbacka kommun
