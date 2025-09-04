@@ -688,17 +688,17 @@ def show_maps_page(planbesked_gdf, op_gdf):
     with tab2:
         st.subheader("🏠 Boendebarometer - Uppsala Universitet")
     st.markdown('<iframe src="//boendebarometern.uu.se/?embedded=true#$chart-type=extapimap&url=v2" style="width: 100%; height: 625px; margin: 0 0 0 0; border: 1px solid grey;" allowfullscreen></iframe>', unsafe_allow_html=True)
-        
-        # Lägg till förklarande text
+
+    # Lägg till förklarande text
     st.info("""
 💡 **Tips för användning:**
 - Zooma in på Hallands län/Kungsbacka för lokal data
 - Jämför med närliggande kommuner som Göteborg, Varberg
     """)
-        
-        # Länk till mer information
-        with st.expander("ℹ️ Om Boendebarometern"):
-            st.markdown("""
+
+    # Länk till mer information
+    with st.expander("ℹ️ Om Boendebarometern"):
+        st.markdown("""
 **Källa:** Uppsala universitet, Institutet för bostads- och urbanforskning (IBF)
 
 **Vad den visar:**
