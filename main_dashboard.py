@@ -69,7 +69,7 @@ def main():
             "Välj sida:",
             [
                 "Hem & Översikt",
-                "🆕 Komplett dataöversikt",
+                "Komplett dataöversikt",
                 "Indikatorer & KPI:er", 
                 "Kartor & Planbesked",
                 "Befolkningsanalys",
@@ -228,7 +228,7 @@ def show_complete_data_overview():
         # Cache control
         col1, col2 = st.columns([3, 1])
         with col1:
-            st.info("💡 **Tips:** Data cachas automatiskt för bättre prestanda. Använd 'Uppdatera data' för att hämta senaste informationen.")
+            st.info("💡Data cachas automatiskt för bättre prestanda. Använd 'Uppdatera data' för att hämta senaste informationen.")
         
         with col2:
             if st.button("🔄 Uppdatera data", type="primary"):
@@ -691,10 +691,9 @@ def show_maps_page(planbesked_gdf, op_gdf):
         
         # Lägg till förklarande text
         st.info("""
-        💡 **Tips för användning:**
-        - Zooma in på Hallands län/Kungsbacka för lokal data
-        - Jämför med närliggande kommuner som Göteborg, Varberg
-        - Använd olika kartlager för att se priser, förändring, etc.
+    💡 **Tips för användning:**
+    - Zooma in på Hallands län/Kungsbacka för lokal data
+    - Jämför med närliggande kommuner som Göteborg, Varberg
         """)
         
         # Länk till mer information
