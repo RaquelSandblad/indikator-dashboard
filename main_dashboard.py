@@ -87,72 +87,7 @@ def main():
             except Exception as e:
                 st.write(f"Fel - {name}")
 
-    # Ladda geodata (cache för prestanda)
-    @st.cache_data
-    def get_geodata():
-        return load_geospatial_data()
-    planbesked_gdf, op_gdf = get_geodata()
-
-    # Router
-    if page == "Hem & Översikt":
-        show_home_page()
-    elif page == "Komplett dataöversikt":
-        show_complete_data_overview()
-    elif page == "Översiktsplanering":
-        show_overview_planning_page()
-    elif page == "Indikatorer & KPI:er":
-        show_indicators_page(planbesked_gdf, op_gdf)
-    elif page == "Kartor & Planbesked":
-        show_maps_page(planbesked_gdf, op_gdf)
-    elif page == "Befolkningsanalys":
-        show_population_page()
-    elif page == "Ortspecifik analys":
-        show_locality_page()
-    elif page == "Värmekarta kommunen":
-        show_heatmap_page()
-    elif page == "Administration & API:er":
-        show_admin_page()
-        
-        st.markdown("---")
-        
-        # Status för datakällor
-        st.subheader("Datakällor")
-        data_sources = get_all_data_sources()
-        
-        for name, source in data_sources.items():
-            try:
-                if name == "SCB":
-                    regions = source.get_regions()
-                    status = "OK" if not regions.empty else "Fel"
-                elif name == "Kolada":
-                    data = source.get_municipality_data(KOMMUN_KOD)
-                    status = "OK" if not data.empty else "Fel"
-                else:
-                    status = "OK"  # Antag att andra fungerar
-                
-                st.write(f"{status} - {name}")
-                
-            except Exception as e:
-                st.write(f"Fel - {name}")
-    
-    # Ladda geodata (cache för prestanda)
-    @st.cache_data
-    def get_geodata():
-        return load_geospatial_data()
-    
-    planbesked_gdf, op_gdf = get_geodata()
-    
-    # Router
-    if page == "Hem & Översikt":
-        show_home_page()
-        
-    elif page == "Komplett dataöversikt":
-        show_complete_data_overview()
-        
-    elif page == "Översiktsplanering":
-        show_overview_planning_page()
-    elif page == "Indikatorer & KPI:er":
-        show_indicators_page(planbesked_gdf, op_gdf)
+    # ...existing code...
 
 # Ny sida: Översiktsplanering
 def show_overview_planning_page():
@@ -160,11 +95,77 @@ def show_overview_planning_page():
     st.markdown("""
     Här kan du arbeta med uppskattningar, prognoser, utfall och få en tematisk överblick kopplat till översiktsplaneringen.
     """)
+
     tabs = st.tabs(["Uppskattning", "Prognos", "Utfall", "Tematisk överblick"])
 
     with tabs[0]:
         st.subheader("Uppskattning")
-        st.info("Här kan du lägga in uppskattade värden eller analyser.")
+        st.markdown("---")
+
+        # Ladda planbesked-data (geojson)
+        import json
+        import folium
+        from streamlit_folium import st_folium
+        import os
+
+        # Läs in planbesked.json (GeoJSON)
+        planbesked_path = os.path.join(os.path.dirname(__file__), "planbesked.json")
+        with open(planbesked_path, encoding="utf-8") as f:
+            planbesked_data = json.load(f)
+
+        # Skapa karta över Kungsbacka
+        m = folium.Map(location=[57.492, 12.073], zoom_start=10, tiles="cartodbpositron")
+
+        # Lägg till planbesked-punkter/polygoner
+        for feature in planbesked_data["features"]:
+            geom_type = feature["geometry"]["type"]
+            props = feature["properties"]
+            if geom_type == "Point":
+                coords = feature["geometry"]["coordinates"][::-1]  # lat, lon
+                folium.CircleMarker(
+                    location=coords,
+                    radius=7,
+                    color="#3388ff",
+                    fill=True,
+                    fill_color="#3388ff",
+                    fill_opacity=0.7,
+                    popup=props.get("projektnamn", "Planbesked")
+                ).add_to(m)
+            elif geom_type == "Polygon":
+                folium.GeoJson(feature, name=props.get("projektnamn", "Planbesked")).add_to(m)
+
+        st_folium(m, width=700, height=500)
+
+        # --- Dela sidan med ett streck ---
+        st.markdown("---")
+
+        # Förberedda rutor för POSITIVA och NEGATIVA planbesked
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+            <div style='background-color:#eafaf1; border:2px solid #b7e4c7; border-radius:10px; padding:1em;'>
+            <b>Positiva - <span style='color:#228B22;'>XX</span></b><br>
+            <u>Bostäder:</u><br>
+            • Kungsbacka stad – ...<br>
+            • Åsa – ...<br>
+            • Anneberg – ...<br>
+            • Övriga orter – ...<br>
+            <br>
+            <u>Mark för näringsliv</u> – ...<br>
+            <u>Offentlig service</u> – ...<br>
+            <u>Utanför utvecklingsort</u> – ...<br>
+            </div>
+            """, unsafe_allow_html=True)
+        with col2:
+            st.markdown("""
+            <div style='background-color:#fff0f0; border:2px solid #f5c2c7; border-radius:10px; padding:1em;'>
+            <b>Negativa - <span style='color:#B22222;'>XX</span></b><br>
+            Kungsbacka stad – ...<br>
+            Åsa – ...<br>
+            Övriga orter – ...<br>
+            Utanför utvecklingsort – ...<br>
+            </div>
+            """, unsafe_allow_html=True)
 
     with tabs[1]:
         st.subheader("Prognos")
