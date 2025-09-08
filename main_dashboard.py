@@ -52,24 +52,15 @@ st.markdown("""
 
 def main():
     """Huvudfunktion för dashboarden"""
-    
-    # Header
-    st.markdown("""
-    <div class="main-header">
-        <h1 style="color: white; margin: 0;">🏙️ Kungsbacka Planeringsdashboard</h1>
-        <p style="color: white; margin: 0; opacity: 0.9;">Verktyg för uppföljning av översiktsplanering och strategisk utveckling</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Sidebar navigation
+    # Meny och navigation
     with st.sidebar:
         st.header("Navigation")
-        
         page = st.radio(
             "Välj sida:",
             [
                 "Hem & Översikt",
                 "Komplett dataöversikt",
+                "Översiktsplanering",
                 "Indikatorer & KPI:er", 
                 "Kartor & Planbesked",
                 "Befolkningsanalys",
@@ -77,6 +68,50 @@ def main():
                 "Värmekarta kommunen",
                 "Administration & API:er"
             ]
+        )
+        st.markdown("---")
+        # Status för datakällor
+        st.subheader("Datakällor")
+        data_sources = get_all_data_sources()
+        for name, source in data_sources.items():
+            try:
+                if name == "SCB":
+                    regions = source.get_regions()
+                    status = "OK" if not regions.empty else "Fel"
+                elif name == "Kolada":
+                    data = source.get_municipality_data(KOMMUN_KOD)
+                    status = "OK" if not data.empty else "Fel"
+                else:
+                    status = "OK"  # Antag att andra fungerar
+                st.write(f"{status} - {name}")
+            except Exception as e:
+                st.write(f"Fel - {name}")
+
+    # Ladda geodata (cache för prestanda)
+    @st.cache_data
+    def get_geodata():
+        return load_geospatial_data()
+    planbesked_gdf, op_gdf = get_geodata()
+
+    # Router
+    if page == "Hem & Översikt":
+        show_home_page()
+    elif page == "Komplett dataöversikt":
+        show_complete_data_overview()
+    elif page == "Översiktsplanering":
+        show_overview_planning_page()
+    elif page == "Indikatorer & KPI:er":
+        show_indicators_page(planbesked_gdf, op_gdf)
+    elif page == "Kartor & Planbesked":
+        show_maps_page(planbesked_gdf, op_gdf)
+    elif page == "Befolkningsanalys":
+        show_population_page()
+    elif page == "Ortspecifik analys":
+        show_locality_page()
+    elif page == "Värmekarta kommunen":
+        show_heatmap_page()
+    elif page == "Administration & API:er":
+        show_admin_page()
         )
         
         st.markdown("---")
@@ -115,23 +150,34 @@ def main():
     elif page == "Komplett dataöversikt":
         show_complete_data_overview()
         
+    elif page == "Översiktsplanering":
+        show_overview_planning_page()
     elif page == "Indikatorer & KPI:er":
         show_indicators_page(planbesked_gdf, op_gdf)
-        
-    elif page == "Kartor & Planbesked":
-        show_maps_page(planbesked_gdf, op_gdf)
-        
-    elif page == "Befolkningsanalys":
-        show_population_page()
-        
-    elif page == "Ortspecifik analys":
-        show_locality_page()
-        
-    elif page == "Värmekarta kommunen":
-        show_heatmap_page()
-        
-    elif page == "Administration & API:er":
-        show_admin_page()
+
+# Ny sida: Översiktsplanering
+def show_overview_planning_page():
+    st.header("Översiktsplanering")
+    st.markdown("""
+    Här kan du arbeta med uppskattningar, prognoser, utfall och få en tematisk överblick kopplat till översiktsplaneringen.
+    """)
+    tabs = st.tabs(["Uppskattning", "Prognos", "Utfall", "Tematisk överblick"])
+
+    with tabs[0]:
+        st.subheader("Uppskattning")
+        st.info("Här kan du lägga in uppskattade värden eller analyser.")
+
+    with tabs[1]:
+        st.subheader("Prognos")
+        st.info("Här kan du visa prognoser och framtidsscenarier.")
+
+    with tabs[2]:
+        st.subheader("Utfall")
+        st.info("Här kan du visa utfall och faktisk utveckling.")
+
+    with tabs[3]:
+        st.subheader("Tematisk överblick")
+        st.info("Här kan du visa kartor, teman eller annan översiktlig information.")
 
 
 def show_home_page():
