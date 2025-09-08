@@ -112,7 +112,6 @@ def main():
         show_heatmap_page()
     elif page == "Administration & API:er":
         show_admin_page()
-        )
         
         st.markdown("---")
         
