@@ -790,6 +790,34 @@ def show_population_page():
         st.metric("Pensionärer (65+ år)", "18 892", delta="21.7% av befolkningen")
     
     # Befolkningsstatistik från SCB
+    # --- Befolkningsprognos 2025-2100 ---
+    st.subheader("Befolkningsprognos 2025–2100")
+    st.markdown("""
+    Nedan visas Kungsbackas befolkningsprognos och framskrivning till år 2100. Prognosen bygger på kommunens och SCB:s antaganden om födelse-, döds- och flyttnetto.
+    """)
+
+    # Data: år och befolkning (utan tusentalsavgränsare)
+    prognos_år = list(range(2025, 2101))
+    prognos_bef = [86183, 86187, 86247, 86370, 86684, 87357, 88206, 88715, 89323, 89787, 90139, 90504, 90879, 91266, 91665, 92077, 92501, 92937, 93386, 93850, 94327, 94815, 95317, 95829, 96352, 96882, 97336, 97793, 98251, 98712, 99175, 99640, 100107, 100576, 101048, 101521, 101997, 102475, 102956, 103439, 103924, 104411, 104900, 105392, 105886, 106383, 106882, 107383, 107886, 108392, 108900, 109411, 109924, 110439, 110957, 111477, 112000, 112525, 113052, 113582, 114115, 114650, 115187, 115728, 116270, 116815, 117363, 117913, 118466, 119021, 119579, 120140, 120703, 121269, 121838, 122409]
+
+    import plotly.graph_objects as go
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=prognos_år, y=prognos_bef, mode='lines+markers', fill='tozeroy',
+                             line=dict(color='#1f77b4', width=3),
+                             marker=dict(size=5),
+                             name='Prognos'))
+    fig.update_layout(
+        title='Befolkningsprognos Kungsbacka 2025–2100',
+        xaxis_title='År',
+        yaxis_title='Antal invånare',
+        template='plotly_white',
+        hovermode='x unified',
+        margin=dict(l=20, r=20, t=50, b=20),
+        height=400
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.caption("Källa: Kungsbacka kommun, SCB. Prognosen är en framskrivning och kan komma att revideras.")
     try:
         # Hämta faktisk data från SCB för Kungsbacka (1380)
         pop_data = scb_data.fetch_population_data("1380")  # Kungsbacka kommunkod
