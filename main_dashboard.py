@@ -52,42 +52,45 @@ st.markdown("""
 
 def main():
     """Huvudfunktion för dashboarden"""
-    # Meny och navigation
-    with st.sidebar:
-        st.header("Navigation")
-        page = st.radio(
-            "Välj sida:",
-            [
-                "Hem & Översikt",
-                "Komplett dataöversikt",
-                "Översiktsplanering",
-                "Indikatorer & KPI:er", 
-                "Kartor & Planbesked",
-                "Befolkningsanalys",
-                "Ortspecifik analys",
-                "Värmekarta kommunen",
-                "Administration & API:er"
-            ]
-        )
-        st.markdown("---")
-        # Status för datakällor
-        st.subheader("Datakällor")
-        data_sources = get_all_data_sources()
-        for name, source in data_sources.items():
-            try:
-                if name == "SCB":
-                    regions = source.get_regions()
-                    status = "OK" if not regions.empty else "Fel"
-                elif name == "Kolada":
-                    data = source.get_municipality_data(KOMMUN_KOD)
-                    status = "OK" if not data.empty else "Fel"
-                else:
-                    status = "OK"  # Antag att andra fungerar
-                st.write(f"{status} - {name}")
-            except Exception as e:
-                st.write(f"Fel - {name}")
+    try:
+        # Meny och navigation
+        with st.sidebar:
+            st.header("Navigation")
+            page = st.radio(
+                "Välj sida:",
+                [
+                    "Hem & Översikt",
+                    "Komplett dataöversikt",
+                    "Översiktsplanering",
+                    "Indikatorer & KPI:er", 
+                    "Kartor & Planbesked",
+                    "Befolkningsanalys",
+                    "Ortspecifik analys",
+                    "Värmekarta kommunen",
+                    "Administration & API:er"
+                ]
+            )
+            st.markdown("---")
+            # Status för datakällor
+            st.subheader("Datakällor")
+            data_sources = get_all_data_sources()
+            for name, source in data_sources.items():
+                try:
+                    if name == "SCB":
+                        regions = source.get_regions()
+                        status = "OK" if not regions.empty else "Fel"
+                    elif name == "Kolada":
+                        data = source.get_municipality_data(KOMMUN_KOD)
+                        status = "OK" if not data.empty else "Fel"
+                    else:
+                        status = "OK"  # Antag att andra fungerar
+                    st.write(f"{status} - {name}")
+                except Exception as e:
+                    st.write(f"Fel - {name}")
 
-    # ...existing code...
+        # ...existing code...
+    except Exception as e:
+        st.error(f"Fel i sidans rendering: {e}")
 
 # Ny sida: Översiktsplanering
 def show_overview_planning_page():
