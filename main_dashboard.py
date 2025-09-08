@@ -109,15 +109,9 @@ def main():
             else:
                 st.info("Sidan är under utveckling.")
         elif page == "Befolkningsanalys":
-            if 'show_population_analysis_page' in globals():
-                show_population_analysis_page()
-            else:
-                st.info("Sidan är under utveckling.")
+            st.info("Sidan är under utveckling.")  # Funktion ej implementerad ännu
         elif page == "Ortspecifik analys":
-            if 'show_area_analysis_page' in globals():
-                show_area_analysis_page()
-            else:
-                st.info("Sidan är under utveckling.")
+            st.info("Sidan är under utveckling.")  # Funktion ej implementerad ännu
         elif page == "Värmekarta kommunen":
             if 'show_heatmap_page' in globals():
                 show_heatmap_page()
@@ -191,12 +185,11 @@ def show_overview_planning_page():
             elif geom_type == "Polygon":
                 folium.GeoJson(feature, name=props.get("projektnamn", "Planbesked")).add_to(m)
 
-        st_folium(m, width=700, height=500)
 
-        # --- Sammanställningsrutor bredvid kartan ---
+        # --- Kartan och sammanställningsrutor i samma rad ---
         col_map, col_sum1, col_sum2 = st.columns([2,1,1])
         with col_map:
-            pass  # Kartan visas redan ovan
+            st_folium(m, width=700, height=500)
         with col_sum1:
             st.markdown("""
             <div style='background-color:#fff; border:2px solid #228B22; border-radius:10px; padding:1em; color:#222; margin-bottom:0.5em;'>
