@@ -185,7 +185,7 @@ def show_overview_planning_page():
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("""
-            <div style='background-color:#eafaf1; border:2px solid #b7e4c7; border-radius:10px; padding:1em;'>
+            <div style='background-color:#eafaf1; border:2px solid #b7e4c7; border-radius:10px; padding:1em; color:#222;'>
             <b>Positiva - <span style='color:#228B22;'>XX</span></b><br>
             <u>Bostäder:</u><br>
             • Kungsbacka stad – ...<br>
@@ -200,7 +200,7 @@ def show_overview_planning_page():
             """, unsafe_allow_html=True)
         with col2:
             st.markdown("""
-            <div style='background-color:#fff0f0; border:2px solid #f5c2c7; border-radius:10px; padding:1em;'>
+            <div style='background-color:#fff0f0; border:2px solid #f5c2c7; border-radius:10px; padding:1em; color:#222;'>
             <b>Negativa - <span style='color:#B22222;'>XX</span></b><br>
             Kungsbacka stad – ...<br>
             Åsa – ...<br>
