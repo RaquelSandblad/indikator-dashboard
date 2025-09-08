@@ -141,7 +141,22 @@ def show_overview_planning_page():
     tabs = st.tabs(["Uppskattning", "Prognos", "Utfall", "Tematisk överblick"])
 
     with tabs[0]:
-        st.subheader("Uppskattning")
+
+        # Rubrik över kartan
+        # Hämta datumintervall dynamiskt i framtiden, nu hårdkodat
+        start_date = "2022"
+        end_date = "april 2025"
+        st.markdown(f"""
+        <div style='font-size:1.3em; font-weight:bold; margin-bottom:0.5em;'>
+            Planbesked<br>
+            <span style='font-size:0.9em; font-weight:normal;'>
+                {start_date} – {end_date} <br>
+                <span style='font-size:0.85em; color:#888;'>
+                (Den här datan kommer att ändras automatiskt när vi får in ny data)
+                </span>
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
         st.markdown("---")
 
         # Ladda planbesked-data (geojson)
@@ -178,10 +193,33 @@ def show_overview_planning_page():
 
         st_folium(m, width=700, height=500)
 
+        # --- Sammanställningsrutor bredvid kartan ---
+        col_map, col_sum1, col_sum2 = st.columns([2,1,1])
+        with col_map:
+            pass  # Kartan visas redan ovan
+        with col_sum1:
+            st.markdown("""
+            <div style='background-color:#fff; border:2px solid #228B22; border-radius:10px; padding:1em; color:#222; margin-bottom:0.5em;'>
+            <b>Sammanställning – <span style='color:#228B22;'>35 st ja</span></b><br>
+            71% prioriterade orter/<br>verksamhetsområde varav<br>
+            40% i staden<br>
+            9% utanför utvecklingsort
+            </div>
+            """, unsafe_allow_html=True)
+        with col_sum2:
+            st.markdown("""
+            <div style='background-color:#fff; border:2px solid #B22222; border-radius:10px; padding:1em; color:#222; margin-bottom:0.5em;'>
+            <b>Sammanställning – <span style='color:#B22222;'>14 st nej</span></b><br>
+            29% i prioriterade orter<br>
+            57% i övriga orter<br>
+            14% utanför utvecklingsort
+            </div>
+            """, unsafe_allow_html=True)
+
         # --- Dela sidan med ett streck ---
         st.markdown("---")
 
-        # Förberedda rutor för POSITIVA och NEGATIVA planbesked
+        # Förberedda rutor för POSITIVA och NEGATIVA planbesked (för framtida automatisering)
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("""
