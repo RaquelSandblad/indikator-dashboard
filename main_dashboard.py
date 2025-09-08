@@ -99,19 +99,21 @@ def main():
         elif page == "Översiktsplanering":
             show_overview_planning_page()
         elif page == "Indikatorer & KPI:er":
-            if 'show_indicators_page' in globals():
-                show_indicators_page()
-            else:
-                st.info("Sidan är under utveckling.")
+            try:
+                planbesked_gdf, op_gdf = load_geospatial_data()
+                show_indicators_page(planbesked_gdf, op_gdf)
+            except Exception as e:
+                st.error(f"Fel i sidans rendering: {e}")
         elif page == "Kartor & Planbesked":
-            if 'show_maps_page' in globals():
-                show_maps_page()
-            else:
-                st.info("Sidan är under utveckling.")
+            try:
+                planbesked_gdf, op_gdf = load_geospatial_data()
+                show_maps_page(planbesked_gdf, op_gdf)
+            except Exception as e:
+                st.error(f"Fel i sidans rendering: {e}")
         elif page == "Befolkningsanalys":
-            st.info("Sidan är under utveckling.")  # Funktion ej implementerad ännu
+            show_population_page()
         elif page == "Ortspecifik analys":
-            st.info("Sidan är under utveckling.")  # Funktion ej implementerad ännu
+            show_locality_page()
         elif page == "Värmekarta kommunen":
             if 'show_heatmap_page' in globals():
                 show_heatmap_page()
