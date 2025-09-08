@@ -1262,5 +1262,5 @@ def show_admin_page():
     else:
         st.error(f"🔴 Systemfel ({working_systems}/{total_systems})")
 
-if __name__ == "__main__":
-    main()
+
+main()
