@@ -112,7 +112,7 @@ def main():
     if page == "Hem & Översikt":
         show_home_page()
         
-    elif page == "🆕 Komplett dataöversikt":
+    elif page == "Komplett dataöversikt":
         show_complete_data_overview()
         
     elif page == "Indikatorer & KPI:er":
