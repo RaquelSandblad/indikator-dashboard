@@ -88,7 +88,46 @@ def main():
                 except Exception as e:
                     st.write(f"Fel - {name}")
 
-        # ...existing code...
+        # Router: visa rätt sida beroende på val
+        if page == "Hem & Översikt":
+            show_home_page()
+        elif page == "Komplett dataöversikt":
+            if 'show_complete_data_overview' in globals():
+                show_complete_data_overview()
+            else:
+                st.info("Sidan är under utveckling.")
+        elif page == "Översiktsplanering":
+            show_overview_planning_page()
+        elif page == "Indikatorer & KPI:er":
+            if 'show_indicators_page' in globals():
+                show_indicators_page()
+            else:
+                st.info("Sidan är under utveckling.")
+        elif page == "Kartor & Planbesked":
+            if 'show_maps_page' in globals():
+                show_maps_page()
+            else:
+                st.info("Sidan är under utveckling.")
+        elif page == "Befolkningsanalys":
+            if 'show_population_analysis_page' in globals():
+                show_population_analysis_page()
+            else:
+                st.info("Sidan är under utveckling.")
+        elif page == "Ortspecifik analys":
+            if 'show_area_analysis_page' in globals():
+                show_area_analysis_page()
+            else:
+                st.info("Sidan är under utveckling.")
+        elif page == "Värmekarta kommunen":
+            if 'show_heatmap_page' in globals():
+                show_heatmap_page()
+            else:
+                st.info("Sidan är under utveckling.")
+        elif page == "Administration & API:er":
+            if 'show_admin_page' in globals():
+                show_admin_page()
+            else:
+                st.info("Sidan är under utveckling.")
     except Exception as e:
         st.error(f"Fel i sidans rendering: {e}")
 
