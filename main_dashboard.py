@@ -1,7 +1,6 @@
 # main_dashboard.py - Ny huvudapplikation med förbättrad struktur
 
 import streamlit as st
-st.info("DEBUG: main_dashboard.py laddad!")
 import os
 import sys
 from PIL import Image
@@ -52,7 +51,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def main():
-    st.info("DEBUG: main() körs!")
     """Huvudfunktion för dashboarden"""
     try:
         # Meny och navigation
