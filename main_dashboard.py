@@ -211,10 +211,11 @@ def show_overview_planning_page():
             </div>
             """, unsafe_allow_html=True)
 
+
         # --- Dela sidan med ett streck ---
         st.markdown("---")
 
-        # Förberedda rutor för POSITIVA och NEGATIVA planbesked (för framtida automatisering)
+        # POSITIVA/NEGATIVA planbesked-rutor direkt under kartan och sammanställning
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("""
