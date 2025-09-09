@@ -127,130 +127,13 @@ def main():
     except Exception as e:
         st.error(f"Fel i sidans rendering: {e}")
 
-# Ny sida: Översiktsplanering
 def show_overview_planning_page():
-                # --- Cirkeldiagram: Andel positiva planbesked för bostäder 2022–2025 ---
-                st.markdown("""
-                <div style='margin-top:2em; margin-bottom:0.5em;'>
-                <span style='font-size:1.2em; font-weight:bold;'>Andel positiva planbesked för bostäder 2022–2025</span>
-                </div>
-                """, unsafe_allow_html=True)
-                plot_planbesked_pie(
-                        labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
-                        values=[47, 30, 23],
-                        colors=["#a63d1c", "#f7b08a", "#fbe7de"]
-                )
-
-                # --- Cirkeldiagram: Bostadsförsörjningsplan, andel bostäder 2025–2029 ---
-                st.markdown("""
-                <div style='margin-top:2em; margin-bottom:0.5em;'>
-                <span style='font-size:1.2em; font-weight:bold;'>Bostadsförsörjningsplan, andel bostäder 2025–2029</span>
-                </div>
-                """, unsafe_allow_html=True)
-                plot_planbesked_pie(
-                        labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
-                        values=[60, 15, 25],
-                        colors=["#a63d1c", "#f7b08a", "#fbe7de"]
-                )
-
-                # --- Avdelare/streck innan Antura-tabellen ---
-                st.markdown("---")
-
-                # --- Antura-tabell (statisk rubrik, dynamiskt innehåll i framtiden) ---
-                st.markdown("""
-                <div style='font-size:1.2em; font-weight:bold; margin-bottom:0.5em;'>Projekt och aktiviteter från <span style='color:#b22222;'>Antura</span></div>
-                <div style='font-size:1em; color:#888; margin-bottom:1em;'>
-                (Denna sektion kommer att uppdateras automatiskt när Antura-integration är på plats. Nedan är exempeldata.)
-                </div>
-                """, unsafe_allow_html=True)
-                # Exempel på tabellstruktur, kan bytas ut mot st.dataframe eller st.table när data finns
-                st.markdown("""
-                <table style='width:100%; border-collapse:collapse;'>
-                    <tr style='background:#f5f5f5; font-weight:bold;'>
-                        <td style='border:1px solid #ddd; padding:8px;'>Projekt</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Status</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Ansvarig</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Start</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Slut</td>
-                    </tr>
-                    <tr>
-                        <td style='border:1px solid #ddd; padding:8px;'>Planbesked Kungsbacka stad</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Pågående</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Anna Andersson</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>2023-01-15</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>2025-06-30</td>
-                    </tr>
-                    <tr>
-                        <td style='border:1px solid #ddd; padding:8px;'>Bostadsförsörjningsplan Åsa</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Planerad</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>Erik Ek</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>2025-03-01</td>
-                        <td style='border:1px solid #ddd; padding:8px;'>2027-12-31</td>
-                    </tr>
-                </table>
-                """, unsafe_allow_html=True)
-                # --- Divisör/linje för att separera sektioner ---
-                st.markdown("<hr style='margin:2em 0; border: 1px solid #444;'>", unsafe_allow_html=True)
-
-                # --- Antura-tabell: statiska rubriker och kategorier, förberedd för dynamisk data ---
-                st.markdown("""
-                <div style='background:#f7f5f2; border-radius:10px; padding:1.5em 1em 1em 1em; margin-bottom:2em;'>
-                <span style='font-size:1.3em; font-weight:bold;'>Planbesked i <span style='color:#222; text-decoration:underline;'>Antura</span> – vad vi vill kunna få ut</span>
-                <br><span style='color:#888; font-size:0.95em;'>All data nedan kommer att uppdateras automatiskt från Antura när integrationen är klar.</span>
-                <div style='overflow-x:auto; margin-top:1.5em;'>
-                <table style='border-collapse:collapse; width:100%; background:#f7f5f2;'>
-                    <tr>
-                        <th rowspan='2' style='background:#e5cfc3; color:#111; font-weight:bold; text-align:center; border-right:2px solid #fff; border-bottom:2px solid #fff; padding:0.7em 0.5em; writing-mode:vertical-rl; text-orientation: mixed;'>BOSTÄDER</th>
-                        <th style='background:#f7f5f2; color:#222; font-weight:bold; text-align:left; border-bottom:2px solid #fff; padding:0.7em 0.5em;'>Kungsbacka stad</th>
-                        <td style='background:#f7f5f2;'></td>
-                        <td style='background:#f7f5f2;'></td>
-                    </tr>
-                    <tr>
-                        <th style='background:#f7f5f2; color:#222; font-weight:bold; text-align:left; border-bottom:2px solid #fff; padding:0.7em 0.5em;'>Åsa</th>
-                        <td style='background:#f7f5f2;'></td>
-                        <td style='background:#f7f5f2;'></td>
-                    </tr>
-                    <tr>
-                        <th rowspan='2' style='background:#e5cfc3; color:#111; font-weight:bold; text-align:center; border-right:2px solid #fff; border-bottom:2px solid #fff; padding:0.7em 0.5em; writing-mode:vertical-rl; text-orientation: mixed;'>BOSTÄDER</th>
-                        <th style='background:#f7f5f2; color:#222; font-weight:bold; text-align:left; border-bottom:2px solid #fff; padding:0.7em 0.5em;'>Anneberg</th>
-                        <td style='background:#f7f5f2;'></td>
-                        <td style='background:#f7f5f2;'></td>
-                    </tr>
-                    <tr>
-                        <th style='background:#f7f5f2; color:#222; font-weight:bold; text-align:left; border-bottom:2px solid #fff; padding:0.7em 0.5em;'>Övriga orter</th>
-                        <td style='background:#f7f5f2;'></td>
-                        <td style='background:#f7f5f2;'></td>
-                    </tr>
-                    <tr>
-                        <th rowspan='3' style='background:#e5cfc3; color:#111; font-weight:bold; text-align:center; border-right:2px solid #fff; border-bottom:2px solid #fff; padding:0.7em 0.5em; writing-mode:vertical-rl; text-orientation: mixed;'>BOSTÄDER</th>
-                        <th style='background:#f7f5f2; color:#222; font-weight:bold; text-align:left; border-bottom:2px solid #fff; padding:0.7em 0.5em;'>Utanför ort</th>
-                        <td style='background:#f7f5f2;'></td>
-                        <td style='background:#f7f5f2;'></td>
-                    </tr>
-                    <tr>
-                        <th style='background:#f7f5f2; color:#222; font-weight:bold; text-align:left; border-bottom:2px solid #fff; padding:0.7em 0.5em;'>Offentlig service</th>
-                        <td style='background:#f7f5f2;'></td>
-                        <td style='background:#f7f5f2;'></td>
-                    </tr>
-                    <tr>
-                        <th style='background:#f7f5f2; color:#222; font-weight:bold; text-align:left; border-bottom:2px solid #fff; padding:0.7em 0.5em;'>Mark för näringslivet</th>
-                        <td style='background:#f7f5f2;'></td>
-                        <td style='background:#f7f5f2;'></td>
-                    </tr>
-                </table>
-                </div>
-                <div style='color:#888; font-size:0.95em; margin-top:0.7em;'>
-                <b>Not:</b> Rubriker och kategorier är statiska – all övrig data kommer att fyllas på automatiskt från Antura.
-                </div>
-                </div>
-                """, unsafe_allow_html=True)
-
     # --- Cirkeldiagram: Andel positiva planbesked för bostäder 2022–2025 ---
     st.markdown("""
-        <div style='margin-top:2em; margin-bottom:0.5em;'>
-        <span style='font-size:1.2em; font-weight:bold;'>Andel positiva planbesked för bostäder 2022–2025</span>
-        </div>
-        """, unsafe_allow_html=True)
+    <div style='margin-top:2em; margin-bottom:0.5em;'>
+    <span style='font-size:1.2em; font-weight:bold;'>Andel positiva planbesked för bostäder 2022–2025</span>
+    </div>
+    """, unsafe_allow_html=True)
     plot_planbesked_pie(
         labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
         values=[47, 30, 23],
@@ -259,10 +142,71 @@ def show_overview_planning_page():
 
     # --- Cirkeldiagram: Bostadsförsörjningsplan, andel bostäder 2025–2029 ---
     st.markdown("""
-        <div style='margin-top:2em; margin-bottom:0.5em;'>
-        <span style='font-size:1.2em; font-weight:bold;'>Bostadsförsörjningsplan, andel bostäder 2025–2029</span>
-        </div>
-        """, unsafe_allow_html=True)
+    <div style='margin-top:2em; margin-bottom:0.5em;'>
+    <span style='font-size:1.2em; font-weight:bold;'>Bostadsförsörjningsplan, andel bostäder 2025–2029</span>
+    </div>
+    """, unsafe_allow_html=True)
+    plot_planbesked_pie(
+        labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
+        values=[60, 15, 25],
+        colors=["#a63d1c", "#f7b08a", "#fbe7de"]
+    )
+
+    # --- Avdelare/streck innan Antura-tabellen ---
+    st.markdown("---")
+
+    # --- Antura-tabell (statisk rubrik, dynamiskt innehåll i framtiden) ---
+    st.markdown("""
+    <div style='font-size:1.2em; font-weight:bold; margin-bottom:0.5em;'>Projekt och aktiviteter från <span style='color:#b22222;'>Antura</span></div>
+    <div style='font-size:1em; color:#888; margin-bottom:1em;'>
+    (Denna sektion kommer att uppdateras automatiskt när Antura-integration är på plats. Nedan är exempeldata.)
+    </div>
+    """, unsafe_allow_html=True)
+    # Exempel på tabellstruktur, kan bytas ut mot st.dataframe eller st.table när data finns
+    st.markdown("""
+    <table style='width:100%; border-collapse:collapse;'>
+        <tr style='background:#f5f5f5; font-weight:bold;'>
+            <td style='border:1px solid #ddd; padding:8px;'>Projekt</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Status</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Ansvarig</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Start</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Slut</td>
+        </tr>
+        <tr>
+            <td style='border:1px solid #ddd; padding:8px;'>Planbesked Kungsbacka stad</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Pågående</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Anna Andersson</td>
+            <td style='border:1px solid #ddd; padding:8px;'>2023-01-15</td>
+            <td style='border:1px solid #ddd; padding:8px;'>2025-06-30</td>
+        </tr>
+        <tr>
+            <td style='border:1px solid #ddd; padding:8px;'>Bostadsförsörjningsplan Åsa</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Planerad</td>
+            <td style='border:1px solid #ddd; padding:8px;'>Erik Ek</td>
+            <td style='border:1px solid #ddd; padding:8px;'>2025-03-01</td>
+            <td style='border:1px solid #ddd; padding:8px;'>2027-12-31</td>
+        </tr>
+    </table>
+    """, unsafe_allow_html=True)
+
+    # --- Cirkeldiagram: Andel positiva planbesked för bostäder 2022–2025 ---
+    st.markdown("""
+    <div style='margin-top:2em; margin-bottom:0.5em;'>
+    <span style='font-size:1.2em; font-weight:bold;'>Andel positiva planbesked för bostäder 2022–2025</span>
+    </div>
+    """, unsafe_allow_html=True)
+    plot_planbesked_pie(
+        labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
+        values=[47, 30, 23],
+        colors=["#a63d1c", "#f7b08a", "#fbe7de"]
+    )
+
+    # --- Cirkeldiagram: Bostadsförsörjningsplan, andel bostäder 2025–2029 ---
+    st.markdown("""
+    <div style='margin-top:2em; margin-bottom:0.5em;'>
+    <span style='font-size:1.2em; font-weight:bold;'>Bostadsförsörjningsplan, andel bostäder 2025–2029</span>
+    </div>
+    """, unsafe_allow_html=True)
     plot_planbesked_pie(
         labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
         values=[60, 15, 25],
@@ -288,10 +232,6 @@ def plot_planbesked_pie(labels, values, colors):
         height=320
     )
     st.plotly_chart(fig, use_container_width=False)
-    st.header("Översiktsplanering")
-    st.markdown("""
-    Här kan du arbeta med uppskattningar, prognoser, utfall och få en tematisk överblick kopplat till översiktsplaneringen.
-    """)
 
     tabs = st.tabs(["Uppskattning", "Prognos", "Utfall", "Tematisk överblick"])
 
