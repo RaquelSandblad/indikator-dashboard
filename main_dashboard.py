@@ -128,29 +128,30 @@ def main():
         st.error(f"Fel i sidans rendering: {e}")
 
 def show_overview_planning_page():
-    # --- Cirkeldiagram: Andel positiva planbesked för bostäder 2022–2025 ---
-    st.markdown("""
-    <div style='margin-top:2em; margin-bottom:0.5em;'>
-    <span style='font-size:1.2em; font-weight:bold;'>Andel positiva planbesked för bostäder 2022–2025</span>
-    </div>
-    """, unsafe_allow_html=True)
-    plot_planbesked_pie(
-        labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
-        values=[47, 30, 23],
-        colors=["#a63d1c", "#f7b08a", "#fbe7de"]
-    )
-
-    # --- Cirkeldiagram: Bostadsförsörjningsplan, andel bostäder 2025–2029 ---
-    st.markdown("""
-    <div style='margin-top:2em; margin-bottom:0.5em;'>
-    <span style='font-size:1.2em; font-weight:bold;'>Bostadsförsörjningsplan, andel bostäder 2025–2029</span>
-    </div>
-    """, unsafe_allow_html=True)
-    plot_planbesked_pie(
-        labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
-        values=[60, 15, 25],
-        colors=["#a63d1c", "#f7b08a", "#fbe7de"]
-    )
+    # --- Två cirkeldiagram i rad: planbesked (vänster) och bostadsförsörjningsplan (höger) ---
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        <div style='margin-top:2em; margin-bottom:0.5em;'>
+        <span style='font-size:1.2em; font-weight:bold;'>Andel positiva planbesked för bostäder 2022–2025</span>
+        </div>
+        """, unsafe_allow_html=True)
+        plot_planbesked_pie(
+            labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
+            values=[47, 30, 23],
+            colors=["#a63d1c", "#f7b08a", "#fbe7de"]
+        )
+    with col2:
+        st.markdown("""
+        <div style='margin-top:2em; margin-bottom:0.5em;'>
+        <span style='font-size:1.2em; font-weight:bold;'>Bostadsförsörjningsplan, andel bostäder 2025–2029</span>
+        </div>
+        """, unsafe_allow_html=True)
+        plot_planbesked_pie(
+            labels=["Kungsbacka stad", "Åsa och Anneberg", "Övriga orter"],
+            values=[60, 15, 25],
+            colors=["#a63d1c", "#f7b08a", "#fbe7de"]
+        )
 
     # --- Avdelare/streck innan Antura-tabellen ---
     st.markdown("---")
