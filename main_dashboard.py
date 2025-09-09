@@ -129,7 +129,9 @@ def main():
 
 def show_overview_planning_page():
     # ...här renderas tabellerna för "Positiva" och "Negativa"...
-    # Avdelare innan cirkeldiagrammen
+    # (Tabellerna renderas här, kod ej visad)
+
+    # --- Avdelare och cirkeldiagram flyttade hit ---
     st.markdown("---")
     # Två cirkeldiagram i rad: planbesked (vänster) och bostadsförsörjningsplan (höger)
     col1, col2 = st.columns(2)
@@ -155,7 +157,6 @@ def show_overview_planning_page():
             values=[60, 15, 25],
             colors=["#a63d1c", "#f7b08a", "#fbe7de"]
         )
-
     # --- Avdelare/streck innan Antura-tabellen ---
     st.markdown("---")
 
