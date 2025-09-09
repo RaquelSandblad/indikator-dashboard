@@ -272,17 +272,17 @@ def show_overview_planning_page():
         </div>
         """, unsafe_allow_html=True)
         
-        # Antura-tabell som matchar originaldesignen från bilderna
+        # Antura-tabell som exakt matchar originaldesignen från bilderna
         col1, col2 = st.columns([1, 1])
         
         # VÄNSTER DEL - BOSTÄDER
         with col1:
             st.markdown("""
-            <table style='width:100%; border-collapse:collapse;'>
+            <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%;'>BOSTÄDER</td>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em; width:20%;'>Kungsbacka stad</td>
-                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:65%;'>
+                    <td rowspan='3' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:12%; text-align:center;'>BOSTÄDER</td>
+                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em; width:18%;'>Kungsbacka stad</td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
                         Gåsevadholm S:1<br>
                         <u>Bäratorr</u> 2:1 och 1:12 samt Kungsbacka 5:1<br>
                         Hammerö 7:3<br>
@@ -292,27 +292,35 @@ def show_overview_planning_page():
                         Fors 1:387<br>
                         Aranäs 10 och 15<br>
                         Store Lyckor 1 och 2
-                        <br><strong>Xx st</strong>
+                    </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:20%;'>
+                        <strong>Xx st</strong>
                     </td>
                 </tr>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;' colspan='2'>Åsa</td>
+                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;'>Åsa</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
                         Åsa 5:197 och 5:70<br>
                         Åsa 5:161 och Åsa 5:101<br>
                         Åsa 5:96<br>
-                        Kläppa 1:4 daterat 2023-10-28<br>
+                        <u>Kläppa</u> 1:4 daterat 2023-10-28<br>
                         Åsa 4:146 och Åsa 4:152<br>
                         Åsa 5:153 och 5:89<br>
                         Åsa 3:14 och Åsa 5:219
                     </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
+                    </td>
                 </tr>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;' colspan='2'>Anneberg</td>
+                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;'>Anneberg</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
                         Älafors 4:12<br>
                         Lerberg 16:40, 3:9 och 3:11<br>
                         Älafors 4:12 (Skifte 23)
+                    </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
                     </td>
                 </tr>
             </table>
@@ -321,11 +329,11 @@ def show_overview_planning_page():
         # HÖGER DEL - ÖVRIGA ORTER  
         with col2:
             st.markdown("""
-            <table style='width:100%; border-collapse:collapse;'>
+            <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%;'>BOSTÄDER</td>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em; width:20%;'>Övriga orter</td>
-                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:65%;'>
+                    <td rowspan='2' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:12%; text-align:center;'>BOSTÄDER</td>
+                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em; width:18%;'>Övriga orter</td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
                         del av <u>Bångsbå</u> 4:1<br>
                         Lyngås 3:3<br>
                         Bäcken 1:31 m.fl.<br>
@@ -334,22 +342,28 @@ def show_overview_planning_page():
                         Må 2:210<br>
                         Frillesås-rya 2:3 och <u>Lurendal</u> 1:3<br>
                         Kyvík 5:380
-                        <br><strong>Xx st</strong>
+                    </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:20%;'>
+                        <strong>Xx st</strong>
                     </td>
                 </tr>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;' colspan='2'>Utanför ort</td>
+                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;'>Utanför ort</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
                         Vallda 20:3, <u>Bröndom</u> 1:2 och del av Vallda 20:59*<br>
                         Bukärr 1:5*<br>
                         Gräppås 2:13<br>
                         Hede 1:53,
                     </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        Väg 158, C<br>
+                        Väg 158, utvidgad<br>
+                        ort
+                    </td>
                 </tr>
                 <tr>
-                    <td style='background:#e6b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;' colspan='2'>
-                        <div style='writing-mode:vertical-rl; text-orientation:mixed;'>Mark för näringsliv</div>
-                    </td>
+                    <td rowspan='2' style='background:#e6b3ff; color:black; font-weight:bold; padding:10px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Mark för näringsliv</td>
+                    <td style='background:#e6b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;'>Mark för näringsliv</td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
                         Åskatorp 21:1 mfl<br>
                         Varla 2:423<br>
@@ -357,20 +371,122 @@ def show_overview_planning_page():
                         Hede 3:12 skifte 1<br>
                         Vallda 23:2<br>
                         Vallda 5:11*
-                        <br><strong>Xx ha</strong>
+                    </td>
+                    <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        <strong>Xx ha</strong>
                     </td>
                 </tr>
                 <tr>
-                    <td style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;' colspan='2'>
-                        <div style='writing-mode:vertical-rl; text-orientation:mixed;'>Värla</div>
-                    </td>
+                    <td style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;'>Värla</td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
                         Väg 158,<br>
                         trafikintensivt
                     </td>
+                    <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
+                    </td>
                 </tr>
             </table>
             """, unsafe_allow_html=True)
+
+        # --- Avdelare före "Ej startade planer och program" tabellen ---
+        st.markdown("---")
+
+        # --- "Ej startade planer och program" tabell ---
+        st.markdown("""
+        <div style='font-size:1.2em; font-weight:bold; margin-bottom:0.5em;'>Ej startade planer och program</div>
+        <div style='font-size:1em; color:#888; margin-bottom:1em;'>
+        (Tabellen förberedd för automatisk data från Antura. Ikoner och struktur enligt original.)
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Tabell med kolumner för olika orter
+        st.markdown("""
+        <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
+            <tr style='background:#f5f5f5; font-weight:bold; font-size:0.85em;'>
+                <td style='border:1px solid #ddd; padding:8px; width:20%; text-align:center; writing-mode:vertical-rl; text-orientation:mixed;'>KUNGSBACKA</td>
+                <td style='border:1px solid #ddd; padding:8px; width:20%; text-align:center; writing-mode:vertical-rl; text-orientation:mixed;'>ÅSA</td>
+                <td style='border:1px solid #ddd; padding:8px; width:20%; text-align:center; writing-mode:vertical-rl; text-orientation:mixed;'>ANNEBERG</td>
+                <td style='border:1px solid #ddd; padding:8px; width:20%; text-align:center; writing-mode:vertical-rl; text-orientation:mixed;'>ÖVRIGA ORTER</td>
+                <td style='border:1px solid #ddd; padding:8px; width:20%; text-align:center; writing-mode:vertical-rl; text-orientation:mixed;'>UTANFÖR ORT</td>
+            </tr>
+            <tr>
+                <td style='border:1px solid #ddd; padding:12px; vertical-align:top; font-size:0.75em; color:black;'>
+                    <div style='margin-bottom:10px;'>
+                        <span style='font-size:1.2em;'>🏠</span> <strong>Bostäder</strong><br>
+                        2021 - DP Tölö ängar syd, del 2<br>
+                        2021 - DP Tölö ängar 3, del 2<br>
+                        2021 - DP Voxlöv Sydöst<br>
+                        2021 - DP Voxlöv Sydväst<br>
+                        2021 - DP Sydöstra Centrum etapp 4<br>
+                        2021 - DP Sydöstra Centrum etapp 3<br>
+                        2020 - DP Södra Porten<br>
+                        2021 - DP Kv. Kronan 5<br>
+                        2017 - DP Aranäs 15<br>
+                        2016 - DP Gertrud<br>
+                        2014 - PR Kungsgärde
+                    </div>
+                    <div style='margin-bottom:10px;'>
+                        <span style='font-size:1.2em;'>🏭</span> <strong>Mark för näringsliv</strong><br>
+                        2021 - DP Hede Station –<br>
+                        2014 - DP Kungsmässan, etapp 2
+                    </div>
+                    <div>
+                        <span style='font-size:1.2em;'>🛣️</span> <strong>Infrastruktur</strong><br>
+                        DP fyra körfält Kungsgatan
+                    </div>
+                </td>
+                <td style='border:1px solid #ddd; padding:12px; vertical-align:top; font-size:0.75em; color:black;'>
+                    <div style='margin-bottom:10px;'>
+                        <span style='font-size:1.2em;'>🏠</span> <strong>Bostäder</strong><br>
+                        2014 - DP Ölmanäs 31:1 och 7:10<br>
+                        2019 - DP Åsa 2:6, 3:11 Boviera<br>
+                        2020 - DP Åsa 4:118 m.fl.
+                    </div>
+                    <div style='margin-bottom:10px;'>
+                        <span style='font-size:1.2em;'>🏭</span> <strong>Mark för näringsliv</strong><br>
+                        2019 - PR verksamheter södra<br>
+                        Anneberg
+                    </div>
+                </td>
+                <td style='border:1px solid #ddd; padding:12px; vertical-align:top; font-size:0.75em; color:black;'>
+                    <div style='margin-bottom:10px;'>
+                        <span style='font-size:1.2em;'>🏠</span> <strong>Bostäder</strong><br>
+                        2019 - PR bostäder Skärby 2:4 mfl
+                    </div>
+                    <div style='margin-bottom:10px;'>
+                        <span style='font-size:1.2em;'>🏭</span> <strong>Mark för näringsliv</strong><br>
+                        2017 - DP Duvehed 2:11, Fjärås<br>
+                        lantmanna
+                    </div>
+                    <div>
+                        <span style='font-size:1.2em;'>🏖️</span> <strong>Besöksnäring</strong><br>
+                        2018 - PR Hamnplan, Gottskär
+                    </div>
+                </td>
+                <td style='border:1px solid #ddd; padding:12px; vertical-align:top; font-size:0.75em; color:black;'>
+                    <div style='margin-bottom:10px;'>
+                        <span style='font-size:1.2em;'>🏠</span> <strong>Bostäder</strong><br>
+                        2020 - DP Spårhaga 1:9<br>
+                        2019 - DP Särö 1:493<br>
+                        2019 - PR Vallda-Backa 1:6<br>
+                        2018 - DP Skörvallla 1:49-1:51 och 1:61<br>
+                        2017 - DP Särö 1:526<br>
+                        2015 - DP Spårhaga 2:139<br>
+                        2014 - DP Särö centrum östra delen
+                    </div>
+                </td>
+                <td style='border:1px solid #ddd; padding:12px; vertical-align:top; font-size:0.75em; color:black;'>
+                    <div>
+                        <span style='font-size:1.2em;'>🏠</span> <strong>Bostäder</strong><br>
+                        2019 - PR bostäder Ölmanäs 6:80<br>
+                        2018 - PR Rosendal 1:2 och 1:3<br>
+                        2015 - DP Hjälmared 1:11 och 25:3
+                    </div>
+                </td>
+            </tr>
+        </table>
+        """, unsafe_allow_html=True)
 
     with tabs[1]:
         st.subheader("Prognos")
