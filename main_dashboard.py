@@ -275,13 +275,13 @@ def show_overview_planning_page():
         # Antura-tabell som exakt matchar originaldesignen från bilderna
         col1, col2 = st.columns([1, 1])
         
-        # VÄNSTER DEL - BOSTÄDER
+        # TABELL 1 (VÄNSTER) - 5 kolumner: Kolumn 1-2 VERTIKALA, Kolumn 3-5 HORISONTALA
         with col1:
             st.markdown("""
             <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
                 <tr>
-                    <td rowspan='3' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:12%; text-align:center;'>BOSTÄDER</td>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em; width:18%;'>Kungsbacka stad</td>
+                    <td rowspan='3' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>BOSTÄDER</td>
+                    <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>Kungsbacka stad</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
                         Gåsevadholm S:1<br>
                         <u>Bäratorr</u> 2:1 och 1:12 samt Kungsbacka 5:1<br>
@@ -293,12 +293,15 @@ def show_overview_planning_page():
                         Aranäs 10 och 15<br>
                         Store Lyckor 1 och 2
                     </td>
-                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:20%;'>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'>
+                        
+                    </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'>
                         <strong>Xx st</strong>
                     </td>
                 </tr>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;'>Åsa</td>
+                    <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Åsa</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
                         Åsa 5:197 och 5:70<br>
                         Åsa 5:161 och Åsa 5:101<br>
@@ -311,9 +314,12 @@ def show_overview_planning_page():
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
                         
                     </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
+                    </td>
                 </tr>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;'>Anneberg</td>
+                    <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Anneberg</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
                         Älafors 4:12<br>
                         Lerberg 16:40, 3:9 och 3:11<br>
@@ -322,17 +328,20 @@ def show_overview_planning_page():
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
                         
                     </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
+                    </td>
                 </tr>
             </table>
             """, unsafe_allow_html=True)
         
-        # HÖGER DEL - ÖVRIGA ORTER  
+        # TABELL 2 (HÖGER) - Samma struktur: Kolumn 1-2 VERTIKALA, Kolumn 3-5 HORISONTALA
         with col2:
             st.markdown("""
             <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
                 <tr>
-                    <td rowspan='2' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:12%; text-align:center;'>BOSTÄDER</td>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em; width:18%;'>Övriga orter</td>
+                    <td rowspan='2' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>BOSTÄDER</td>
+                    <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>Övriga orter</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
                         del av <u>Bångsbå</u> 4:1<br>
                         Lyngås 3:3<br>
@@ -343,12 +352,17 @@ def show_overview_planning_page():
                         Frillesås-rya 2:3 och <u>Lurendal</u> 1:3<br>
                         Kyvík 5:380
                     </td>
-                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:20%;'>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'>
+                        Väg 158, C<br>
+                        Väg 158, utvidgad<br>
+                        ort
+                    </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'>
                         <strong>Xx st</strong>
                     </td>
                 </tr>
                 <tr>
-                    <td style='background:#c19a9a; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.85em;'>Utanför ort</td>
+                    <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Utanför ort</td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
                         Vallda 20:3, <u>Bröndom</u> 1:2 och del av Vallda 20:59*<br>
                         Bukärr 1:5*<br>
@@ -356,14 +370,15 @@ def show_overview_planning_page():
                         Hede 1:53,
                     </td>
                     <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
-                        Väg 158, C<br>
-                        Väg 158, utvidgad<br>
-                        ort
+                        
+                    </td>
+                    <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
                     </td>
                 </tr>
                 <tr>
                     <td rowspan='4' style='background:#e6b3ff; color:black; font-weight:bold; padding:10px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>MARK FÖR NÄRINGSLIV</td>
-                    <td style='background:#e6b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;'>Mark för näringsliv</td>
+                    <td rowspan='1' style='background:#e6b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Åsa stad</td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
                         Åskatorp 21:1 mfl<br>
                         Varla 2:423<br>
@@ -373,11 +388,14 @@ def show_overview_planning_page():
                         Vallda 5:11*
                     </td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
+                    </td>
+                    <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
                         <strong>Xx ha</strong>
                     </td>
                 </tr>
                 <tr>
-                    <td style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;'>Fjärås stn</td>
+                    <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Fjärås stn</td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
                         Väg 158,<br>
                         trafikintensivt
@@ -385,10 +403,16 @@ def show_overview_planning_page():
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
                         
                     </td>
+                    <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
+                        
+                    </td>
                 </tr>
                 <tr>
-                    <td style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;'>KBA stad</td>
+                    <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>KBA stad</td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
+                        
+                    </td>
+                    <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
                         
                     </td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
@@ -396,8 +420,11 @@ def show_overview_planning_page():
                     </td>
                 </tr>
                 <tr>
-                    <td style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; text-align:center; font-size:0.75em;'>Vallda</td>
+                    <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Vallda</td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
+                        
+                    </td>
+                    <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
                         
                     </td>
                     <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'>
