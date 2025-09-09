@@ -205,9 +205,6 @@ def show_overview_planning_page():
             </div>
             """, unsafe_allow_html=True)
 
-        # --- Dela sidan med ett streck ---
-        st.markdown("---")
-
         # POSITIVA/NEGATIVA planbesked-rutor direkt under kartan och sammanställning
         col1, col2 = st.columns(2)
         with col1:
@@ -275,52 +272,89 @@ def show_overview_planning_page():
         </div>
         """, unsafe_allow_html=True)
         
-        # Antura-tabell med statiska rubriker enligt bild M
+        # Antura-tabell med statiska rubriker och demo-data baserat på verklig planbesked-data
         st.markdown("""
         <table style='width:100%; border-collapse:collapse;'>
             <tr style='background:#f5f5f5; font-weight:bold;'>
-                <td style='border:1px solid #ddd; padding:8px; width:15%;'>BOSTÄDER</td>
+                <td style='border:1px solid #ddd; padding:8px; width:15%; background:#d4edda;'>BOSTÄDER</td>
                 <td style='border:1px solid #ddd; padding:8px; width:20%;'>Kungsbacka stad</td>
-                <td style='border:1px solid #ddd; padding:8px; width:20%;'>Åsa</td>
-                <td style='border:1px solid #ddd; padding:8px; width:20%;'>Anneberg</td>
-                <td style='border:1px solid #ddd; padding:8px; width:25%;'>ÖVRIGA ORTER</td>
+                <td style='border:1px solid #ddd; padding:8px; width:15%;'>Åsa</td>
+                <td style='border:1px solid #ddd; padding:8px; width:15%;'>Anneberg</td>
+                <td style='border:1px solid #ddd; padding:8px; width:35%; background:#d4edda;'>ÖVRIGA ORTER</td>
             </tr>
             <tr>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#fbe7de;'>
-                    <strong>Övriga orter</strong><br>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#fbe7de; font-size:0.85em;'>
+                    <strong>Kungsbacka stad</strong>
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top;'>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; font-size:0.85em;'>
+                    Gåsevadholm S:1<br>
+                    Bäratorr 2:1 och 1:12<br>
+                    Hammerö 7:3<br>
+                    Hammerö 13:7 m.fl.<br>
+                    Lärkan 14<br>
+                    Ysby 3:4 m.fl.<br>
+                    Fors 1:387<br>
+                    Aranäs 10 och 15<br>
+                    Store Lyckor 1 och 2
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top;'>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; font-size:0.85em;'>
+                    Åsa 5:197 och 5:70<br>
+                    Åsa 5:161 och 5:101<br>
+                    Åsa 5:96<br>
+                    Åsa 4:146 och 4:152<br>
+                    Åsa 5:153 och 5:89<br>
+                    Åsa 3:14 och 5:219
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top;'>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; font-size:0.85em;'>
+                    Kläppa 1:4<br>
+                    (daterat 2023-10-28)<br>
+                    Älafors 4:12<br>
+                    Lerberg 16:40, 3:9<br>
+                    och 3:11<br>
+                    Älafors 4:12<br>
+                    (Skifte 23)
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#f7b08a;'>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#f7b08a; font-size:0.85em;'>
                     <strong>Mark för näringsliv</strong><br>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                    del av Bångsbå 4:1<br>
+                    Lyngås 3:3<br>
+                    Bäcken 1:31 m.fl.<br>
+                    Vallda 5:11<br>
+                    Frillesås-Rya 2:11<br>
+                    Må 2:210<br>
+                    Kyvík 5:380
                 </td>
             </tr>
             <tr>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#fbe7de;'>
-                    <strong>Utanför utvecklingsort</strong><br>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#fbe7de; font-size:0.85em;'>
+                    <strong>Utanför utvecklingsort</strong>
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top;'>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; font-size:0.85em;'>
+                    Vallda 20:3<br>
+                    Bröndom 1:2<br>
+                    och del av Vallda 20:59*<br>
+                    Bukärr 1:5*<br>
+                    Gräppås 2:13
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top;'>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; font-size:0.85em;'>
+                    Hede 1:53
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top;'>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; font-size:0.85em;'>
+                    Åskatorp 21:1 mfl<br>
+                    Varla 2:423<br>
+                    Varla 2:412<br>
+                    Hede 3:12 skifte 1<br>
+                    Vallda 23:2<br>
+                    Vallda 5:11*
                 </td>
-                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#a63d1c; color:white;'>
+                <td style='border:1px solid #ddd; padding:8px; vertical-align:top; background:#a63d1c; color:white; font-size:0.85em;'>
                     <strong>Mark för kommunal service</strong><br>
-                    <span style='font-size:0.9em;'>[Data från Antura]</span>
+                    Frillesås-rya 2:3<br>
+                    och Lurendal 1:3<br>
+                    <br>
+                    <em>Väg 158, C</em><br>
+                    <em>Väg 158, utvidgad ort</em><br>
+                    <em>Väg 158, trafikintensivt</em>
                 </td>
             </tr>
         </table>
