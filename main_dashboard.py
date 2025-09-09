@@ -128,7 +128,10 @@ def main():
         st.error(f"Fel i sidans rendering: {e}")
 
 def show_overview_planning_page():
-    # --- Två cirkeldiagram i rad: planbesked (vänster) och bostadsförsörjningsplan (höger) ---
+    # ...här renderas tabellerna för "Positiva" och "Negativa"...
+    # Avdelare innan cirkeldiagrammen
+    st.markdown("---")
+    # Två cirkeldiagram i rad: planbesked (vänster) och bostadsförsörjningsplan (höger)
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("""
