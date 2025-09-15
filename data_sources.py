@@ -29,15 +29,19 @@ class SCBDataSource:
         # Skapa cache-katalog om den inte finns
         os.makedirs(self.cache_dir, exist_ok=True)
 
-    def fetch_population_data(self, region_code: str = "1384") -> pd.DataFrame:
+    def fetch_population_data(self, region_code: str = "1380") -> pd.DataFrame:
         """Hämtar befolkningsdata från SCB"""
         try:
-            url = f"{EXTERNAL_APIS['scb']['base_url']}/v1/sv/ssd/START/BE/BE0101/BE0101A/BefolkningNy"
+            # Använd korrekt SCB API URL från EXTERNAL_APIS
+            url = f"{EXTERNAL_APIS['scb']['base_url']}/BE/BE0101/BE0101A/BefolkningNy"
             
-            # Standard query för befolkning
-            query = get_standard_query(region_code)
+            # Standard query för befolkning med aktuella år
+            query = get_standard_query("befolkning", region_code)
             
-            response = requests.post(url, json=query, timeout=self.timeout)
+            response = requests.post(url, json=query, 
+                                   headers={"User-Agent": self.user_agent},
+                                   timeout=self.timeout)
+            response.raise_for_status()
             
             if response.status_code == 200:
                 data = response.json()
@@ -49,21 +53,21 @@ class SCBDataSource:
         except Exception as e:
             print(f"Fel vid hämtning av befolkningsdata: {e}")
             return pd.DataFrame()
-        def fetch_population_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
-            """Hämtar befolkningsdata från SCB"""
-            endpoint = SCB_TABLES["befolkning"]["endpoint"]
-            query = get_standard_query("befolkning", region_code)
-            try:
-                url = f"{self.base_url}/{endpoint}"
-                response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
-                response.raise_for_status()
-                data = response.json()
-                return self._parse_population_response(data)
-            except Exception as e:
-                print(f"Fel vid hämtning av befolkningsdata: {e}")
-                return pd.DataFrame()
+    def fetch_population_data_new(self, region_code: str = "1380") -> pd.DataFrame:
+        """Hämtar befolkningsdata från SCB med korrekt API"""
+        endpoint = SCB_TABLES["befolkning"]["endpoint"]
+        query = get_standard_query("befolkning", region_code)
+        try:
+            url = f"{self.base_url}/{endpoint}"
+            response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
+            response.raise_for_status()
+            data = response.json()
+            return self._parse_population_response(data)
+        except Exception as e:
+            print(f"Fel vid hämtning av befolkningsdata (new): {e}")
+            return pd.DataFrame()
     
-        def fetch_household_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+    def fetch_household_data(self, region_code: str = "1380") -> pd.DataFrame:
             """Hämtar hushållsdata från SCB"""
             endpoint = SCB_TABLES["hushall"]["endpoint"]
             query = get_standard_query("hushall", region_code)
@@ -134,13 +138,13 @@ class SCBDataSource:
                 print(f"Fel vid hämtning av utbildningsdata: {e}")
                 return pd.DataFrame()
 
-    def fetch_age_distribution(self, region_code: str = "1384") -> pd.DataFrame:
+    def fetch_age_distribution(self, region_code: str = "1380") -> pd.DataFrame:
         """Hämtar åldersfördelning från SCB för ålderspyramid"""
         try:
-            # Använd en mer detaljerad åldersindeling
-            url = f"{EXTERNAL_APIS['scb']['base_url']}/v1/sv/ssd/START/BE/BE0101/BE0101A/BefolkningNy"
+            # Använd korrekt SCB API URL
+            url = f"{EXTERNAL_APIS['scb']['base_url']}/BE/BE0101/BE0101A/BefolkningNy"
             
-            # Query för att få åldersfördelning per kön
+            # Query för att få åldersfördelning per kön med aktuella år
             query = {
                 "query": [
                     {
@@ -166,13 +170,15 @@ class SCBDataSource:
                     },
                     {
                         "code": "Tid",
-                        "selection": {"filter": "item", "values": ["2023"]}
+                        "selection": {"filter": "item", "values": ["2024", "2023"]}
                     }
                 ],
                 "response": {"format": "json"}
             }
             
-            response = requests.post(url, json=query, timeout=self.timeout)
+            response = requests.post(url, json=query, 
+                                   headers={"User-Agent": self.user_agent},
+                                   timeout=self.timeout)
             
             if response.status_code == 200:
                 data = response.json()

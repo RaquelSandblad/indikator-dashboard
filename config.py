@@ -86,6 +86,11 @@ GIS_SOURCES = {
 
 # Andra öppna datakällor
 EXTERNAL_APIS = {
+    "scb": {
+        "base_url": "https://api.scb.se/OV0104/v1/doris/sv/ssd",
+        "description": "SCB - Statistiska centralbyrån",
+        "requires_key": False
+    },
     "trafiklab": {
         "base_url": "https://api.resrobot.se/v2.1",
         "description": "Kollektivtrafikdata från Trafiklab",
@@ -114,7 +119,8 @@ def get_standard_query(table_type: str, region_code: str = KOMMUN_KOD, years: Li
     """Genererar standardqueries för olika SCB-tabeller"""
     
     if years is None:
-        years = ["2023", "2022", "2021"]
+        # Använd senaste tillgängliga åren, inklusive 2024 och 2025
+        years = ["2024", "2023", "2022"]
     
     base_queries = {
         "befolkning": {
