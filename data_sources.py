@@ -49,6 +49,90 @@ class SCBDataSource:
         except Exception as e:
             print(f"Fel vid hämtning av befolkningsdata: {e}")
             return pd.DataFrame()
+        def fetch_population_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+            """Hämtar befolkningsdata från SCB"""
+            endpoint = SCB_TABLES["befolkning"]["endpoint"]
+            query = get_standard_query("befolkning", region_code)
+            try:
+                url = f"{self.base_url}/{endpoint}"
+                response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                return self._parse_population_response(data)
+            except Exception as e:
+                print(f"Fel vid hämtning av befolkningsdata: {e}")
+                return pd.DataFrame()
+    
+        def fetch_household_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+            """Hämtar hushållsdata från SCB"""
+            endpoint = SCB_TABLES["hushall"]["endpoint"]
+            query = get_standard_query("hushall", region_code)
+            try:
+                url = f"{self.base_url}/{endpoint}"
+                response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                # Anpassa parser om nödvändigt
+                return pd.DataFrame(data.get("data", []))
+            except Exception as e:
+                print(f"Fel vid hämtning av hushållsdata: {e}")
+                return pd.DataFrame()
+    
+        def fetch_bostader_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+            """Hämtar bostadsdata från SCB"""
+            endpoint = SCB_TABLES["bostader"]["endpoint"]
+            query = get_standard_query("bostader", region_code)
+            try:
+                url = f"{self.base_url}/{endpoint}"
+                response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                return pd.DataFrame(data.get("data", []))
+            except Exception as e:
+                print(f"Fel vid hämtning av bostadsdata: {e}")
+                return pd.DataFrame()
+    
+        def fetch_arbetsloshet_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+            """Hämtar arbetslöshetsdata från SCB"""
+            endpoint = SCB_TABLES["arbetslöshet"]["endpoint"]
+            query = get_standard_query("arbetslöshet", region_code)
+            try:
+                url = f"{self.base_url}/{endpoint}"
+                response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                return pd.DataFrame(data.get("data", []))
+            except Exception as e:
+                print(f"Fel vid hämtning av arbetslöshetsdata: {e}")
+                return pd.DataFrame()
+    
+        def fetch_inkomst_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+            """Hämtar inkomstdata från SCB"""
+            endpoint = SCB_TABLES["inkomst"]["endpoint"]
+            query = get_standard_query("inkomst", region_code)
+            try:
+                url = f"{self.base_url}/{endpoint}"
+                response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                return pd.DataFrame(data.get("data", []))
+            except Exception as e:
+                print(f"Fel vid hämtning av inkomstdata: {e}")
+                return pd.DataFrame()
+    
+        def fetch_utbildning_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+            """Hämtar utbildningsdata från SCB"""
+            endpoint = SCB_TABLES["utbildning"]["endpoint"]
+            query = get_standard_query("utbildning", region_code)
+            try:
+                url = f"{self.base_url}/{endpoint}"
+                response = requests.post(url, json=query, headers={"User-Agent": self.user_agent}, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                return pd.DataFrame(data.get("data", []))
+            except Exception as e:
+                print(f"Fel vid hämtning av utbildningsdata: {e}")
+                return pd.DataFrame()
 
     def fetch_age_distribution(self, region_code: str = "1384") -> pd.DataFrame:
         """Hämtar åldersfördelning från SCB för ålderspyramid"""
