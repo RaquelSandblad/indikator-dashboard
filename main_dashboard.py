@@ -264,123 +264,123 @@ def show_overview_planning_page():
         # --- Avdelare före Antura-tabellen ---
         st.markdown("---")
 
-                # --- Antura-tabell i expander (rullgardin) ---
-                with st.expander("Planbesked i Antura – vad vi vill kunna få ut", expanded=False):
-                        st.markdown("""
-                        <div style='font-size:1em; color:#888; margin-bottom:1em;'>
-                        (Denna sektion kommer att uppdateras automatiskt när Antura-integration är på plats. Rubrikerna nedan är statiska, data kommer från Antura.)
-                        </div>
-                        <div style='display:flex; gap:32px;'>
-                            <div style='flex:1;'>
-                                <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
-                                    <tr>
-                                        <td rowspan='3' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>BOSTÄDER</td>
-                                        <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>Kungsbacka stad</td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
-                                                Gåsevadholm S:1<br>
-                                                <u>Bäratorr</u> 2:1 och 1:12 samt Kungsbacka 5:1<br>
-                                                Hammerö 7:3<br>
-                                                Hammerö 13:7 m.fl.<br>
-                                                Lärkan 14<br>
-                                                Ysby 3:4 m.fl.<br>
-                                                Fors 1:387<br>
-                                                Aranäs 10 och 15<br>
-                                                Store Lyckor 1 och 2
-                                        </td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'></td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'><strong>Xx st</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Åsa</td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
-                                                Åsa 5:197 och 5:70<br>
-                                                Åsa 5:161 och Åsa 5:101<br>
-                                                Åsa 5:96<br>
-                                                <u>Kläppa</u> 1:4 daterat 2023-10-28<br>
-                                                Åsa 4:146 och Åsa 4:152<br>
-                                                Åsa 5:153 och 5:89<br>
-                                                Åsa 3:14 och Åsa 5:219
-                                        </td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Anneberg</td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
-                                                Älafors 4:12<br>
-                                                Lerberg 16:40, 3:9 och 3:11<br>
-                                                Älafors 4:12 (Skifte 23)
-                                        </td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div style='flex:1;'>
-                                <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
-                                    <tr>
-                                        <td rowspan='2' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>BOSTÄDER</td>
-                                        <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>Övriga orter</td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
-                                                del av <u>Bångsbå</u> 4:1<br>
-                                                Lyngås 3:3<br>
-                                                Bäcken 1:31 m.fl.<br>
-                                                Vallda 5:11<br>
-                                                Frillesås-Rya 2:11<br>
-                                                Må 2:210<br>
-                                                Frillesås-rya 2:3 och <u>Lurendal</u> 1:3<br>
-                                                Kyvík 5:380
-                                        </td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'>Väg 158, C<br>Väg 158, utvidgad<br>ort</td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'><strong>Xx st</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Utanför ort</td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
-                                                Vallda 20:3, <u>Bröndom</u> 1:2 och del av Vallda 20:59*<br>
-                                                Bukärr 1:5*<br>
-                                                Gräppås 2:13<br>
-                                                Hede 1:53,
-                                        </td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                        <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan='4' style='background:#e6b3ff; color:black; font-weight:bold; padding:10px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>MARK FÖR NÄRINGSLIV</td>
-                                        <td rowspan='1' style='background:#e6b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Åsa stad</td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
-                                                Åskatorp 21:1 mfl<br>
-                                                Varla 2:423<br>
-                                                Varla 2:412<br>
-                                                Hede 3:12 skifte 1<br>
-                                                Vallda 23:2<br>
-                                                Vallda 5:11*
-                                        </td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'><strong>Xx ha</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Fjärås stn</td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>Väg 158,<br>trafikintensivt</td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>KBA stad</td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'></td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Vallda</td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'></td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                        <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
+        # --- Antura-tabell i expander (rullgardin) ---
+        with st.expander("Planbesked i Antura – vad vi vill kunna få ut", expanded=False):
+            st.markdown("""
+            <div style='font-size:1em; color:#888; margin-bottom:1em;'>
+            (Denna sektion kommer att uppdateras automatiskt när Antura-integration är på plats. Rubrikerna nedan är statiska, data kommer från Antura.)
+            </div>
+            <div style='display:flex; gap:32px;'>
+                <div style='flex:1;'>
+                    <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
+                        <tr>
+                            <td rowspan='3' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>BOSTÄDER</td>
+                            <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>Kungsbacka stad</td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
+                                    Gåsevadholm S:1<br>
+                                    <u>Bäratorr</u> 2:1 och 1:12 samt Kungsbacka 5:1<br>
+                                    Hammerö 7:3<br>
+                                    Hammerö 13:7 m.fl.<br>
+                                    Lärkan 14<br>
+                                    Ysby 3:4 m.fl.<br>
+                                    Fors 1:387<br>
+                                    Aranäs 10 och 15<br>
+                                    Store Lyckor 1 och 2
+                            </td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'></td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'><strong>Xx st</strong></td>
+                        </tr>
+                        <tr>
+                            <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Åsa</td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
+                                    Åsa 5:197 och 5:70<br>
+                                    Åsa 5:161 och Åsa 5:101<br>
+                                    Åsa 5:96<br>
+                                    <u>Kläppa</u> 1:4 daterat 2023-10-28<br>
+                                    Åsa 4:146 och Åsa 4:152<br>
+                                    Åsa 5:153 och 5:89<br>
+                                    Åsa 3:14 och Åsa 5:219
+                            </td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                        </tr>
+                        <tr>
+                            <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Anneberg</td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
+                                    Älafors 4:12<br>
+                                    Lerberg 16:40, 3:9 och 3:11<br>
+                                    Älafors 4:12 (Skifte 23)
+                            </td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                        </tr>
+                    </table>
+                </div>
+                <div style='flex:1;'>
+                    <table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>
+                        <tr>
+                            <td rowspan='2' style='background:#c19a9a; color:black; font-weight:bold; padding:10px; font-size:0.9em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>BOSTÄDER</td>
+                            <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; width:15%; text-align:center;'>Övriga orter</td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em; width:50%;'>
+                                    del av <u>Bångsbå</u> 4:1<br>
+                                    Lyngås 3:3<br>
+                                    Bäcken 1:31 m.fl.<br>
+                                    Vallda 5:11<br>
+                                    Frillesås-Rya 2:11<br>
+                                    Må 2:210<br>
+                                    Frillesås-rya 2:3 och <u>Lurendal</u> 1:3<br>
+                                    Kyvík 5:380
+                            </td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'>Väg 158, C<br>Väg 158, utvidgad<br>ort</td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center; width:10%;'><strong>Xx st</strong></td>
+                        </tr>
+                        <tr>
+                            <td rowspan='1' style='background:#c19a9a; color:black; font-weight:bold; padding:8px; font-size:0.85em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Utanför ort</td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.75em;'>
+                                    Vallda 20:3, <u>Bröndom</u> 1:2 och del av Vallda 20:59*<br>
+                                    Bukärr 1:5*<br>
+                                    Gräppås 2:13<br>
+                                    Hede 1:53,
+                            </td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                            <td style='background:#f5f5f5; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                        </tr>
+                        <tr>
+                            <td rowspan='4' style='background:#e6b3ff; color:black; font-weight:bold; padding:10px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>MARK FÖR NÄRINGSLIV</td>
+                            <td rowspan='1' style='background:#e6b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Åsa stad</td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>
+                                    Åskatorp 21:1 mfl<br>
+                                    Varla 2:423<br>
+                                    Varla 2:412<br>
+                                    Hede 3:12 skifte 1<br>
+                                    Vallda 23:2<br>
+                                    Vallda 5:11*
+                            </td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'><strong>Xx ha</strong></td>
+                        </tr>
+                        <tr>
+                            <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Fjärås stn</td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'>Väg 158,<br>trafikintensivt</td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                        </tr>
+                        <tr>
+                            <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>KBA stad</td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'></td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                        </tr>
+                        <tr>
+                            <td rowspan='1' style='background:#d9b3ff; color:black; font-weight:bold; padding:8px; font-size:0.75em; writing-mode:vertical-rl; text-orientation:mixed; text-align:center;'>Vallda</td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.75em;'></td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                            <td style='background:#f0e6ff; color:black; padding:8px; font-size:0.8em; text-align:center;'></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
         # --- Avdelare före "Ej startade planer och program" tabellen ---
         st.markdown("---")
