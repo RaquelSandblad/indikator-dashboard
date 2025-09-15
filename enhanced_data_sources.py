@@ -185,41 +185,6 @@ class SCB_PXWeb_API:
         
         return self.query_table(table_path, query)
 
-    def get_housing_data(self) -> pd.DataFrame:
-        """Hämtar bostadsdata för Kungsbacka"""
-        table_path = "BO/BO0104/BO0104T02"
-        
-        query = {
-            "query": [
-                {
-                    "code": "Region",
-                    "selection": {
-                        "filter": "vs:RegionKommun07",
-                        "values": ["1380"]
-                    }
-                },
-                {
-                    "code": "Hustyp",
-                    "selection": {
-                        "filter": "item",
-                        "values": ["TOT"]
-                    }
-                },
-                {
-                    "code": "Tid",
-                    "selection": {
-                        "filter": "item",
-                        "values": ["2020", "2021", "2022", "2023"]
-                    }
-                }
-            ],
-            "response": {
-                "format": "json"
-            }
-        }
-        
-        return self.query_table(table_path, query)
-
 class KoladaDataSource:
     """
     Komplett Kolada API integration för alla kommunala nyckeltal
@@ -441,9 +406,6 @@ class EnhancedDataManager:
             
             st.info("👥 Hämtar åldersfördelning från SCB...")
             all_data['scb_alder'] = self.scb.get_age_distribution()
-            
-            st.info("🏠 Hämtar bostadsdata från SCB...")
-            all_data['scb_bostader'] = self.scb.get_housing_data()
             
             # Kolada data
             st.info("📈 Hämtar alla KPI:er från Kolada...")

@@ -8,7 +8,7 @@ import json
 from datetime import datetime, timedelta
 import os
 import time
-from config import SCB_CONFIG, SCB_TABLES, GIS_SOURCES, EXTERNAL_APIS, get_standard_query
+from config import SCB_CONFIG, SCB_TABLES, GIS_SOURCES, EXTERNAL_APIS, get_standard_query, KOMMUN_KOD
 from pathlib import Path
 
 # PPTX loader (infonet)
@@ -81,8 +81,8 @@ class SCBDataSource:
             except Exception as e:
                 print(f"Fel vid hämtning av hushållsdata: {e}")
                 return pd.DataFrame()
-    
-        def fetch_bostader_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+
+    def fetch_bostader_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
             """Hämtar bostadsdata från SCB"""
             endpoint = SCB_TABLES["bostader"]["endpoint"]
             query = get_standard_query("bostader", region_code)
@@ -95,8 +95,8 @@ class SCBDataSource:
             except Exception as e:
                 print(f"Fel vid hämtning av bostadsdata: {e}")
                 return pd.DataFrame()
-    
-        def fetch_arbetsloshet_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+
+    def fetch_arbetsloshet_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
             """Hämtar arbetslöshetsdata från SCB"""
             endpoint = SCB_TABLES["arbetslöshet"]["endpoint"]
             query = get_standard_query("arbetslöshet", region_code)
@@ -109,8 +109,8 @@ class SCBDataSource:
             except Exception as e:
                 print(f"Fel vid hämtning av arbetslöshetsdata: {e}")
                 return pd.DataFrame()
-    
-        def fetch_inkomst_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+
+    def fetch_inkomst_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
             """Hämtar inkomstdata från SCB"""
             endpoint = SCB_TABLES["inkomst"]["endpoint"]
             query = get_standard_query("inkomst", region_code)
@@ -123,8 +123,8 @@ class SCBDataSource:
             except Exception as e:
                 print(f"Fel vid hämtning av inkomstdata: {e}")
                 return pd.DataFrame()
-    
-        def fetch_utbildning_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
+
+    def fetch_utbildning_data(self, region_code: str = KOMMUN_KOD) -> pd.DataFrame:
             """Hämtar utbildningsdata från SCB"""
             endpoint = SCB_TABLES["utbildning"]["endpoint"]
             query = get_standard_query("utbildning", region_code)
