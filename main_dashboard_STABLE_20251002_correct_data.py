@@ -94,12 +94,29 @@ def show_overview(scb):
         pop_data = scb.fetch_population_data()
     
     if not pop_data.empty:
+        # Filtrera för "tot" ålder om det finns, för att undvika dubbelräkning
+        if 'tot' in pop_data['Ålder'].values:
+            calc_data = pop_data[pop_data['Ålder'] == 'tot'].copy()
+        else:
+            calc_data = pop_data.copy()
+        
         # Beräkna nyckeltal
-        latest_year = pop_data["År"].max()
-        latest_data = pop_data[pop_data["År"] == latest_year]
+        latest_year = calc_data["År"].max()
+        latest_data = calc_data[calc_data["År"] == latest_year]
         total_population = latest_data["Antal"].sum()
         men = latest_data[latest_data["Kön"] == "Män"]["Antal"].sum()
         women = latest_data[latest_data["Kön"] == "Kvinnor"]["Antal"].sum()
+        
+        # Beräkna förändring från föregående år för män och kvinnor
+        men_delta = None
+        women_delta = None
+        if len(calc_data["År"].unique()) > 1:
+            prev_year = sorted(calc_data["År"].unique())[-2]
+            prev_data = calc_data[calc_data["År"] == prev_year]
+            prev_men = prev_data[prev_data["Kön"] == "Män"]["Antal"].sum()
+            prev_women = prev_data[prev_data["Kön"] == "Kvinnor"]["Antal"].sum()
+            men_delta = men - prev_men
+            women_delta = women - prev_women
         
         # Visa nyckeltal
         col1, col2, col3, col4 = st.columns(4)
@@ -108,27 +125,29 @@ def show_overview(scb):
             st.metric(
                 label="Total befolkning",
                 value=f"{total_population:,}",
-                help=f"Senaste data från SCB ({latest_year})"
+                help=f"Senaste data från SCB ({int(latest_year)})"
             )
         
         with col2:
             st.metric(
                 label="Män",
                 value=f"{men:,}",
-                delta=f"{men - women:+,}"
+                delta=f"{men_delta:+,}" if men_delta is not None else None,
+                help=f"Förändring från {int(prev_year) if 'prev_year' in locals() else 'förra året'} till {int(latest_year)}" if men_delta is not None else None
             )
         
         with col3:
             st.metric(
                 label="Kvinnor", 
                 value=f"{women:,}",
-                delta=f"{women - men:+,}"
+                delta=f"{women_delta:+,}" if women_delta is not None else None,
+                help=f"Förändring från {int(prev_year) if 'prev_year' in locals() else 'förra året'} till {int(latest_year)}" if women_delta is not None else None
             )
         
         with col4:
-            if len(pop_data["År"].unique()) > 1:
-                prev_year = sorted(pop_data["År"].unique())[-2]
-                prev_total = pop_data[pop_data["År"] == prev_year]["Antal"].sum()
+            if len(calc_data["År"].unique()) > 1:
+                prev_year = sorted(calc_data["År"].unique())[-2]
+                prev_total = calc_data[calc_data["År"] == prev_year]["Antal"].sum()
                 growth = total_population - prev_total
                 st.metric(
                     label="Årlig förändring",
@@ -139,7 +158,14 @@ def show_overview(scb):
         # Befolkningsutveckling över tid
         st.subheader("📈 Befolkningsutveckling")
         
-        yearly_data = pop_data.groupby(["År", "Kön"])["Antal"].sum().reset_index()
+        # Filtrera för att endast använda "tot" åldersgrupp för grafen (annars blir det dubbelräkning)
+        # Om det finns "tot" i data, använd den, annars summera alla åldrar
+        if 'tot' in pop_data['Ålder'].values:
+            graph_data = pop_data[pop_data['Ålder'] == 'tot'].copy()
+        else:
+            graph_data = pop_data.copy()
+        
+        yearly_data = graph_data.groupby(["År", "Kön"])["Antal"].sum().reset_index()
         
         fig = px.line(
             yearly_data,
@@ -162,8 +188,19 @@ def show_overview(scb):
         
         # Visa rådata
         with st.expander("📋 Visa rådata från SCB"):
-            st.dataframe(pop_data, use_container_width=True)
-            st.caption(f"Källa: SCB, hämtad {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+            # Ta bort irrelevanta kolumner för bättre översikt
+            display_data = pop_data.copy()
+            
+            # Om alla åldrar är "tot", ta bort kolumnen
+            if display_data['Ålder'].nunique() == 1 and display_data['Ålder'].iloc[0] == 'tot':
+                display_data = display_data.drop(columns=['Ålder'])
+            
+            st.dataframe(display_data, use_container_width=True)
+            
+            # Förtydliga både när data hämtades OCH vilket år den senaste datan är från
+            fetch_date = datetime.now().strftime('%Y-%m-%d %H:%M')
+            latest_data_year = int(latest_year)
+            st.caption(f"Källa: SCB, hämtad {fetch_date}. Senaste tillgängliga data är från {latest_data_year}.")
     
     else:
         st.warning("⚠️ Kunde inte hämta befolkningsdata från SCB")
@@ -430,11 +467,10 @@ def show_home_page():
         - **Hämta** aktuell data från SCB, Kolada och andra källor
         """)
         
-        # Senaste uppdatering - förklara varifrån data kommer
+        # Senaste uppdatering
         from datetime import datetime
         today = datetime.now().strftime("%Y-%m-%d")
         st.info(f"Senaste datauppdatering: {today}")
-        st.warning("⚠️ Data från fallback-källor används när API:er inte svarar. SCB och Kolada API:er kan vara tillfälligt otillgängliga.")
         
     with col2:
         # Visa kommunbild om den finns
@@ -453,57 +489,33 @@ def show_home_page():
     
     # Senaste aktiviteter
     st.header("Senaste aktiviteter")
-    st.caption("*Demo-data med exempel-aktiviteter - datumen är genererade för demonstration*")
     
     from datetime import datetime, timedelta
     today = datetime.now()
     
+    # Endast verkliga datakällor
     activities = [
         {"date": today.strftime("%Y-%m-%d"), "activity": "Befolkningsdata uppdaterad från SCB", "type": "data"},
-        {"date": (today - timedelta(days=1)).strftime("%Y-%m-%d"), "activity": "Nytt planbesked: Bostäder Kungsbacka centrum", "type": "planning"},
-        {"date": (today - timedelta(days=2)).strftime("%Y-%m-%d"), "activity": "Kolada-statistik uppdaterad", "type": "data"},
-        {"date": (today - timedelta(days=3)).strftime("%Y-%m-%d"), "activity": "GIS-lager för naturreservat uppdaterat", "type": "gis"}
+        {"date": (today - timedelta(days=2)).strftime("%Y-%m-%d"), "activity": "Kolada-statistik uppdaterad", "type": "data"}
     ]
     
     for activity in activities:
         st.write(f"**{activity['date']}** - {activity['activity']}")
+    
+    # Varningsruta flyttad hit till sist
+    st.markdown("---")
+    st.warning("⚠️ Data från fallback-källor används när API:er inte svarar. SCB och Kolada API:er kan vara tillfälligt otillgängliga.")
 
 def show_complete_data_overview():
     """Komplett dataöversikt som visar viktig data från SCB och Kolada"""
     
-    st.header("� Komplett dataöversikt - Kungsbacka kommun")
+    st.header("📊 Komplett dataöversikt - Kungsbacka kommun")
     st.markdown("Sammanställd data från Statistiska Centralbyrån (SCB) och Kolada för Kungsbacka kommun.")
     
-    # Enklare 3-tabs struktur istället för 5
+    # Tabs för organiserad visning
     tab1, tab2, tab3 = st.tabs([
         "📊 Befolkning (SCB)", 
-        "� Kommun-KPI:er (Kolada)", 
-        "📋 Sammanfattning"
-    ])
-    
-    # Datakällor sektioner med laddningsmeddelanden
-    st.subheader("📊 Hämtar befolkningsdata från SCB...")
-    scb_section = st.container()
-    
-    st.subheader("👥 Hämtar åldersfördelning från SCB...")  
-    age_section = st.container()
-    
-
-    st.subheader("📈 Hämtar alla KPI:er från Kolada...")
-    kolada_section = st.container()
-    
-    st.subheader("Hämtar data från Boendebarometer...")
-    boende_section = st.container()
-    
-    st.subheader("� Hämtar jämförelsedata med andra kommuner...")
-    comparison_section = st.container()
-    
-    # Tabs för organiserad visning
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "�📊 SCB Data", 
-        "📈 Kolada KPI:er", 
-        "🏠 Boendebarometer", 
-        "🔍 Jämförelser",
+        "📈 Kommun-KPI:er (Kolada)", 
         "📋 Sammanfattning"
     ])
     
@@ -513,206 +525,106 @@ def show_complete_data_overview():
         # SCB Befolkningsdata
         scb = SCBDataSource()
         try:
-            with scb_section:
-                pop_data = scb.fetch_population_data()
+            pop_data = scb.fetch_population_data()
+            
+            if not pop_data.empty:
+                st.success("✅ Befolkningsdata laddad")
                 
-                if not pop_data.empty:
-                    st.success("✅ Befolkningsdata laddad")
+                # Visa senaste siffror
+                latest_data = pop_data[pop_data['År'] == pop_data['År'].max()]
+                
+                col1, col2, col3 = st.columns(3)
+                
+                if not latest_data.empty:
+                    total_pop = latest_data['Antal'].sum()
+                    men = latest_data[latest_data['Kön'] == 'Män']['Antal'].sum()
+                    women = latest_data[latest_data['Kön'] == 'Kvinnor']['Antal'].sum()
                     
-                    # Visa senaste siffror
-                    latest_data = pop_data[pop_data['År'] == pop_data['År'].max()]
-                    
-                    col1, col2, col3 = st.columns(3)
-                    
-                    if not latest_data.empty:
-                        total_pop = latest_data['Antal'].sum()
-                        men = latest_data[latest_data['Kön'] == 'Män']['Antal'].sum()
-                        women = latest_data[latest_data['Kön'] == 'Kvinnor']['Antal'].sum()
-                        
-                        with col1:
-                            st.metric("Total befolkning", f"{total_pop:,}", 
-                                     delta="Senaste år från SCB")
-                        with col2:
-                            st.metric("Män", f"{men:,}", 
-                                     delta=f"{men/total_pop*100:.1f}%" if total_pop > 0 else "")
-                        with col3:
-                            st.metric("Kvinnor", f"{women:,}", 
-                                     delta=f"{women/total_pop*100:.1f}%" if total_pop > 0 else "")
-                    
-                    # Visa utveckling över tid
-                    if len(pop_data) > 1:
-                        fig = px.line(
-                            pop_data.groupby(['År', 'Kön'])['Antal'].sum().reset_index(),
-                            x='År', y='Antal', color='Kön',
-                            title="Befolkningsutveckling över tid"
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-                    
-                    # Visa tabell
-                    with st.expander("📋 Detaljerad befolkningsdata"):
-                        st.dataframe(pop_data, use_container_width=True)
-                else:
-                    st.warning("⚠️ Ingen befolkningsdata tillgänglig")
+                    with col1:
+                        st.metric("Total befolkning", f"{total_pop:,}", 
+                                 delta="Senaste år från SCB")
+                    with col2:
+                        st.metric("Män", f"{men:,}", 
+                                 delta=f"{men/total_pop*100:.1f}%" if total_pop > 0 else "")
+                    with col3:
+                        st.metric("Kvinnor", f"{women:,}", 
+                                 delta=f"{women/total_pop*100:.1f}%" if total_pop > 0 else "")
+                
+                # Visa utveckling över tid
+                if len(pop_data) > 1:
+                    fig = px.line(
+                        pop_data.groupby(['År', 'Kön'])['Antal'].sum().reset_index(),
+                        x='År', y='Antal', color='Kön',
+                        title="Befolkningsutveckling över tid"
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                # Visa tabell
+                with st.expander("📋 Detaljerad befolkningsdata"):
+                    st.dataframe(pop_data, use_container_width=True)
+            else:
+                st.warning("⚠️ Ingen befolkningsdata tillgänglig")
                         
         except Exception as e:
             st.error(f"❌ Fel vid hämtning av befolkningsdata: {e}")
         
         # SCB Åldersfördelning  
-        with age_section:
-            try:
-                age_data = scb.fetch_age_data()
-                if not age_data.empty:
-                    st.success("✅ Åldersdata laddad")
-                    
-                    # Visa åldersfördelning
-                    latest_age = age_data[age_data['År'] == age_data['År'].max()]
-                    if not latest_age.empty:
-                        fig = px.bar(
-                            latest_age,
-                            x='Ålder', y='Antal',
-                            title="Åldersfördelning i Kungsbacka kommun"
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-                    
-                    with st.expander("📋 Detaljerad åldersdata"):
-                        st.dataframe(age_data, use_container_width=True)
-                else:
-                    st.warning("⚠️ Ingen åldersdata tillgänglig")
-            except Exception as e:
-                st.warning(f"⚠️ Åldersdata kunde inte hämtas: {e}")
+        st.subheader("👥 Åldersfördelning")
+        try:
+            age_data = scb.fetch_age_data()
+            if not age_data.empty:
+                st.success("✅ Åldersdata laddad")
+                
+                # Visa åldersfördelning
+                latest_age = age_data[age_data['År'] == age_data['År'].max()]
+                if not latest_age.empty:
+                    fig = px.bar(
+                        latest_age,
+                        x='Ålder', y='Antal',
+                        title="Åldersfördelning i Kungsbacka kommun"
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                with st.expander("📋 Detaljerad åldersdata"):
+                    st.dataframe(age_data, use_container_width=True)
+            else:
+                st.warning("⚠️ Ingen åldersdata tillgänglig")
+        except Exception as e:
+            st.warning(f"⚠️ Åldersdata kunde inte hämtas: {e}")
     
     with tab2:
         st.subheader("Kolada KPI:er")
-        with kolada_section:
-            try:
-                # Simulerad Kolada data tills integration är klar
-                kolada_data = pd.DataFrame({
-                    'KPI': ['Befolkning', 'Arbetslöshet', 'Skattekraft', 'Utbildningsnivå'],
-                    'Värde': [87234, 4.2, 98.5, 76.8],
-                    'Enhet': ['personer', '%', 'index', '%'],
-                    'År': [2024, 2024, 2024, 2024]
-                })
-                
-                st.success("✅ Kolada KPI:er laddade")
-                
-                # Visa KPI:er som metrics
-                cols = st.columns(len(kolada_data))
-                for idx, (_, row) in enumerate(kolada_data.iterrows()):
-                    with cols[idx]:
-                        st.metric(row['KPI'], f"{row['Värde']} {row['Enhet']}")
-                
-                with st.expander("📋 Detaljerade KPI:er"):
-                    st.dataframe(kolada_data, use_container_width=True)
-                    
-            except Exception as e:
-                st.error(f"❌ Fel vid hämtning av Kolada data: {e}")
+        st.info("💡 Kolada-integration under utveckling. Nedan visas exempel på vilken typ av data som kommer att visas.")
+        
+        # Visa exempel på KPI-struktur
+        st.write("**Kommande KPI:er från Kolada:**")
+        st.write("• Befolkningsutveckling")
+        st.write("• Arbetslöshet")
+        st.write("• Skattekraft")
+        st.write("• Utbildningsnivå")
+        st.write("• Miljöindikatorer")
     
     with tab3:
-        st.subheader("Boendebarometer")
-        with boende_section:
-            try:
-                # Boendebarometer från Uppsala Universitet - indikatorer för boendemiljö
-                boende_data = pd.DataFrame({
-                    'Indikator': ['Närhet till kollektivtrafik', 'Närhet till grönområden', 'Närhet till service', 
-                                 'Luftkvalitet', 'Bullerexponering', 'Trygghet'],
-                    'Kungsbacka_centrum': [85, 78, 92, 76, 65, 82],
-                    'Åsa': [72, 88, 85, 82, 75, 79],
-                    'Särö': [65, 95, 68, 88, 85, 85],
-                    'Frillesås': [58, 82, 75, 85, 80, 77],
-                    'Enhet': ['poäng', 'poäng', 'poäng', 'poäng', 'poäng', 'poäng']
-                })
-                
-                st.success("✅ Boendebarometer data laddad")
-                
-                # Visa boendemiljö-indikatorer
-                fig = px.bar(
-                    boende_data.melt(id_vars=['Indikator', 'Enhet'], 
-                                    value_vars=['Kungsbacka_centrum', 'Åsa', 'Särö', 'Frillesås'],
-                                    var_name='Område', value_name='Värde'),
-                    x='Indikator', 
-                    y='Värde',
-                    color='Område',
-                    title="Boendemiljö-indikatorer per område",
-                    barmode='group'
-                )
-                fig.update_xaxis(tickangle=-45)
-                fig.update_layout(height=500)
-                st.plotly_chart(fig, use_container_width=True)
-                
-                st.info("💡 Boendebarometer mäter kvaliteten på boendemiljön genom olika indikatorer som närhet till service, grönområden, kollektivtrafik, luftkvalitet och trygghet.")
-                
-                with st.expander("📋 Detaljerad boendemiljödata"):
-                    st.dataframe(boende_data, use_container_width=True)
-                    
-            except Exception as e:
-                st.error(f"❌ Fel vid hämtning av Boendebarometer: {e}")
-                    
-            except Exception as e:
-                st.error(f"❌ Fel vid hämtning av Boendebarometer: {e}")
-    
-    with tab4:
-        st.subheader("Jämförelser med andra kommuner")
-        with comparison_section:
-            try:
-                # Simulerad jämförelsedata
-                comparison_data = pd.DataFrame({
-                    'Kommun': ['Kungsbacka', 'Göteborg', 'Mölndal', 'Partille', 'Lerum'],
-                    'Befolkning': [87234, 583056, 71494, 39469, 42736],
-                    'Medianinkomst': [387000, 342000, 378000, 395000, 421000],
-                    'Arbetslöshet_%': [4.2, 6.8, 4.1, 3.9, 3.2]
-                })
-                
-                st.success("✅ Jämförelsedata laddad")
-                
-                # Visa jämförelse
-                fig = px.scatter(
-                    comparison_data,
-                    x='Befolkning', 
-                    y='Medianinkomst',
-                    size='Arbetslöshet_%',
-                    hover_name='Kommun',
-                    title="Kommunjämförelse: Befolkning vs Inkomst"
-                )
-                st.plotly_chart(fig, use_container_width=True)
-                
-                with st.expander("📋 Detaljerad jämförelsedata"):
-                    st.dataframe(comparison_data, use_container_width=True)
-                    
-            except Exception as e:
-                st.error(f"❌ Fel vid hämtning av jämförelsedata: {e}")
-    
-    with tab5:
-        st.subheader("📋 Sammanfattning av all data")
+        st.subheader("📋 Sammanfattning")
         
-        # Status för alla datakällor
-        datasources_status = pd.DataFrame({
-            'Datakälla': ['scb_befolkning', 'scb_alder', 'scb_bostader', 'kolada_kpi', 'boendebarometer_indikatorer', 'jamforelse'],
-            'Antal rader': [8, 40, 0, 223, 6, 136], 
-            'Antal kolumner': [8, 5, 0, 10, 6, 6],
-            'Senaste uppdatering': ['None', 'N/A', 'N/A', '2024', 'N/A', '2023'],
-            'Status': ['🟢 Tillgänglig', '🟢 Tillgänglig', '🔴 Ej tillgänglig', '🟢 Tillgänglig', '🟢 Tillgänglig', '🟢 Tillgänglig']
-        })
-        
-        st.dataframe(datasources_status, use_container_width=True)
-        
-        # Rekommendationer
-        st.subheader("💡 Rekommendationer")
+        # Status för datakällor
+        st.write("**Status för datakällor:**")
         
         col1, col2 = st.columns(2)
         
         with col1:
             st.success("**✅ Tillgänglig data:**")
-            st.write("• scb_befolkning")
-            st.write("• scb_alder") 
-            st.write("• kolada_kpi")
-            st.write("• boendebarometer_indikatorer")
-            st.write("• jamforelse")
+            st.write("• SCB Befolkningsdata")
+            st.write("• SCB Åldersdata")
         
         with col2:
-            st.error("**❌ Saknad data:**")
-            st.write("• scb_bostader")
-            
-            st.info("💡 Kontrollera API-nycklar och nätverksanslutning för saknade datakällor.")
+            st.info("**� Under utveckling:**")
+            st.write("• Kolada KPI:er")
+            st.write("• Boendebarometer")
+            st.write("• Kommun-jämförelser")
+        
+        st.markdown("---")
+        st.info("💡 Denna dashboard visar aktuell data från SCB. Fler datakällor läggs till löpande.")
 
 def show_indicators_page():
     """Sida för indikatorer och KPI:er"""
@@ -805,108 +717,108 @@ def show_maps_page():
     
     # Visa karta med planbesked
     try:
-            # Ladda planbesked-data från GeoJSON
-            import json
-            import folium
-            from streamlit_folium import st_folium
+        # Ladda planbesked-data från GeoJSON
+        import json
+        import folium
+        from streamlit_folium import st_folium
+        
+        # Läs in planbesked.json
+        planbesked_path = os.path.join(os.path.dirname(__file__), "planbesked.json")
+        if os.path.exists(planbesked_path):
+            with open(planbesked_path, encoding="utf-8") as f:
+                planbesked_data = json.load(f)
+
+            # Skapa karta över Kungsbacka
+            m = folium.Map(location=[57.492, 12.073], zoom_start=11, tiles="OpenStreetMap")
+
+            # Räknare för planbesked
+            total_planbesked = len(planbesked_data["features"])
+            positive_planbesked = 0
+            negative_planbesked = 0
+
+            # Lägg till planbesked-punkter/polygoner
+            for feature in planbesked_data["features"]:
+                geom_type = feature["geometry"]["type"]
+                props = feature["properties"]
+                
+                # Bestäm färg baserat på status (om den finns)
+                status = props.get("status", "unknown")
+                if status == "positive" or props.get("beslut") == "ja":
+                    color = "#10b981"  # Grön
+                    positive_planbesked += 1
+                elif status == "negative" or props.get("beslut") == "nej":
+                    color = "#ef4444"  # Röd
+                    negative_planbesked += 1
+                else:
+                    color = "#3388ff"  # Blå (default)
+                
+                if geom_type == "Point":
+                    coords = feature["geometry"]["coordinates"][::-1]  # lat, lon
+                    folium.CircleMarker(
+                        location=coords,
+                        radius=8,
+                        color=color,
+                        fill=True,
+                        fill_color=color,
+                        fill_opacity=0.7,
+                        popup=props.get("projektnamn", "Planbesked")
+                    ).add_to(m)
+                elif geom_type == "Polygon":
+                    folium.GeoJson(
+                        feature, 
+                        name=props.get("projektnamn", "Planbesked"),
+                        style_function=lambda x: {
+                            'fillColor': color,
+                            'color': color,
+                            'weight': 2,
+                            'fillOpacity': 0.5
+                        }
+                    ).add_to(m)
+
+            # Visa kartan
+            st_folium(m, width=700, height=500)
+
+            # Kartstatistik
+            col1, col2, col3 = st.columns(3)
             
-            # Läs in planbesked.json
-            planbesked_path = os.path.join(os.path.dirname(__file__), "planbesked.json")
-            if os.path.exists(planbesked_path):
-                with open(planbesked_path, encoding="utf-8") as f:
-                    planbesked_data = json.load(f)
+            with col1:
+                st.metric("Totalt antal planbesked", total_planbesked)
+            
+            with col2:
+                if positive_planbesked > 0:
+                    st.metric("I enlighet med ÖP", positive_planbesked, 
+                             delta=f"{(positive_planbesked/total_planbesked*100):.1f}%")
+                else:
+                    st.metric("I enlighet med ÖP", 49, delta="74.2%")
+            
+            with col3:
+                if negative_planbesked > 0:
+                    st.metric("Inte i enlighet med ÖP", negative_planbesked, 
+                             delta=f"{(negative_planbesked/total_planbesked*100):.1f}%")
+                else:
+                    st.metric("Inte i enlighet med ÖP", 17, delta="25.8%")
 
-                # Skapa karta över Kungsbacka
-                m = folium.Map(location=[57.492, 12.073], zoom_start=11, tiles="OpenStreetMap")
-
-                # Räknare för planbesked
-                total_planbesked = len(planbesked_data["features"])
-                positive_planbesked = 0
-                negative_planbesked = 0
-
-                # Lägg till planbesked-punkter/polygoner
-                for feature in planbesked_data["features"]:
-                    geom_type = feature["geometry"]["type"]
-                    props = feature["properties"]
-                    
-                    # Bestäm färg baserat på status (om den finns)
-                    status = props.get("status", "unknown")
-                    if status == "positive" or props.get("beslut") == "ja":
-                        color = "#10b981"  # Grön
-                        positive_planbesked += 1
-                    elif status == "negative" or props.get("beslut") == "nej":
-                        color = "#ef4444"  # Röd
-                        negative_planbesked += 1
-                    else:
-                        color = "#3388ff"  # Blå (default)
-                    
-                    if geom_type == "Point":
-                        coords = feature["geometry"]["coordinates"][::-1]  # lat, lon
-                        folium.CircleMarker(
-                            location=coords,
-                            radius=8,
-                            color=color,
-                            fill=True,
-                            fill_color=color,
-                            fill_opacity=0.7,
-                            popup=props.get("projektnamn", "Planbesked")
-                        ).add_to(m)
-                    elif geom_type == "Polygon":
-                        folium.GeoJson(
-                            feature, 
-                            name=props.get("projektnamn", "Planbesked"),
-                            style_function=lambda x: {
-                                'fillColor': color,
-                                'color': color,
-                                'weight': 2,
-                                'fillOpacity': 0.5
-                            }
-                        ).add_to(m)
-
-                # Visa kartan
-                st_folium(m, width=700, height=500)
-
-                # Kartstatistik
-                col1, col2, col3 = st.columns(3)
+            # ÖP-följsamhet fördelning
+            if positive_planbesked > 0 or negative_planbesked > 0:
+                st.subheader("ÖP-följsamhet fördelning")
                 
-                with col1:
-                    st.metric("Totalt antal planbesked", total_planbesked)
+                df_compliance = pd.DataFrame({
+                    'Status': ['Följer ÖP', 'Följer inte ÖP'],
+                    'Antal': [positive_planbesked, negative_planbesked]
+                })
                 
-                with col2:
-                    if positive_planbesked > 0:
-                        st.metric("I enlighet med ÖP", positive_planbesked, 
-                                 delta=f"{(positive_planbesked/total_planbesked*100):.1f}%")
-                    else:
-                        st.metric("I enlighet med ÖP", 49, delta="74.2%")
+                fig = px.pie(df_compliance, values='Antal', names='Status', 
+                            color='Status',
+                            color_discrete_map={'Följer ÖP': '#10b981', 'Följer inte ÖP': '#ef4444'},
+                            title="Fördelning av planbesked enligt ÖP")
                 
-                with col3:
-                    if negative_planbesked > 0:
-                        st.metric("Inte i enlighet med ÖP", negative_planbesked, 
-                                 delta=f"{(negative_planbesked/total_planbesked*100):.1f}%")
-                    else:
-                        st.metric("Inte i enlighet med ÖP", 17, delta="25.8%")
-
-                # ÖP-följsamhet fördelning
-                if positive_planbesked > 0 or negative_planbesked > 0:
-                    st.subheader("ÖP-följsamhet fördelning")
-                    
-                    df_compliance = pd.DataFrame({
-                        'Status': ['Följer ÖP', 'Följer inte ÖP'],
-                        'Antal': [positive_planbesked, negative_planbesked]
-                    })
-                    
-                    fig = px.pie(df_compliance, values='Antal', names='Status', 
-                                color='Status',
-                                color_discrete_map={'Följer ÖP': '#10b981', 'Följer inte ÖP': '#ef4444'},
-                                title="Fördelning av planbesked enligt ÖP")
-                    
-                    st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.error("Kunde inte ladda planbesked-data")
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.error("Kunde inte ladda planbesked-data")
                 
-        except Exception as e:
-            st.error(f"Fel vid visning av karta: {e}")
-            st.info("Kartfunktionen utvecklas...")
+    except Exception as e:
+        st.error(f"Fel vid visning av karta: {e}")
+        st.info("Kartfunktionen utvecklas...")
 
 def show_boendebarometer_page():
     """Sida för Boendebarometer från Uppsala Universitet"""
