@@ -93,7 +93,7 @@ with col1:
             Översiktsplanen är kommunens strategiska planeringsdokument som visar hur mark- och vattenområden 
             ska användas och hur den bebyggda miljön ska utvecklas och bevaras.
         </div>
-        <a href="https://kungsbacka.se/kommun-och-politik/sa-styrs-kungsbacka" 
+        <a href="https://kungsbacka.se/download/18.664f3731952dcb17b8813a4/1740567574918/Vision%202030.pdf" 
            target="_blank" class="document-link">Läs mer om visionen</a>
     </div>
     """, unsafe_allow_html=True)
