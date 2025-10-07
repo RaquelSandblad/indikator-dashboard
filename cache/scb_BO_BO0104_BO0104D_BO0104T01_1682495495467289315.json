@@ -1,0 +1,66 @@
+{
+  "columns": [
+    {
+      "code": "Region",
+      "text": "region",
+      "type": "d"
+    },
+    {
+      "code": "Hustyp",
+      "text": "hustyp",
+      "type": "d"
+    },
+    {
+      "code": "Tid",
+      "text": "år",
+      "type": "t"
+    },
+    {
+      "code": "BO0104AG",
+      "text": "Antal",
+      "type": "c"
+    }
+  ],
+  "comments": [
+    {
+      "variable": "Hustyp",
+      "value": "SMÅHUS",
+      "comment": "Småhus avser friliggande en- och tvåbostadshus samt par-, rad- och kedjehus (exklusive fritidshus).\r\n"
+    },
+    {
+      "variable": "Hustyp",
+      "value": "FLERBOST",
+      "comment": "Flerbostadshus avser bostadsbyggnader innehållande tre eller flera lägenheter inklusive loftgångshus.\r\n"
+    }
+  ],
+  "data": [
+    {
+      "key": [
+        "1384",
+        "SMÅHUS",
+        "2024"
+      ],
+      "values": [
+        "25143"
+      ]
+    },
+    {
+      "key": [
+        "1384",
+        "FLERBOST",
+        "2024"
+      ],
+      "values": [
+        "9229"
+      ]
+    }
+  ],
+  "metadata": [
+    {
+      "infofile": "BO0104",
+      "updated": "2025-04-16T07:18:00Z",
+      "label": "Antal lägenheter, antal efter region, hustyp, år och tabellinnehåll",
+      "source": "SCB"
+    }
+  ]
+}

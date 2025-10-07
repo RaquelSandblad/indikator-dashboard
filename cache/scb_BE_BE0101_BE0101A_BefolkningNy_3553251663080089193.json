@@ -1,0 +1,71 @@
+{
+  "columns": [
+    {
+      "code": "Region",
+      "text": "region",
+      "comment": "År 1968–1998 redovisas enligt regional indelning 1998-01-01.\r\n",
+      "type": "d"
+    },
+    {
+      "code": "Alder",
+      "text": "ålder",
+      "type": "d"
+    },
+    {
+      "code": "Kon",
+      "text": "kön",
+      "type": "d"
+    },
+    {
+      "code": "Tid",
+      "text": "år",
+      "type": "t"
+    },
+    {
+      "code": "BE0101N1",
+      "text": "Folkmängd",
+      "type": "c"
+    },
+    {
+      "code": "BE0101N2",
+      "text": "Folkökning",
+      "comment": "Folkökningen definieras som skillnaden mellan folkmängden vid årets början och årets slut.\r\n",
+      "type": "c"
+    }
+  ],
+  "comments": [],
+  "data": [
+    {
+      "key": [
+        "1380",
+        "tot",
+        "1",
+        "2024"
+      ],
+      "values": [
+        "53045",
+        "49"
+      ]
+    },
+    {
+      "key": [
+        "1380",
+        "tot",
+        "2",
+        "2024"
+      ],
+      "values": [
+        "53039",
+        "239"
+      ]
+    }
+  ],
+  "metadata": [
+    {
+      "infofile": "BE0101",
+      "updated": "2025-02-11T14:05:00Z",
+      "label": "Folkmängden efter region, ålder, kön, år och tabellinnehåll",
+      "source": "SCB"
+    }
+  ]
+}

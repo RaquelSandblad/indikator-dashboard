@@ -1,0 +1,142 @@
+{
+  "prioriterade_orter": {
+    "Kungsbacka stad": {
+      "typ": "Huvudort",
+      "prioritet": "Högsta",
+      "beskrivning": "Kommunens huvudort med fokus på förtätning och stadsbyggnadsutveckling. Här prioriteras bostäder, service, handel och verksamheter. Tydligt centrum med goda kommunikationer.",
+      "utvecklingsområden": ["Tölö ängar", "Voxlöv"],
+      "mål": "Fortsatt förtätning inom befintlig bebyggelsestruktur, utveckling av stadskärnan, stärka kollektivtrafiken"
+    },
+    "Åsa": {
+      "typ": "Prioriterad ort",
+      "prioritet": "Hög",
+      "beskrivning": "Viktig kustort med potential för både bostäder och verksamheter. God tillgång till service och närhet till havet. Stark lokal identitet.",
+      "utvecklingsområden": ["Boviera", "Åskatorp"],
+      "mål": "Stärka ortens roll som regional knutpunkt, utveckla bostäder och service, bevara kustmiljö"
+    },
+    "Anneberg": {
+      "typ": "Prioriterad ort",
+      "prioritet": "Hög",
+      "beskrivning": "Prioriterad ort med utvecklingspotential. Strategiskt läge för fortsatt utveckling.",
+      "utvecklingsområden": ["Älafors", "Lerberg"],
+      "mål": "Utveckla som bostadsort med kompletterande service"
+    }
+  },
+  "ovriga_orter": {
+    "Fjärås": {
+      "typ": "Kompletterande ort",
+      "prioritet": "Medel",
+      "beskrivning": "Ort med närhet till Kungsbacka stad. Kompletterande bebyggelse.",
+      "mål": "Bevara ortens karaktär, kompletterande bostadsutveckling"
+    },
+    "Onsala": {
+      "typ": "Kompletterande ort",
+      "prioritet": "Medel",
+      "beskrivning": "Kustort med stark lokal identitet. Kompletterande bebyggelse som respekterar ortens karaktär och kustmiljö.",
+      "mål": "Bevara ortens småskaliga karaktär, komplettera med enstaka bostäder"
+    },
+    "Kullavik": {
+      "typ": "Kompletterande ort",
+      "prioritet": "Medel",
+      "beskrivning": "Ort med närhet till havet. Kompletterande bebyggelse.",
+      "mål": "Bevara ortens karaktär, begränsad komplettering"
+    },
+    "Särö": {
+      "typ": "Kompletterande ort",
+      "prioritet": "Medel",
+      "beskrivning": "Attraktiv kustort med begränsad potential för ytterligare utbyggnad. Fokus på att bevara ortens unika karaktär.",
+      "mål": "Bevara ortens exklusiva karaktär, mycket begränsad komplettering"
+    },
+    "Vallda": {
+      "typ": "Kompletterande ort",
+      "prioritet": "Medel",
+      "beskrivning": "Mindre ort med kompletterande bebyggelse.",
+      "mål": "Bibehålla ortens småskaliga struktur"
+    },
+    "Frillesås": {
+      "typ": "Kompletterande ort",
+      "prioritet": "Medel",
+      "beskrivning": "Mindre ort med kompletterande bebyggelse och lokal service.",
+      "mål": "Bevara ortens småortskaraktär"
+    }
+  },
+  "strategiska_utvecklingsområden": {
+    "Tölö ängar": {
+      "ort": "Kungsbacka stad",
+      "typ": "Bostäder",
+      "omfattning": "Stort område för bostadsutveckling",
+      "status": "Planerat",
+      "beskrivning": "Stort utvecklingsområde för bostäder i anslutning till Kungsbacka centrum"
+    },
+    "Voxlöv": {
+      "ort": "Kungsbacka stad",
+      "typ": "Blandstad - bostäder och verksamheter",
+      "omfattning": "Stort område för blandad bebyggelse",
+      "status": "Pågående",
+      "beskrivning": "Utvecklingsområde för både bostäder och verksamheter, blandad bebyggelse"
+    },
+    "Boviera": {
+      "ort": "Åsa",
+      "typ": "Bostäder",
+      "omfattning": "Bostadsområde",
+      "status": "Planerat",
+      "beskrivning": "Nytt bostadsområde i Åsa"
+    },
+    "Åskatorp": {
+      "ort": "Åsa",
+      "typ": "Blandad bebyggelse",
+      "omfattning": "Bostäder och verksamheter",
+      "status": "Planerat",
+      "beskrivning": "Område för både bostäder och verksamheter i Åsa"
+    },
+    "Hede station": {
+      "ort": "Kungsbacka",
+      "typ": "Verksamheter och logistik",
+      "omfattning": "Stort verksamhetsområde",
+      "status": "Pågående",
+      "beskrivning": "Logistik- och verksamhetsområde vid Hede station"
+    },
+    "Kungsmässan": {
+      "ort": "Kungsbacka",
+      "typ": "Handel och kontor",
+      "omfattning": "Handels- och kontorsområde",
+      "status": "Etablerat",
+      "beskrivning": "Etablerat handels- och kontorsområde vid E6/E20"
+    }
+  },
+  "planeringsstrategier": {
+    "planprincip": "Inifrån och ut - förtätning före utbredning",
+    "op_foljsamhet_mal": "Minst 80% av planbesked ska följa översiktsplanen",
+    "bostadsproduktion_mal": "1000 nya lägenheter per år",
+    "prioritering": "Kungsbacka stad, Åsa och Anneberg prioriteras för bostadsbyggande och utveckling av service",
+    "hallbarhet": "Hållbar markanvändning, bevarande av grönytor och naturvärden, klimatsmart planering",
+    "infrastruktur": "Utveckling ska ske i anslutning till kollektivtrafik och befintlig infrastruktur"
+  },
+  "styrdokument": {
+    "Översiktsplan": {
+      "url": "https://karta.kungsbacka.se/oversiktsplan",
+      "beskrivning": "Kommunens långsiktiga plan för mark- och vattenanvändning"
+    },
+    "Bostadsförsörjningsplan": {
+      "url": null,
+      "beskrivning": "Plan för bostadsförsörjning med mål om 1000 nya lägenheter per år"
+    },
+    "Vision 2030": {
+      "url": "https://kungsbacka.se/download/18.664f3731952dcb17b8813a4/1740567574918/Vision%202030.pdf",
+      "beskrivning": "Kungsbacka kommuns vision för 2030"
+    },
+    "Hållbarhetsstrategi": {
+      "url": "https://kungsbacka.se/kommun-och-politik/utveckling-och-innovation/hallbarhet/vara-steg-mot-hallbarhet",
+      "beskrivning": "Våra steg mot hållbarhet - kommunens hållbarhetsstrategi"
+    }
+  },
+  "viktiga_principer": [
+    "Förtätning i befintliga tätorter före ny exploatering på landsbygden",
+    "Bevara och utveckla grönstrukturer",
+    "Samordna markanvändning och transporter",
+    "Skydda värdefull natur och kulturmiljöer",
+    "Skapa blandad bebyggelse med olika bostadsformer",
+    "Stärka kommunikationer och kollektivtrafik",
+    "Klimatanpassa och minska klimatpåverkan"
+  ]
+}
