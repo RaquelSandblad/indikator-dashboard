@@ -1,6 +1,6 @@
 """
 Kungsbacka Planeringsdashboard
-Huvudsida - Navigation till alla undersidor
+Startsida - Navigation till alla undersidor
 """
 
 import streamlit as st
@@ -10,7 +10,7 @@ from datetime import datetime
 
 # Streamlit konfiguration
 st.set_page_config(
-    page_title="Inledning - Kungsbacka",
+    page_title="Start - Kungsbacka",
     page_icon="🏙️",
     layout="wide",
     initial_sidebar_state="expanded"

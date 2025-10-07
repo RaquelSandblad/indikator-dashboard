@@ -135,7 +135,7 @@ required_files = [
     "data_sources.py",
     "utils.py",
     "SCB_Dataservice.py",
-    "Home.py"
+    "Start.py"
 ]
 
 file_status = []
