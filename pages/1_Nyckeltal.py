@@ -7,12 +7,12 @@ import pandas as pd
 import plotly.express as px
 
 st.set_page_config(
-    page_title="Kommunens nyckeltal - Kungsbacka",
+    page_title="Nyckeltal - Kungsbacka",
     page_icon="📊",
     layout="wide"
 )
 
-st.title("📊 Kommunens nyckeltal")
+st.title("📊 Nyckeltal")
 st.markdown("Övergripande indikatorer och KPI:er för strategisk uppföljning")
 
 # ÖP-följsamhet och måluppfyllelse med progress bars
