@@ -349,8 +349,8 @@ with tabs[0]:
     with col1:
         st.metric(
             "Total befolkning",
-            "106,084",
-            delta="+288 från föregående år",
+            "85,792",
+            delta="+139 från föregående år",
             help="Senaste data från SCB 2024"
         )
 
