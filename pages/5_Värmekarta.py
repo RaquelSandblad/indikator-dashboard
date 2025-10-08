@@ -78,28 +78,33 @@ except Exception as e:
 st.subheader("Interaktiv befolkningsvärmekarta")
 
 try:
-    # Ortdata med befolkningstäthet - NU MED ALLA 9 ORTER FRÅN ÖVERSIKTSPLANEN
-    # Format: [lat, lon, befolkning/intensitet]
-    # JUSTERAT: Högre intensitet för mindre orter så de syns bättre
+    # Ortdata med befolkningstäthet - KRAFTIGT FÖRBÄTTRAD SYNLIGHET
+    # Format: [lat, lon, intensitet]
+    # MAXIMERAD SYNLIGHET: Även små orter har hög intensitet för tydlig visualisering
     ortdata = [
-        # PRIORITERADE ORTER
-        [57.4879, 12.0756, 45000],  # Kungsbacka stad - huvudort (högst intensitet)
-        [57.3667, 12.1333, 12000],  # Åsa - ÖKAT från 8900
-        [57.4167, 12.0833, 6000],   # Fjärås - ÖKAT från 3500
+        # PRIORITERADE ORTER - Mycket höga värden
+        [57.4879, 12.0756, 100],    # Kungsbacka stad - Max intensitet
+        [57.3667, 12.1333, 45],     # Åsa - Mycket hög
+        [57.4167, 12.0833, 35],     # Fjärås - Hög
         
-        # ÖVRIGA ORTER - ALLA ÖKADE FÖR BÄTTRE SYNLIGHET
-        [57.4833, 11.9167, 18000],  # Onsala - ÖKAT från 14000
-        [57.4667, 11.9500, 8000],   # Kullavik - ÖKAT från 4500
-        [57.5167, 11.9333, 5500],   # Särö - ÖKAT från 3000
-        [57.3800, 12.2800, 3500],   # Vallda - ÖKAT från 1500
-        [57.3500, 12.2333, 2800],   # Frillesås - ÖKAT från 1200
-        [57.3200, 12.1800, 2200],   # Anneberg - ÖKAT från 800
+        # ÖVRIGA ORTER - Kraftigt ökade för maximal synlighet
+        [57.4833, 11.9167, 55],     # Onsala - Mycket hög
+        [57.4667, 11.9500, 40],     # Kullavik - Hög
+        [57.5167, 11.9333, 35],     # Särö - Hög
+        [57.3800, 12.2800, 30],     # Vallda - Medel-hög
+        [57.3500, 12.2333, 28],     # Frillesås - Medel-hög
+        [57.3200, 12.1800, 25],     # Anneberg - Medel-hög
         
-        # LANDSBYGD OCH MINDRE OMRÅDEN - KRAFTIGT ÖKADE
-        [57.5000, 12.1000, 1500],   # Landsbygd nord - ÖKAT från 500
-        [57.4200, 12.2000, 1200],   # Landsbygd öst - ÖKAT från 400
-        [57.3800, 12.0500, 1000],   # Landsbygd syd - ÖKAT från 300
-        [57.4500, 11.8800, 1200],   # Landsbygd väst - ÖKAT från 400
+        # LANDSBYGD - Nu med tydlig synlighet
+        [57.5000, 12.1000, 20],     # Landsbygd nord
+        [57.4200, 12.2000, 18],     # Landsbygd öst
+        [57.3800, 12.0500, 15],     # Landsbygd syd
+        [57.4500, 11.8800, 18],     # Landsbygd väst
+        
+        # EXTRA PUNKTER för bättre täckning
+        [57.45, 12.15, 12],         # Mellanområde öst
+        [57.40, 11.95, 10],         # Mellanområde väst
+        [57.35, 12.10, 10],         # Södra området
     ]
     
     # Skapa grundkarta
@@ -109,20 +114,22 @@ try:
         tiles="OpenStreetMap"
     )
     
-    # Lägg till värmekarta med justerade värden för bättre synlighet av mindre orter
+    # KRAFTIGT FÖRBÄTTRAD VÄRMEKARTA - mycket bättre synlighet
     HeatMap(ortdata, 
-           min_opacity=0.25,     # ÖKAT från 0.15 - mindre orter syns bättre
-           radius=40,            # ÖKAT från 35 - större radie för bättre spridning
-           blur=50,              # ÖKAT från 45 - ännu mjukare övergångar
-           max_zoom=11,          # Lägre för större spridning
+           min_opacity=0.5,      # KRAFTIGT ÖKAT från 0.25 - alla områden syns tydligt!
+           radius=50,            # ÖKAT från 40 - ännu större spridning
+           blur=35,              # MINSKAT från 50 - skarpare gränser mellan orter
+           max_zoom=13,          # ÖKAT från 11 - bättre vid inzoomning
            gradient={
-               0.0: '#fffbf0',   # Väldigt ljus (landsbygd)
-               0.10: '#fee5d9',  # Ljus terracotta - JUSTERAT från 0.15
-               0.25: '#fcbba1',  # Mild terracotta - JUSTERAT från 0.3
-               0.45: '#fc9272',  # Medium terracotta - JUSTERAT från 0.5
-               0.65: '#fb6a4a',  # Starkare terracotta - JUSTERAT från 0.7
-               0.80: '#ef3b2c',  # Stark röd - JUSTERAT från 0.85
-               1.0: '#a50f15'    # Mörk röd-terracotta (tätaste områden)
+               0.0: '#fff5eb',   # Mycket ljus beige (visar även minsta aktivitet)
+               0.05: '#fee6ce',  # Ljus persika
+               0.12: '#fdd0a2',  # Ljus terracotta
+               0.20: '#fdae6b',  # Mild orange
+               0.35: '#fd8d3c',  # Orange
+               0.50: '#f16913',  # Stark orange
+               0.70: '#d94801',  # Orange-röd
+               0.85: '#a63603',  # Mörk orange-röd
+               1.0: '#7f2704'    # Mörkast (endast Kungsbacka centrum)
            }
     ).add_to(m)
     
