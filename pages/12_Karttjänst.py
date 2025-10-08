@@ -6,7 +6,6 @@ import sys
 import os
 import requests
 import json
-from bs4 import BeautifulSoup
 
 # Lägg till current directory till Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
