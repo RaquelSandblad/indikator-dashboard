@@ -13,9 +13,9 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data.scb_connector import SCBConnector
 
-st.set_page_config(page_title="Befolkning - Kungsbacka", page_icon="�", layout="wide")
+st.set_page_config(page_title="Befolkning - Kungsbacka", page_icon="👥", layout="wide")
 
-st.title("� Befolkningsförändringar")
+st.title("👥 Befolkningsförändringar")
 st.markdown("*Analys av befolkningsutveckling och dess komponenter*")
 
 scb = SCBConnector()

@@ -22,6 +22,24 @@ st.set_page_config(
     layout="wide"
 )
 
+# CSS för större ikoner och text i metrics
+st.markdown("""
+<style>
+    /* Större ikoner och text i metric cards */
+    [data-testid="stMetricValue"] {
+        font-size: 2.5rem !important;
+        font-weight: 600;
+    }
+    [data-testid="stMetricLabel"] {
+        font-size: 1.2rem !important;
+        font-weight: 500;
+    }
+    [data-testid="stMetricDelta"] {
+        font-size: 1.1rem !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 st.title("📈 Kolada - Kommunala Nyckeltal")
 st.markdown("Aktuella nyckeltal och KPI:er för Kungsbacka kommun från Kolada-databasen")
 
@@ -173,23 +191,6 @@ with col4:
             st.metric("📋 Planaktivitet", "Data saknas")
     except:
         st.metric("📋 Planaktivitet", "Beräkningsfel")
-
-# Rad 3: Data som saknas - placeras sist
-st.markdown("###")
-st.markdown("**⚠️ Följande nyckeltal saknar data i Kolada:**")
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("�️ Nybyggda lägenheter", "Data saknas", help="KPI N00913 - Ingen data tillgänglig för Kungsbacka")
-
-with col2:
-    st.metric("🔨 Påbörjade lägenheter", "Data saknas", help="KPI N00914 - Ingen data tillgänglig för Kungsbacka")
-
-with col3:
-    st.info("Kontakta Kolada för att rapportera in denna data")
-
-with col4:
-    pass
 
 st.markdown("---")
 
