@@ -80,25 +80,26 @@ st.subheader("Interaktiv befolkningsvärmekarta")
 try:
     # Ortdata med befolkningstäthet - NU MED ALLA 9 ORTER FRÅN ÖVERSIKTSPLANEN
     # Format: [lat, lon, befolkning/intensitet]
+    # JUSTERAT: Högre intensitet för mindre orter så de syns bättre
     ortdata = [
         # PRIORITERADE ORTER
         [57.4879, 12.0756, 45000],  # Kungsbacka stad - huvudort (högst intensitet)
-        [57.3667, 12.1333, 8900],   # Åsa
-        [57.4167, 12.0833, 3500],   # Fjärås
+        [57.3667, 12.1333, 12000],  # Åsa - ÖKAT från 8900
+        [57.4167, 12.0833, 6000],   # Fjärås - ÖKAT från 3500
         
-        # ÖVRIGA ORTER
-        [57.4833, 11.9167, 14000],  # Onsala
-        [57.4667, 11.9500, 4500],   # Kullavik
-        [57.5167, 11.9333, 3000],   # Särö
-        [57.3800, 12.2800, 1500],   # Vallda
-        [57.3500, 12.2333, 1200],   # Frillesås
-        [57.3200, 12.1800, 800],    # Anneberg
+        # ÖVRIGA ORTER - ALLA ÖKADE FÖR BÄTTRE SYNLIGHET
+        [57.4833, 11.9167, 18000],  # Onsala - ÖKAT från 14000
+        [57.4667, 11.9500, 8000],   # Kullavik - ÖKAT från 4500
+        [57.5167, 11.9333, 5500],   # Särö - ÖKAT från 3000
+        [57.3800, 12.2800, 3500],   # Vallda - ÖKAT från 1500
+        [57.3500, 12.2333, 2800],   # Frillesås - ÖKAT från 1200
+        [57.3200, 12.1800, 2200],   # Anneberg - ÖKAT från 800
         
-        # LANDSBYGD OCH MINDRE OMRÅDEN (lägre intensitet för att visa spridning)
-        [57.5000, 12.1000, 500],    # Landsbygd nord
-        [57.4200, 12.2000, 400],    # Landsbygd öst
-        [57.3800, 12.0500, 300],    # Landsbygd syd
-        [57.4500, 11.8800, 400],    # Landsbygd väst
+        # LANDSBYGD OCH MINDRE OMRÅDEN - KRAFTIGT ÖKADE
+        [57.5000, 12.1000, 1500],   # Landsbygd nord - ÖKAT från 500
+        [57.4200, 12.2000, 1200],   # Landsbygd öst - ÖKAT från 400
+        [57.3800, 12.0500, 1000],   # Landsbygd syd - ÖKAT från 300
+        [57.4500, 11.8800, 1200],   # Landsbygd väst - ÖKAT från 400
     ]
     
     # Skapa grundkarta
@@ -108,19 +109,19 @@ try:
         tiles="OpenStreetMap"
     )
     
-    # Lägg till värmekarta med mjukare gradient för bättre spridning
+    # Lägg till värmekarta med justerade värden för bättre synlighet av mindre orter
     HeatMap(ortdata, 
-           min_opacity=0.15,     # Lägre för att visa landsbygd
-           radius=35,            # Stor radie för överlappning mellan orter
-           blur=45,              # Mycket oskärpa för mjuka övergångar
+           min_opacity=0.25,     # ÖKAT från 0.15 - mindre orter syns bättre
+           radius=40,            # ÖKAT från 35 - större radie för bättre spridning
+           blur=50,              # ÖKAT från 45 - ännu mjukare övergångar
            max_zoom=11,          # Lägre för större spridning
            gradient={
                0.0: '#fffbf0',   # Väldigt ljus (landsbygd)
-               0.15: '#fee5d9',  # Ljus terracotta
-               0.3: '#fcbba1',   # Mild terracotta  
-               0.5: '#fc9272',   # Medium terracotta
-               0.7: '#fb6a4a',   # Starkare terracotta
-               0.85: '#ef3b2c',  # Stark röd
+               0.10: '#fee5d9',  # Ljus terracotta - JUSTERAT från 0.15
+               0.25: '#fcbba1',  # Mild terracotta - JUSTERAT från 0.3
+               0.45: '#fc9272',  # Medium terracotta - JUSTERAT från 0.5
+               0.65: '#fb6a4a',  # Starkare terracotta - JUSTERAT från 0.7
+               0.80: '#ef3b2c',  # Stark röd - JUSTERAT från 0.85
                1.0: '#a50f15'    # Mörk röd-terracotta (tätaste områden)
            }
     ).add_to(m)
