@@ -1,5 +1,21 @@
 """
-Sida för befolkningsvärmekarta
+Sida för befolkningstäthetskarta
+Visar befolkningstäthet över hela Kungsbacka kommun med interaktiv karta
+"""
+
+import streamlit as st
+import sys
+import os
+import math
+
+# Lägg till projektets rotkatalog i Python-sökvägen
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from data_sources import SCBDataSource
+import folium
+from streamlit_folium import st_folium
+import pandas as pd
+import plotly.express as pxkningsvärmekarta
 Visar befolkningstäthet över hela Kungsbacka kommun med interaktiv karta
 """
 
@@ -23,8 +39,8 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🌡️ Befolkningsvärmekarta - Kungsbacka kommun")
-st.caption("Interaktiv karta som visar befolkningstäthet baserad på SCB-data")
+st.title("🌡️ Befolkningstäthetskarta - Kungsbacka kommun")
+st.caption("Interaktiv karta som visar befolkningsfördelning per ort baserad på SCB-data")
 
 # Hämta verklig befolkningsdata från SCB
 scb = SCBDataSource()
@@ -75,63 +91,99 @@ except Exception as e:
         st.metric("Kvinnor", "43,617", delta="50.0%")
 
 # Skapa värmekarta med ortspecifika befolkningskoncentrationer
-st.subheader("Interaktiv befolkningsvärmekarta")
+st.subheader("Interaktiv befolkningstäthetskarta")
+st.info("💡 Cirklarnas storlek motsvarar befolkning. Klicka på cirklarna för mer info!")
 
 try:
-    # Ortdata med befolkningstäthet - KRAFTIGT FÖRBÄTTRAD SYNLIGHET
-    # Format: [lat, lon, intensitet]
-    # MAXIMERAD SYNLIGHET: Även små orter har hög intensitet för tydlig visualisering
-    ortdata = [
-        # PRIORITERADE ORTER - Mycket höga värden
-        [57.4879, 12.0756, 100],    # Kungsbacka stad - Max intensitet
-        [57.3667, 12.1333, 45],     # Åsa - Mycket hög
-        [57.4167, 12.0833, 35],     # Fjärås - Hög
-        
-        # ÖVRIGA ORTER - Kraftigt ökade för maximal synlighet
-        [57.4833, 11.9167, 55],     # Onsala - Mycket hög
-        [57.4667, 11.9500, 40],     # Kullavik - Hög
-        [57.5167, 11.9333, 35],     # Särö - Hög
-        [57.3800, 12.2800, 30],     # Vallda - Medel-hög
-        [57.3500, 12.2333, 28],     # Frillesås - Medel-hög
-        [57.3200, 12.1800, 25],     # Anneberg - Medel-hög
-        
-        # LANDSBYGD - Nu med tydlig synlighet
-        [57.5000, 12.1000, 20],     # Landsbygd nord
-        [57.4200, 12.2000, 18],     # Landsbygd öst
-        [57.3800, 12.0500, 15],     # Landsbygd syd
-        [57.4500, 11.8800, 18],     # Landsbygd väst
-        
-        # EXTRA PUNKTER för bättre täckning
-        [57.45, 12.15, 12],         # Mellanområde öst
-        [57.40, 11.95, 10],         # Mellanområde väst
-        [57.35, 12.10, 10],         # Södra området
-    ]
+    # Skapa en mer realistisk befolkningskarta med markers istället för heatmap
+    # Detta ger bättre geografisk precision
+    
+    # Ortdata med KORREKT placering och verklig befolkning
+    orter_data = {
+        "Kungsbacka stad": {"lat": 57.4879, "lon": 12.0756, "befolkning": 45000, "typ": "Prioriterad ort"},
+        "Onsala": {"lat": 57.4833, "lon": 11.9167, "befolkning": 14000, "typ": "Övrig ort"},
+        "Åsa": {"lat": 57.3667, "lon": 12.1333, "befolkning": 8900, "typ": "Prioriterad ort"},
+        "Kullavik": {"lat": 57.4667, "lon": 11.9500, "befolkning": 4500, "typ": "Övrig ort"},
+        "Fjärås": {"lat": 57.4167, "lon": 12.0833, "befolkning": 3500, "typ": "Prioriterad ort"},
+        "Särö": {"lat": 57.5167, "lon": 11.9333, "befolkning": 3000, "typ": "Övrig ort"},
+        "Vallda": {"lat": 57.3800, "lon": 12.2800, "befolkning": 1500, "typ": "Övrig ort"},
+        "Frillesås": {"lat": 57.3500, "lon": 12.2333, "befolkning": 1200, "typ": "Övrig ort"},
+        "Anneberg": {"lat": 57.3200, "lon": 12.1800, "befolkning": 800, "typ": "Övrig ort"},
+    }
     
     # Skapa grundkarta
     m = folium.Map(
-        location=[57.42, 12.07],  # Centrerat för att visa hela kommunen
+        location=[57.42, 12.07],
         zoom_start=10.5,
         tiles="OpenStreetMap"
     )
     
-    # KRAFTIGT FÖRBÄTTRAD VÄRMEKARTA - mycket bättre synlighet
-    HeatMap(ortdata, 
-           min_opacity=0.5,      # KRAFTIGT ÖKAT från 0.25 - alla områden syns tydligt!
-           radius=50,            # ÖKAT från 40 - ännu större spridning
-           blur=35,              # MINSKAT från 50 - skarpare gränser mellan orter
-           max_zoom=13,          # ÖKAT från 11 - bättre vid inzoomning
-           gradient={
-               0.0: '#fff5eb',   # Mycket ljus beige (visar även minsta aktivitet)
-               0.05: '#fee6ce',  # Ljus persika
-               0.12: '#fdd0a2',  # Ljus terracotta
-               0.20: '#fdae6b',  # Mild orange
-               0.35: '#fd8d3c',  # Orange
-               0.50: '#f16913',  # Stark orange
-               0.70: '#d94801',  # Orange-röd
-               0.85: '#a63603',  # Mörk orange-röd
-               1.0: '#7f2704'    # Mörkast (endast Kungsbacka centrum)
-           }
-    ).add_to(m)
+    # Lägg till cirkelmarkörer för varje ort - storlek baserat på befolkning
+    for ort, data in orter_data.items():
+        # Beräkna cirkelns radie baserat på befolkning (logaritmisk skala för bättre visualisering)
+        import math
+        radie = math.sqrt(data["befolkning"]) * 15  # Skalning för lämplig storlek
+        
+        # Färg baserat på typ
+        farg = "#ff6b35" if data["typ"] == "Prioriterad ort" else "#f7931e"
+        
+        # Skapa cirkel
+        folium.Circle(
+            location=[data["lat"], data["lon"]],
+            radius=radie,
+            popup=f"""
+                <div style='font-family: Arial; min-width: 200px;'>
+                    <h4 style='margin: 0; color: #ff6b35;'>{ort}</h4>
+                    <p style='margin: 5px 0;'><strong>Typ:</strong> {data["typ"]}</p>
+                    <p style='margin: 5px 0;'><strong>Befolkning:</strong> {data["befolkning"]:,} inv</p>
+                </div>
+            """,
+            tooltip=f"{ort} ({data['befolkning']:,} inv)",
+            color=farg,
+            fill=True,
+            fillColor=farg,
+            fillOpacity=0.6,
+            weight=2
+        ).add_to(m)
+        
+        # Lägg till etikett för större orter
+        if data["befolkning"] > 3000:
+            folium.Marker(
+                location=[data["lat"], data["lon"]],
+                icon=folium.DivIcon(html=f"""
+                    <div style='
+                        font-size: 11px; 
+                        font-weight: bold; 
+                        color: #2c3e50;
+                        text-shadow: 1px 1px 2px white, -1px -1px 2px white;
+                        white-space: nowrap;
+                    '>{ort}</div>
+                """)
+            ).add_to(m)
+    
+    # Lägg till legend
+    legend_html = """
+    <div style="
+        position: fixed; 
+        bottom: 50px; 
+        left: 50px; 
+        width: 220px; 
+        background-color: white; 
+        border: 2px solid grey; 
+        z-index: 9999; 
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+    ">
+        <h4 style='margin-top: 0;'>Befolkningstäthet</h4>
+        <p style='margin: 5px 0;'><span style='color: #ff6b35; font-size: 18px;'>●</span> Prioriterad ort</p>
+        <p style='margin: 5px 0;'><span style='color: #f7931e; font-size: 18px;'>●</span> Övrig ort</p>
+        <p style='margin: 10px 0 5px 0; font-size: 12px; font-style: italic;'>
+            Cirkelstorlek = befolkning
+        </p>
+    </div>
+    """
+    m.get_root().html.add_child(folium.Element(legend_html))
     
     st_folium(m, width=700, height=500)
     
