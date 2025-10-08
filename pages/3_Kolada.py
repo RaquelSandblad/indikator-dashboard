@@ -22,7 +22,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# CSS för större ikoner och text i metrics
+# CSS för större ikoner och text i metrics + orange flikar
 st.markdown("""
 <style>
     /* Större ikoner och text i metric cards */
@@ -36,6 +36,22 @@ st.markdown("""
     }
     [data-testid="stMetricDelta"] {
         font-size: 1.1rem !important;
+    }
+    
+    /* Aktiv flik - Orange istället för röd */
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        border-bottom-color: #ff8c42 !important;
+        color: #ff8c42 !important;
+    }
+    
+    /* Hover-effekt på flikar */
+    .stTabs [data-baseweb="tab-list"] button:hover {
+        color: #ff8c42 !important;
+    }
+    
+    /* Flik-panel understruken */
+    .stTabs [data-baseweb="tab-panel"] {
+        border-top: 2px solid #ff8c42;
     }
 </style>
 """, unsafe_allow_html=True)
