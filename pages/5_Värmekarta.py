@@ -15,22 +15,6 @@ from data_sources import SCBDataSource
 import folium
 from streamlit_folium import st_folium
 import pandas as pd
-import plotly.express as pxkningsvärmekarta
-Visar befolkningstäthet över hela Kungsbacka kommun med interaktiv karta
-"""
-
-import streamlit as st
-import sys
-import os
-
-# Lägg till projektets rotkatalog i Python-sökvägen
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from data_sources import SCBDataSource
-import folium
-from folium.plugins import HeatMap
-from streamlit_folium import st_folium
-import pandas as pd
 import plotly.express as px
 
 st.set_page_config(
@@ -121,7 +105,6 @@ try:
     # Lägg till cirkelmarkörer för varje ort - storlek baserat på befolkning
     for ort, data in orter_data.items():
         # Beräkna cirkelns radie baserat på befolkning (logaritmisk skala för bättre visualisering)
-        import math
         radie = math.sqrt(data["befolkning"]) * 15  # Skalning för lämplig storlek
         
         # Färg baserat på typ
@@ -228,9 +211,7 @@ try:
     with st.expander("📋 Detaljerad befolkningsfördelning"):
         st.dataframe(df_orter, use_container_width=True)
         
-except ImportError:
-    st.error("folium.plugins.HeatMap inte tillgänglig")
-    st.info("Värmekarta-funktionen utvecklas för närvarande...")
 except Exception as e:
-    st.error(f"Fel vid visning av värmekarta: {e}")
-    st.info("Värmekarta-funktionen utvecklas för närvarande...")
+    st.error(f"Fel vid visning av täthetskarta: {e}")
+    st.info("Täthetskarta-funktionen utvecklas för närvarande...")
+
