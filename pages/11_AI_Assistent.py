@@ -1,4 +1,11 @@
 import streamlit as st
+
+# OBS! Denna sida är tillfälligt dold från sidomenyn.
+st.set_page_config(page_title="AI-Assistent (Ej publik)", page_icon="❌", layout="wide", initial_sidebar_state="collapsed")
+
+# Avbryt rendering om någon försöker öppna sidan direkt
+st.warning("Denna sida är inte publik ännu.")
+st.stop()
 import sys
 import os
 from datetime import datetime

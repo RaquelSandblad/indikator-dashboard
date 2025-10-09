@@ -9,6 +9,13 @@ import json
 import traceback
 
 import streamlit as st
+
+# OBS! Denna sida är tillfälligt dold från sidomenyn.
+st.set_page_config(page_title="Värmekarta (Ej publik)", page_icon="❌", layout="wide", initial_sidebar_state="collapsed")
+
+# Avbryt rendering om någon försöker öppna sidan direkt
+st.warning("Denna sida är inte publik ännu.")
+st.stop()
 import pandas as pd
 import plotly.express as px
 import requests
